@@ -1,16 +1,16 @@
 
 
 import React from 'react'
+import Application from '../components/applicatiom'
+
 
 const add = ()=>{
 
     return(
 
-        <div className='w-[80%] mx-auto border border-black rounded-lg mt-[60px]'>
+        <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
 
-                <div claassNma >
-                    <h1>APPLICATION DATA</h1>
-                </div>
+                <Application/>
 
         </div>
     )

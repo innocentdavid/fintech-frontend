@@ -7,7 +7,7 @@ import styles from '../styles/Home.module.css'
 import Inputfeild from '../components/inputfeild'
 import Emailverifybutton from '../components/Buttons/Emailverifybutton'
 import Data from '../components/Data'
-import  Displaytable from '../components/table'
+// import Table from '../components/table'
 
 
 export default function Home() {
@@ -31,18 +31,7 @@ export default function Home() {
       </header>
 
       <Data/>
-
-      <Displaytable
-        leaders= 'bitty'
-        crowler = 'Success'
-        id= '123'
-        status = 'funded'
-        DOB = '06/06/23'
-        legalname = 'The business name'
-        Advanced= '7,500'
-        comission= '600.00'
-        link='/add'
-      />
+      {/* <Table/> */}
 
     </div>
 
