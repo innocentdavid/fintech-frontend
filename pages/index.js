@@ -1,13 +1,11 @@
 
 
 
-import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Inputfeild from '../components/inputfeild'
 import Emailverifybutton from '../components/Buttons/Emailverifybutton'
 import Data from '../components/Data'
-// import Table from '../components/table'
+import Table from '../components/table'
 
 
 export default function Home() {
@@ -31,7 +29,7 @@ export default function Home() {
       </header>
 
       <Data/>
-      {/* <Table/> */}
+      <Table/>
 
     </div>
 
