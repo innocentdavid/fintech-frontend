@@ -9,6 +9,7 @@ const Inputfeild = (props) =>{
             <label className='text-[14px]'>{props.label}</label>
             <input type={props.type} 
             name={props.name} 
+            readOnly={props.read}
             placeholder={props.plholder} 
             className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' id="" />
         </div>

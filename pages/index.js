@@ -1,5 +1,6 @@
-import Head from 'next/head'
-import Image from 'next/image'
+
+
+
 import styles from '../styles/Home.module.css'
 import Inputfeild from '../components/inputfeild'
 import Emailverifybutton from '../components/Buttons/Emailverifybutton'
@@ -27,8 +28,8 @@ export default function Home() {
         />
       </header>
 
-      <Data />
-      {/* <Table /> */}
+      <Data/>
+      {/* <Table/> */}
 
     </div>
 
