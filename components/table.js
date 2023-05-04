@@ -28,11 +28,10 @@ const Table = () => {
       "name_of_business": "ABC Corporation",
       "legal_business_name":"ABC Corporation LLC",
       "oweners":"John Doe, Jane Doe",
-
       "users_cash_advance":true,
       "have_cash_advance":true,
       "credit_score":750,
-      "business_nmame_match": false
+      "business_name_match": false
      }
   ]
 
