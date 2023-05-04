@@ -2,10 +2,13 @@
 
 import React from 'react'
 import Inputfeild from '../components/inputfeild'
+import { FaCloudUploadAlt, FaTimes } from 'react-icons/fa'
 // import axios from 'axios';
 import  useState  from 'react'
 // import Emailverifybutton from '../components/Buttons/Emailverifybutton'
 import { NextApiRequest, NextApiResponse } from 'next';
+import FileUpload from './FileUpload';
+import { useRouter } from 'next/router';
 
 
 // export default function handler(req:, NextApiRequest, res:, NextApiResponse) {
@@ -15,7 +18,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 // }
 
 
-const Application =() =>{
+const Application =({ add }) =>{
+
+    const router = useRouter()
 
 
     // const [formData, setFormData] = useState({});
@@ -47,7 +52,7 @@ const Application =() =>{
                 <div className='w-[45%] mb-[160px] '>
                     <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
                     <h3>APPLICATION DATA</h3>
-                        <span className='text-[15px] h-[20px] w-[20px] flex justify-center my-2' >X</span>
+                        <span className='text-[15px] h-[20px] w-[20px] flex justify-center my-2' ><FaTimes size={20} className="cursor-pointer" onClick={() => router.back()} /></span>
                     </div>
                     <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
 
@@ -79,37 +84,17 @@ const Application =() =>{
 
                         <div className='w-[45%] '>
                             <h2 className='text-[13px] text-black'>Bank Statement</h2>
-                            <div className='flex '>
-                                <Inputfeild
-                                    type='text'
-                                    read= 'true'
-                                    plholder='+'
-                                />
-                                <Inputfeild
-                                    type='text'
-                                    read= 'true'
-                                    plholder='+'
-                                />
-                                <Inputfeild
-                                    type='text'
-                                    read= 'true'
-                                    plholder='+'
-                                />
+                            <div className='flex items-center gap-2 mt-1'>
+                                <FileUpload />
+                                <FileUpload />
+                                <FileUpload />
                             </div>
                         </div>
                         <div className='w-[30%]'>
                             <h2 className='text-[13px] text-black'>Application</h2>
-                            <div className='flex gap-0'>
-                                <Inputfeild
-                                      type='text'
-                                    read= 'true'
-                                    plholder='+'
-                                />
-                                <Inputfeild
-                                      type='text'
-                                    read= 'true'
-                                    plholder='+'
-                                />
+                            <div className='flex items-center gap-2 mt-1'>
+                                <FileUpload />
+                                <FileUpload />
                              
                             </div>
                         </div>

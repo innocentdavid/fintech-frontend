@@ -10,7 +10,7 @@ const add = ()=>{
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
 
-                <Application/>
+                <Application add={true} />
 
         </div>
     )
