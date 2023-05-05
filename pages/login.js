@@ -13,7 +13,10 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  async function handleLogin(event) {
+
+
+  const handlelogin = async (event) => {
+   
     event.preventDefault();
 
     const response = await fetch('/api/login', {
@@ -38,7 +41,7 @@ export default function Login() {
 
         <h1 className='text-[18px] md:mx-0 mx-7 py-1 text-blue-500' >Login Now!!</h1>
 
-        <form action="" method='post' className='flex flex-col' onSubmit={handleLogin}>
+        <form action="" method='post' className='flex flex-col' onSubmit={handlelogin}>
             <Inputfeild
                 type='text'
                 name='usname'

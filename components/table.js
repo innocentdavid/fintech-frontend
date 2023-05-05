@@ -122,7 +122,7 @@ const Table = () => {
                 muiTableBodyRowProps={({ row }) => {
                     return ({
                     // onClick: row.getToggleSelectedHandler(),
-                    onClick: () => handleRowClick(row.original),
+                    onClick: () => handleRoswClick(row.original),
                     sx: { cursor: 'pointer' },
                 })}}
                 // renderRowActions={({ row, table }) => (
