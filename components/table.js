@@ -91,7 +91,6 @@ const Table = () => {
       "name_of_business": "ABC Corporation",
       "legal_business_name":"ABC Corporation LLC",
       "oweners":"John Doe, Jane Doe",
-
       "users_cash_advance":true,
       "have_cash_advance":true,
       "credit_score":750,
@@ -119,7 +118,7 @@ const Table = () => {
                 enableEditing={false}
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
-                onRowClick={handleRowClick}
+                // onRowClick={handleRowClick}
                 muiTableBodyRowProps={({ row }) => {
                     return ({
                     // onClick: row.getToggleSelectedHandler(),

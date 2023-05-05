@@ -3,51 +3,33 @@
 import React from 'react'
 import Inputfeild from '../components/inputfeild'
 import { FaCloudUploadAlt, FaTimes } from 'react-icons/fa'
-// import axios from 'axios';
+import axios from 'axios';
 import  useState  from 'react'
-// import Emailverifybutton from '../components/Buttons/Emailverifybutton'
 import { NextApiRequest, NextApiResponse } from 'next';
 import FileUpload from './FileUpload';
 import { useRouter } from 'next/router';
 
 
-// export default function handler(req:, NextApiRequest, res:, NextApiResponse) {
-//   const formData = req.body;
-//   // handle form data here
-//   res.status(200).json({ message: 'Form submitted successfully' });
-// }
 
 
 const Application =({ add }) =>{
 
     const router = useRouter()
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const data = { name };
+        const response = await axios.post('http://localhost:8000/api/user', data);
+        console.log(response.data);
+      };
+      
 
-    // const [formData, setFormData] = useState({});
-
-    // const handleInputChange = e => {
-    //     const { name, value } = e.target;
-    //     setFormData(prevState => ({
-    //       ...prevState,
-    //       [name]: value
-    //     }));
-    //   };
-
-    //   const handleSubmit = async e => {
-    //     e.preventDefault();
-    //     try {
-    //       const response = await axios.post('/api/form', formData);
-    //       console.log(response.data);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   };
 
     return (
        
             <div className='w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
 
-                <form action="" method="post" className='flex' >
+                <form action="" method="post" className='flex' onSubmit={handleSubmit} >
 
                 <div className='w-[45%] mb-[160px] '>
                     <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
@@ -61,21 +43,25 @@ const Application =({ add }) =>{
                         label='Business Name'
                         name='Business Name'
                         type='text'
-                        
+                        read="True"
+                        onChange={(e) => setName(e.target.value)}
                         plholder='WMM CAPITAL ADVISORS,LLC'
                     />
                     <Inputfeild
                         label='Status'
                         name='Status'
+                        read="True"
+                        onChange={(e) => setName(e.target.value)}
                         type='text'
                         
                         plholder='Contact Out'
                     />
                     <Inputfeild
                         label='Status Description'
+                        onChange={(e) => setName(e.target.value)}
                         name='Status Description'
                         type='text'
-                        
+                        read="True"
                         plholder='Contact Sent'
                     />
                     </div>
@@ -85,16 +71,27 @@ const Application =({ add }) =>{
                         <div className='w-[45%] '>
                             <h2 className='text-[13px] text-black'>Bank Statement</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                <FileUpload />
-                                <FileUpload />
-                                <FileUpload />
+                                <FileUpload 
+                                     read="True"
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                                <FileUpload
+                                onChange={(e) => setName(e.target.value)}
+                                read="True" />
+                                 
+                                <FileUpload 
+                                onChange={(e) => setName(e.target.value)}
+                                read="True"
+   />
                             </div>
                         </div>
                         <div className='w-[30%]'>
                             <h2 className='text-[13px] text-black'>Application</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                <FileUpload />
-                                <FileUpload />
+                                <FileUpload
+                                onChange={(e) => setName(e.target.value)} />
+                                <FileUpload
+                                onChange={(e) => setName(e.target.value)} />
                              
                             </div>
                         </div>
@@ -118,6 +115,7 @@ const Application =({ add }) =>{
                                 <Inputfeild
                                             label='Advanced Amount'
                                             name='Advanced Amount'
+                                            onChange={(e) => setName(e.target.value)}
                                             type='text'
                                             read="True"
                                             
@@ -127,17 +125,17 @@ const Application =({ add }) =>{
                                 <div className='flex gap-3 w-[60%] '>
                                     <Inputfeild
                                             label='Commisson'
+                                            onChange={(e) => setName(e.target.value)}
                                             name='Commisson'
                                             type='text'
-                                            
                                             read="True"
                                             plholder='$750.00'
                                         />
                                         <Inputfeild
                                             label='%'
                                             name='percent'
+                                            onChange={(e) => setName(e.target.value)}
                                             type='text'
-                                            
                                             read="True"
                                             plholder='13.0k'
                                         />
@@ -150,7 +148,7 @@ const Application =({ add }) =>{
                                         label='Factor'
                                         name='Factor'
                                         type='text'
-                                       
+                                        onChange={(e) => setName(e.target.value)}
                                         read="True"
                                         plholder='149000'
                                     />
@@ -160,7 +158,7 @@ const Application =({ add }) =>{
                                         label='Total fee'
                                         name='Total fee'
                                         type='text'
-                                        
+                                        onChange={(e) => setName(e.target.value)}
                                         read="True"
                                         plholder='$940.00'
                                     />
@@ -175,7 +173,7 @@ const Application =({ add }) =>{
                                         name='Payback'
                                         type='text'
                                         read="True"
-                                       
+                                        onChange={(e) => setName(e.target.value)}
                                         plholder='$8,900.00'
                                     />
                                 </div>
@@ -185,14 +183,14 @@ const Application =({ add }) =>{
                                         name='Term'
                                         type='text'
                                         read="True"
-                                        
+                                        onChange={(e) => setName(e.target.value)}
                                         plholder='91'
                                     />
                                     <Inputfeild
                                         label='Frequency'
                                         name='Frequency'
                                         type='text'
-                                       
+                                        onChange={(e) => setName(e.target.value)}
                                         read="True"
                                         plholder='Daily'
                                     />
@@ -207,7 +205,7 @@ const Application =({ add }) =>{
                                         name='Payment'
                                         type='text'
                                         read="True"
-                                        
+                                        onChange={(e) => setName(e.target.value)}
                                         plholder='$99.00'
                                     />
                                 </div>
@@ -216,7 +214,7 @@ const Application =({ add }) =>{
                                         label='Not Funding Amount'
                                         name='Not Funding Amount'
                                         type='text'
-                                        
+                                        onChange={(e) => setName(e.target.value)}
                                         read="True"
                                         plholder='$5,406.00'
                                     />
