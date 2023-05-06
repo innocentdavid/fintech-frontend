@@ -36,7 +36,11 @@ const Table = () => {
 
     const handleCancelRowEdits = () => {
         setValidationErrors({});
-    };
+    }; 
+
+    const handleRoswClick = ()=>{
+        console.log('Am been clicked')
+    }
 
     const handleDeleteRow = useCallback(
         (row) => {
@@ -85,6 +89,7 @@ const Table = () => {
 
   const columns = [
     {
+    
       "application_id":1,
       "date_submitted":"2023-05-03T08:30:00Z",
       "status":"SD",
@@ -140,7 +145,7 @@ const Table = () => {
                 //     </Box>
                 // )}
                 renderTopToolbarCustomActions={() => (
-                    <Link href="/add" className="bg-black text-white py-2 px-4 rounded-lg">Add New Application</Link>
+                    <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg">Add New Application</Link>
                 )}
             />
             <CreateNewAccountModal

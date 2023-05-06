@@ -19,16 +19,17 @@ function LoginPage() {
    
     event.preventDefault();
 
-    const response = await fetch('/api/login', {
+    const response = await fetch('http://localhost:8000/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
 
     if (response.ok) {
-      const { token } = await response.json();
+      const { token } = await response.json();(
+      console.log(token)
       // Save the token to local storage or cookies
-    } else {
+    )} else {
       const { message } = await response.json();
       // Display an error message to the user
     }
@@ -41,7 +42,7 @@ export default function Login() {
 
         <h1 className='text-[18px] md:mx-0 mx-7 py-1 text-blue-500' >Login Now!!</h1>
 
-        <form action="" method='post' className='flex flex-col' onSubmit={handlelogin}>
+        <form action="" method='post' onSubmit={LoginPage} className='flex flex-col'>
             <Inputfeild
                 type='text'
                 name='usname'
