@@ -10,7 +10,7 @@ export default function FileUpload(props) {
       console.log('Valid PDF file:', file);
     } else {
       // Handle invalid file type here
-      console.log('Invalid file type');
+      throw('Invalid file type');
     }
   };
 

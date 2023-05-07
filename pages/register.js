@@ -9,21 +9,58 @@ import Inputfeild from '../components/inputfeild'
 import Link from "next/link";
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post('http://localhost:8000/api/signup', { username, password });
-    const { token } = response.data;
-    setCookie(null, 'token', token, { path: './login' });
-    // Redirect the user to a protected page
-  } catch (error) {
-    // Handle signup error
-  }
-  console.log('dem click me')
-};
+
+// const [formData, setFormData] = useState({});
+  
+//     const handleSubmit = async (event) => {
+//       event.preventDefault();
+  
+//       try {
+//         const response = await fetch('http://localhost:8000/applications', {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(formData),
+//           const { token } = response.data
+//           setCookie(null, 'token', token, { path: './login' });
+//         });
+  
+//         if (response.ok) {
+//           // Handle success
+//           console.log(response)
+//         } else {
+//           // Handle error
+//           console.log(response)
+//         }
+//       } catch (error) {
+//         // Handle error
+//         console.log(response)
+//       }
+//     };
+  
+//     const handleChange = (event) => {
+//       const { name, value } = event.target;
+//       setFormData((prevData) => ({ ...prevData, [name]: value }));
+//     };
 
 
 export default function Register() {
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/api/signup', { username, psword1, psword2  });
+      const { token } = response.data;
+      setCookie(null, 'token', token, { path: './login' });
+      // Redirect the user to a protected page
+    } catch (error) {
+      // Handle signup error
+    }
+    console.log('dem click me')
+  };
+  
   return (
     <div className='mx-auto my-[100px] md:w-[30%] py-1 pb-4  px-7 h-[400px] md:border border-blue-50 flex flex-col justify-center align-middle' >
 
@@ -32,7 +69,7 @@ export default function Register() {
         <form action="" method='post' className='flex flex-col' onSubmit={handleSubmit}>
             <Inputfeild
                     type='text'
-                    name='usname'
+                    name='username'
                     plholder ='Username'
                 />
 

@@ -4,7 +4,7 @@ import React from 'react'
 
 const Selectmenu =()=>{
     return(
-        <div className='w-[30%] border rounded-lg mx-4'>
+        <div className='md:w-[30%] w-[70%] border rounded-lg md:mx-4 mx-2'>
 
             <select className='text-[15px]'>
                 <option value="AL">Alabama</option>

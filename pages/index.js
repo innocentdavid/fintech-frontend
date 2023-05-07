@@ -9,29 +9,31 @@ import Link from 'next/link'
 import { parseCookies } from 'nookies';
 import jwt from 'jsonwebtoken';
 
-// export async function getServerSideProps(context) {
-//   const baseUrl = 'http://localhost:8000/applications'
-//   const response = await fetch(baseUrl)
-//   const data =response.data
-//   const { token } = parseCookies(context);
+export async function getServerSideProps(context) {
+  const baseUrl = 'http://localhost:8000/applications/'
+  const response = await fetch(baseUrl)
+  const data =response.data
+  const { token } = parseCookies(context);
 
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     // User is authenticated, return some data for the page
-//     return {
-//       props: { data: 'some data' },
-//       data
-//     };
-//   } catch (error) {
-//     // User is not authenticated, redirect to login page
-//     return {
-//       redirect: {
-//         destination: '/login',
-//         permanent: false,
-//       },
-//     };
-//   }
-// }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // User is authenticated, return some data for the page
+    return {
+      
+      props: { data: 'some data' },
+      data
+      
+    };
+  } catch (error) {
+    // User is not authenticated, redirect to login page
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+}
 
 
 export default function Home() {
