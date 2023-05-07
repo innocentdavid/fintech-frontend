@@ -10,9 +10,7 @@ import FileUpload from './FileUpload';
 import { useRouter } from 'next/router';
 
 
-
-
-const Application =({ add }) =>{
+const Application = ({ add }) =>{
 
     const router = useRouter()
 

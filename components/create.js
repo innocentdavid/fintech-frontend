@@ -10,8 +10,6 @@ import { useState } from 'react';
 
 
 
-
-
 const Creates = () =>{
 
 
@@ -19,24 +17,24 @@ const Creates = () =>{
   
     const handleSubmit = async (event) => {
       event.preventDefault();
+        console.log(formData);
+    //   try {
+    //     const response = await fetch('http://localhost:8000/applications/', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify(formData),
+    //     });
   
-      try {
-        const response = await fetch('http://localhost:8000/applications', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-  
-        if (response.ok) {
-          // Handle success
-        } else {
-          // Handle error
-        }
-      } catch (error) {
-        // Handle error
-      }
+    //     if (response.ok) {
+    //       // Handle success
+    //     } else {
+    //       // Handle error
+    //     }
+    //   } catch (error) {
+    //     // Handle error
+    //   }
     };
   
     const handleChange = (event) => {

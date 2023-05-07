@@ -2,7 +2,6 @@
 
 export const data = [
     {
-        field: 'id',
         "application_id": 1,
         "date_submitted": "2023-05-03T08:30:00Z",
         "status": "SD",
@@ -16,7 +15,6 @@ export const data = [
         "business_name_match_flag": "false"
     },
     {
-        field: 'id',
         "application_id": 2,
         "date_submitted": "2023-05-02T14:30:00Z",
         "status": "RFR",
@@ -30,7 +28,6 @@ export const data = [
         "business_name_match_flag": "true"
     },
     {
-        field: 'id',
         "application_id": 3,
         "date_submitted": "2023-05-01T11:45:00Z",
         "status": "NME",

@@ -1,27 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
 import {
-    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    IconButton,
-    MenuItem,
     Stack,
     TextField,
-    Tooltip,
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { data } from './makeData.js';
+import Link from 'next/link.js';
+import { useRouter } from 'next/router.js';
 
-const Table = ({ data }) => {
-    console.log(data);
+const Table = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState(() => data);
     const [validationErrors, setValidationErrors] = useState({});
+
     const router = useRouter()
 
     const handleCreateNewRow = (values) => {
@@ -40,7 +36,11 @@ const Table = ({ data }) => {
 
     const handleCancelRowEdits = () => {
         setValidationErrors({});
-    };
+    }; 
+
+    const handleRoswClick = ()=>{
+        console.log('Am been clicked')
+    }
 
     const handleDeleteRow = useCallback(
         (row) => {
@@ -87,145 +87,22 @@ const Table = ({ data }) => {
         [validationErrors],
     );
 
-    // const columns = useMemo(
-    //     () => [
-    //         {
-    //             accessorKey: 'application_id',
-    //             header: 'ID',
-    //             enableColumnOrdering: false,
-    //             enableEditing: false, //disable editing on this column
-    //             enableSorting: false,
-    //             size: 80,
-    //         },
-    //         {
-    //             accessorKey: 'date_submitted',
-    //             header: 'Date Submitted',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'status',
-    //             header: 'Status',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'name_of_business',
-    //             header: 'Name Of Business',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             //     type: 'email',
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'legal_business_name',
-    //             header: 'legal_business_name',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'oweners',
-    //             header: 'Oweners',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'users_cash_advance',
-    //             header: 'Users Cash Advance',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'have_cash_advance',
-    //             header: 'Have Cash Advance',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'credit_score',
-    //             header: 'Credit Score',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'business_name_match_flag',
-    //             header: 'Business Name Match Flag',
-    //             size: 250,
-    //         },
-    //     ],
-    //     [],
-    // );
+  const columns = [
+    {
+    
+      "application_id":1,
+      "date_submitted":"2023-05-03T08:30:00Z",
+      "status":"SD",
+      "name_of_business": "ABC Corporation",
+      "legal_business_name":"ABC Corporation LLC",
+      "oweners":"John Doe, Jane Doe",
+      "users_cash_advance":true,
+      "have_cash_advance":true,
+      "credit_score":750,
+      "business_nmame_match": false
+     }
+  ]
 
-    const columns = [
-        {
-            accessorKey: 'application_id',
-            header: 'ID',
-            enableColumnOrdering: false,
-            enableEditing: false, //disable editing on this column
-            enableSorting: false,
-            size: 80,
-        },
-        {
-            accessorKey: 'date_submitted',
-            header: 'Date Submitted',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            // }),
-        },
-        {
-            accessorKey: 'status',
-            header: 'Status',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            // }),
-        },
-        {
-            accessorKey: 'name_of_business',
-            header: 'Name Of Business',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            //     type: 'email',
-            // }),
-        },
-        {
-            accessorKey: 'legal_business_name',
-            header: 'legal_business_name',
-            size: 140,
-        },
-        {
-            accessorKey: 'oweners',
-            header: 'Oweners',
-            size: 140,
-        },
-        {
-            accessorKey: 'users_cash_advance',
-            header: 'Users Cash Advance',
-            size: 140,
-        },
-        {
-            accessorKey: 'have_cash_advance',
-            header: 'Have Cash Advance',
-            size: 140,
-        },
-        {
-            accessorKey: 'credit_score',
-            header: 'Credit Score',
-            size: 140,
-        },
-        {
-            accessorKey: 'business_name_match_flag',
-            header: 'Business Name Match Flag',
-            size: 250,
-        },
-    ]
-
-    const handleRoswClick = (e) => {
-        console.log();
-        router.push(`application/${e.application_id}`)
-    }
 
     return (
         <>
@@ -239,26 +116,27 @@ const Table = ({ data }) => {
                     },
                 }}
                 columns={columns}
-                data={tableData}
+                data={tableData}                
                 editingMode="modal" //default
                 enableColumnOrdering
+                disableColumnMenu
                 enableEditing={false}
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
+                // onRowClick={handleRowClick}
                 muiTableBodyRowProps={({ row }) => {
                     return ({
-                        // onClick: row.getToggleSelectedHandler(),
-                        onClick: () => handleRoswClick(row.original),
-                        sx: { cursor: 'pointer' },
-                    })
-                }}
+                    // onClick: row.getToggleSelectedHandler(),
+                    onClick: () => handleRoswClick(row.original),
+                    sx: { cursor: 'pointer' },
+                })}}
                 // renderRowActions={({ row, table }) => (
                 //     <Box sx={{ display: 'flex', gap: '1rem' }}>
-                //         <Tooltip arrow placement="left" title="Edit">
+                //         {/* <Tooltip arrow placement="left" title="Edit">
                 //             <IconButton onClick={() => table.setEditingRow(row)}>
                 //                 <Edit />
                 //             </IconButton>
-                //         </Tooltip>
+                //         </Tooltip> */}
                 //         <Tooltip arrow placement="right" title="Delete">
                 //             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                 //                 <Delete />
@@ -267,13 +145,6 @@ const Table = ({ data }) => {
                 //     </Box>
                 // )}
                 renderTopToolbarCustomActions={() => (
-                    // <Button
-                    //     color="secondary"
-                    //     onClick={() => setCreateModalOpen(true)}
-                    //     variant="contained"
-                    // >
-                    //     Create New Account
-                    // </Button>
                     <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg">Add New Application</Link>
                 )}
             />
@@ -287,7 +158,7 @@ const Table = ({ data }) => {
     );
 };
 
-//Table of creating a mui dialog modal for creating new rows
+//example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
     const [values, setValues] = useState(() =>
         columns.reduce((acc, column) => {
@@ -314,7 +185,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                             gap: '1.5rem',
                         }}
                     >
-                        {columns?.map((column) => (
+                        {columns.map((column) => (
                             <TextField
                                 key={column.accessorKey}
                                 label={column.header}
@@ -338,6 +209,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 };
 
 const validateRequired = (value) => !!value.length;
+
 const validateEmail = (email) =>
     !!email.length &&
     email
