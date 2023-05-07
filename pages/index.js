@@ -10,7 +10,7 @@ import { parseCookies } from 'nookies';
 import jwt from 'jsonwebtoken';
 
 export async function getServerSideProps(context) {
-  const baseUrl = 'http://localhost:8000/applications/'
+  const baseUrl = 'http://localhost:8000/applications '
   const response = await fetch(baseUrl)
   const data =response.data
   const { token } = parseCookies(context);

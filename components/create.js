@@ -21,7 +21,7 @@ const Creates = () =>{
       event.preventDefault();
   
       try {
-        const response = await fetch('http://localhost:8000/applications/', {
+        const response = await fetch('http://localhost:8000/applications', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
