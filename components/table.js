@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
 import {
     Box,
@@ -18,11 +18,15 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 const Table = ({ data }) => {
-    console.log(data);
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [tableData, setTableData] = useState(() => data);
+    const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
     const router = useRouter()
+
+    useEffect(() => {
+      setTableData(data)
+    }, [data])
+    
 
     const handleCreateNewRow = (values) => {
         tableData.push(values);
@@ -223,7 +227,6 @@ const Table = ({ data }) => {
     ]
 
     const handleRoswClick = (e) => {
-        console.log();
         router.push(`application/${e.application_id}`)
     }
 
