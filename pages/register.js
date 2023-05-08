@@ -3,10 +3,12 @@
 
 
 
-import Head from 'next/head'
-import Image from 'next/image'
+
 import Inputfeild from '../components/inputfeild'
 import Link from "next/link";
+// import { setCookie } from 'nookies';
+import { useState } from 'react';
+import axios from 'axios';
 
 
 
@@ -48,17 +50,37 @@ import Link from "next/link";
 export default function Register() {
 
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post('http://localhost:8000/api/signup', { username, psword1, psword2  });
+  //     const { token } = response.data;
+  //     setCookie(null, 'token', token, { path: './login' });
+  //     // Redirect the user to a protected page
+  //   } catch (error) {
+  //     // Handle signup error
+  //   }
+  //   console.log('dem click me')
+  // };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const HandleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/signup', { username, psword1, psword2  });
-      const { token } = response.data;
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        username,
+        password,
+      });
+      const token = response.data.token;
       setCookie(null, 'token', token, { path: './login' });
-      // Redirect the user to a protected page
+      // Store the token in local storage or cookies
+      console.log(token);
+      // Redirect to protected page or perform other actions
     } catch (error) {
-      // Handle signup error
+      console.error(error);
+      // Display error message or handle the error
     }
-    console.log('dem click me')
   };
   
   return (
@@ -66,11 +88,12 @@ export default function Register() {
 
         <h1 className='text-[18px] ml-5 md:ml-0 py-1 text-blue-500' >Register Now!!</h1>
 
-        <form action="" method='post' className='flex flex-col' onSubmit={handleSubmit}>
+        <form action="" method='post' className='flex flex-col' onSubmit={HandleLogin}>
             <Inputfeild
                     type='text'
                     name='username'
                     plholder ='Username'
+                    onChange={(e) => setUsername(e.target.value)}
                 />
 
                 <Inputfeild
