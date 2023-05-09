@@ -6,7 +6,6 @@ import Inputfeild from '../components/inputfeild'
 import Link from "next/link";
 import axios from 'axios';
 import { setCookie } from 'nookies';
-
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
