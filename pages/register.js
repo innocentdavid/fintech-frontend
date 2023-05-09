@@ -15,6 +15,7 @@ export default function Register() {
     name: '',
     email: '',
     password: '',
+    cpassword: '',
   })
 
   const handleChange = (event) => {
@@ -34,6 +35,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(formData.password !== formData.cpassword) return alert("Your password must be the same!")
     setLoading(true)
     const response = await API.post('api/register/', formData)
     // console.log(response);
@@ -72,6 +74,13 @@ export default function Register() {
           type='password'
           name='password'
           plholder='Password'
+          onChange={handleChange}
+          formData={formData}
+        />
+        <Inputfeild
+          type='password'
+          name='cpassword'
+          plholder='Confirm Password'
           onChange={handleChange}
           formData={formData}
         />

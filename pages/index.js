@@ -64,7 +64,7 @@ export default function Home() {
     const fetch = async () => {
       const response = await APIN.get('api/getcurrentuser/')
       setUser(response.data)
-      console.log(response);
+      // console.log(response);
       if (response.data.message !== "success") {
         router.push('/login')
         return;
@@ -75,7 +75,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const refreshMovies = async () => {
+    const fetch = async () => {
       await API.get("/")
         .then((res) => {
           setApplications(res?.data)
@@ -83,17 +83,21 @@ export default function Home() {
         })
         .catch(console.error);
     };
-    refreshMovies()
+    // fetch()
+    // Schedule fetch data every 10 seconds
+    const intervalId = setInterval(fetch, 10000);
+
+    // Clean up interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, [])
 
   return (<>
-    {loading ? < LoadingModal loading={loading} /> :
-      <div className="w-full my-[10px] px-5">
-        {user?.email && <header className="flex gap-10 items-center justify-between p-5">
-          <div className="text-lg font-bold">{user?.name}</div>
+    {loading ? < LoadingModal loading={loading} /> :<>
+        {user?.email && <header className="flex gap-10 items-center justify-between p-5 bg-black text-white">
+          <div className="text-lg font-bold">Fintech</div>
           <div className="flex items-center gap-2">
             <div className="">{user?.email}</div>
-            <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={async () => {
+            <div className="text-sm font-bold cursor-pointer" onClick={async () => {
               await handleLogout()
               setUser({})
               router.push('/login')
@@ -102,12 +106,13 @@ export default function Home() {
             </div>
           </div>
         </header>}
+      <div className="w-full my-[10px] px-5">
 
         <Data />
 
         <Table data={applications} />
 
-      </div>
+      </div></>
     }
   </>
 

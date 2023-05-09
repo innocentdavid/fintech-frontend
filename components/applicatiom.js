@@ -4,14 +4,9 @@ import React, { useEffect } from 'react'
 import { FaCloudUploadAlt, FaTimes, FaTimesCircle } from 'react-icons/fa'
 import axios from 'axios';
 import { useState } from 'react'
-import { NextApiRequest, NextApiResponse } from 'next';
-import FileUpload from './FileUpload';
 import { useRouter } from 'next/router';
 import { AiFillFilePdf } from 'react-icons/ai';
 import API from './API';
-import Addmoreinfo from './additionalinfo';
-import PdfViewer from './pdfview';
-import { Document, Page } from 'react-pdf';
 import LoadingModal from './LoadingModal ';
 
 const date = new Date();
@@ -169,7 +164,7 @@ const Application = ({ application }) => {
                         />
                     </div>
 
-                    {!loadingPdfs ?
+                    {!loadingPdfs && !loading ?
                         <div className='flex items-center gap-5 w-full mx-2 mt-[40px]'>
                             <div className=''>
                                 <h2 className='text-[13px] text-black'>Bank Statement</h2>
@@ -184,7 +179,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload onChange={handleInputChange} />}
+                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
 
                                     {statementPdfs[1] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -196,7 +191,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload onChange={handleInputChange} />}
+                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
 
                                     {statementPdfs[2] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -208,7 +203,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload onChange={handleInputChange} />}
+                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
                                 </div>
                             </div>
 
@@ -225,7 +220,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload onChange={handleInputChange} />}
+                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
 
                                     {applicaitonPdfs[1] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -237,7 +232,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload onChange={handleInputChange} />}
+                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
                                 </div>
                             </div>
                         </div>
@@ -474,7 +469,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                     </div>
                     <div className="">
                         <div className="flex items-center">
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='business_name'
                                 name="business_name"
@@ -483,7 +478,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 onChange={() => { }}
                                 formData={pdfObj}
                             />
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='bank_name'
                                 name="bank_name"
@@ -494,7 +489,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                             />
                         </div>
                         <div className="flex items-center">
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='begin_bal_amount'
                                 name="begin_bal_amount"
@@ -503,7 +498,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 onChange={() => { }}
                                 formData={pdfObj}
                             />
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='begin_bal_date'
                                 name="begin_bal_date"
@@ -514,7 +509,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                             />
                         </div>
                         <div className="flex items-center">
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='ending_bal_amount'
                                 name="ending_bal_amount"
@@ -523,7 +518,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 onChange={() => { }}
                                 formData={pdfObj}
                             />
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='ending_bal_date'
                                 name="ending_bal_date"
@@ -534,7 +529,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                             />
                         </div>
                         <div className="flex items-center">
-                            <Inputfeild
+                            <Inputfeild2
                                 type='text'
                                 label='total_deposit'
                                 name="total_deposit"
@@ -556,17 +551,34 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
 }
 
 
+function removeQuotes(str) {
+    return str.replace(/'/g, '');
+}
+function purifyData(str) {
+    const match = str.match(/\{(.+?)\}/);
+    if (match) {
+        return removeQuotes(match[1]);
+    }
+    return '';
+}
 const Inputfeild = ({ type, application, label, read, name, disabled, onChange, formData, plholder }) => {
-    function removeQuotes(str) {
-        return str.replace(/'/g, '');
-    }
-    function purifyData(str) {
-        const match = str.match(/\{(.+?)\}/);
-        if (match) {
-            return removeQuotes(match[1]);
-        }
-        return '';
-    }
+    return (
+        <div className='flex gap-1 flex-col mx-3 my-2'>
+            <label className='text-[14px]'>{label}</label>
+            <input type={type}
+                name={name}
+                readOnly={read}
+                disabled={disabled}
+                // value={value}
+                onChange={onChange}
+                value={formData?.[name] ? formData?.[name] : application?.[name]}
+                placeholder={plholder}
+                className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' id="" />
+        </div>
+    )
+};
+
+const Inputfeild2 = ({ type, application, label, read, name, disabled, onChange, formData, plholder }) => {
     return (
         <div className='flex gap-1 flex-col mx-3 my-2'>
             <label className='text-[14px]'>{label}</label>
@@ -583,6 +595,34 @@ const Inputfeild = ({ type, application, label, read, name, disabled, onChange, 
     )
 };
 
+
+function FileUpload(props) {
+
+    // const handleFileUpload = (event) => {
+    //     const file = event.target.files[0];
+    //     if (file && file.type === 'application/pdf') {
+    //         // Handle the valid PDF file here
+    //         console.log('Valid PDF file:', file);
+    //     } else {
+    //         // Handle invalid file type here
+    //         throw ('Invalid file type');
+    //     }
+    // };
+
+    // console.log(props.disabled);
+
+    return (
+        <label htmlFor="bankstatement1" className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+            <FaCloudUploadAlt size={20} />
+            <input type="file"
+                disabled={props.disabled}
+                // disabled={true}
+                id="bankstatement1" name={props.name} accept="application/pdf" onChange={props.onChange} readable={props.read} className='hidden' />
+        </label>
+    )
+}
+
+
 const SelectMenuNew = (props) => {
     return (<>
         <div className='flex gap-1 flex-col mx-3 my-2'>
@@ -592,8 +632,6 @@ const SelectMenuNew = (props) => {
                 <option value="Created">Created</option>
                 <option value="Submitted">Submitted</option>
                 <option value="Error Submitting">Error Submitting</option>
-                <option value="Approved">Approved</option>
-                <option value="Declined">Declined</option>
                 <option value="Scraping Data">Scraping Data</option>
                 <option value="Needs Manual Entry">Needs Manual Entry</option>
                 <option value="Ready for Review">Ready for Review</option>

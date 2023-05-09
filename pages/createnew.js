@@ -6,7 +6,7 @@ import Inputfeild from '../components/inputfeild';
 import SelectMenuNew from '../components/SelectMenuNew';
 import { AiFillCheckCircle } from 'react-icons/ai'
 import API from '../components/API';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import RadioFeild from '../components/Radio';
 import LoadingModal from '../components/LoadingModal ';
@@ -126,6 +126,10 @@ const Createnew = () => {
     }}>
       {/* <Creates/> */}
       <div className='md:w-[80%] w-full mx-auto p-2 border flex flex-col justify-center'>
+        <FaTimes size={20} className='absolute top-5 right-7 cursor-pointer' onClick={() => {
+          setLoading(true)
+          router.back()
+        }} />
         <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >Create New Application</h1>
 
         <form method='POST' action='' onSubmit={handleSubmit} >
