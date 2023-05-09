@@ -24,9 +24,16 @@ const Table = ({ data }) => {
     const router = useRouter()
 
     useEffect(() => {
-      setTableData(data)
+        if (!data.length>0) return;
+        const list = []
+        data.forEach(item => {
+            const o = item.status
+            const d = {...item, status: o?.name}
+            list.push(d)
+        });
+        setTableData(list)
     }, [data])
-    
+
 
     const handleCreateNewRow = (values) => {
         tableData.push(values);
@@ -186,6 +193,14 @@ const Table = ({ data }) => {
             // }),
         },
         {
+            accessorKey: 'status_date',
+            header: 'Status Date',
+            size: 140,
+            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            //     ...getCommonEditTextFieldProps(cell),
+            // }),
+        },
+        {
             accessorKey: 'name_of_business',
             header: 'Name Of Business',
             size: 140,
@@ -205,14 +220,14 @@ const Table = ({ data }) => {
             size: 140,
         },
         {
-            accessorKey: 'users_cash_advance',
-            header: 'Users Cash Advance',
+            accessorKey: 'has_open_cash_advances',
+            header: 'Open Cash Advance',
             size: 140,
         },
         {
-            accessorKey: 'have_cash_advance',
-            header: 'Have Cash Advance',
-            size: 140,
+            accessorKey: 'has_used_cash_advance_plan_before',
+            header: 'Have Used Cash Advance',
+            size: 200,
         },
         {
             accessorKey: 'credit_score',

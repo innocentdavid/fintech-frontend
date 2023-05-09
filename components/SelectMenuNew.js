@@ -2,9 +2,9 @@
 
 import React from 'react'
 
-const SelectMenu = (props)=>{
+const SelectMenuNew = (props)=>{
     return(<>
-        <div className='hidden md:mx-4 mx-2'>
+        <div className='flex gap-1 flex-col mx-3 my-2'>
 
             <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg' 
             name={props.name} onChange={props.onChange}>
@@ -64,4 +64,4 @@ const SelectMenu = (props)=>{
     </>)
 }
 
-export default SelectMenu
+export default SelectMenuNew

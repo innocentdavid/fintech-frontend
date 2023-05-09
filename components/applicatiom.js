@@ -1,80 +1,120 @@
 
 
-import React from 'react'
-import Inputfeild from '../components/inputfeild'
+import React, { useEffect } from 'react'
 import { FaCloudUploadAlt, FaTimes } from 'react-icons/fa'
 import axios from 'axios';
 import { useState } from 'react'
 import { NextApiRequest, NextApiResponse } from 'next';
 import FileUpload from './FileUpload';
 import { useRouter } from 'next/router';
+import { AiFillFilePdf } from 'react-icons/ai';
+import API from './API';
 
+const date = new Date();
+const year = date.getFullYear(); // e.g. 2022
+const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get the actual month number (e.g. 5 for May)
+const day = date.getDate(); // e.g. 28
+const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
-const Application = ({ add }) => {
-
+const Application = ({ application }) => {
     const router = useRouter()
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     const data = { name };
-    //     const response = await axios.post('http://localhost:8000/api/user', data);
-    //     console.log(response.data);
-    //   };
-
-
+    const [applicaitonPdfs, setApplicaitonPdfs] = useState([])
+    const [statementPdfs, setStatementPdfs] = useState([])
+    const [formData, setFormData] = useState({
+        name_of_business: '',
+        status: "",
+        status_description: "",
+        status_date: today,
+        advanced_price: '',
+        commission_price: '',
+        percentage: '',
+        factor: '',
+        total_fee: '',
+        payback: '',
+        term: '',
+        frequency: '',
+        payment: '',
+        net_funding_amount: ''
+    });
+    const [loading, setLoading] = useState(false)
     const [isEditable, setIsEditable] = useState(false)
+
+    useEffect(() => {
+        const fetch = async () => {
+            const baseUrl = `http://localhost:8000/api/applications/${application.application_id}/pdfs/`
+            const config = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            };
+            const response = await axios.get(baseUrl, config);
+            // console.log({ response });
+            response.data.pdfs.forEach(item => {
+                const type = item?.pdf_type?.toString()
+                console.log(type);
+                if (type.includes('Application')) {
+                    setApplicaitonPdfs([...applicaitonPdfs, item])
+                } else {
+                    setStatementPdfs([...statementPdfs, item])
+                }
+            });
+        }
+        if (application?.application_id) {
+            fetch()
+        }
+        application && setFormData({
+            name_of_business: application?.name_of_business,
+            status: application?.status?.name,
+            status_description: application?.status?.description,
+            status_date: today,
+            advanced_price: application?.advanced_price,
+            commission_price: application?.commission_price,
+            percentage: application?.percentage,
+            factor: application?.factor,
+            total_fee: application?.total_fee,
+            payback: application?.payback,
+            term: application?.term,
+            frequency: application?.frequency,
+            payment: application?.payment,
+            net_funding_amount: application?.net_funding_amount,
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [application])
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setLoading(true)
+        console.log({ formData });
+
+        try {
+            const res = await API.put(`/${application?.application_id}/`, formData)
+            console.log(res);
+            if (res.statusText === "Created"){
+                setIsEditable(false)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setLoading(false)
+    };
 
     const handleEditButtonClick = () => {
         setIsEditable(!isEditable);
     };
 
-    // const [formData, setFormData] = useState({
-    //   // Initialize the form data with existing values
-    //   // fetched from the database
-    //   name: 'John Doe',
-    //   email: 'johndoe@example.com',
-    //   // ...
-    // });
-
-
-
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        // Perform API request to update data in the database
-        //   try {
-        //     const response = await fetch('http://localhost:8000/applications', {
-        //       method: 'POST',
-        //       body: JSON.stringify(formData),
-        //       headers: {
-        //         'Content-Type': 'application/json',
-        //       },
-        //     });
-
-        //     if (response.ok) {
-        //       // Data updated successfully
-        //       // Perform any additional actions as needed
-        //     //   setIsEditable(false);
-        //     } else {
-        //       // Handle error case
-        //       console.error('Failed to update data in the database');
-        //     }
-        //   } catch (error) {
-        //     console.error('Failed to update data:', error);
-        //   }
-    };
-
     const handleInputChange = (e) => {
-        //   setFormData({
-        //     ...formData,
-        //     [e.target.name]: e.target.value,
-        //   });
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
     };
 
     return (
 
         <div className='w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
 
-            <form action="" method="post" className='flex' onSubmit={handleFormSubmit} >
+            <form action="" method="post" className='flex' onSubmit={handleSubmit} >
 
                 <div className='w-[45%] mb-[160px] '>
                     <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
@@ -85,29 +125,31 @@ const Application = ({ add }) => {
 
                     <div className='w-[75%]'>
                         <Inputfeild
+                            formData={formData}
                             label='Business Name'
-                            name='Business Name'
+                            name='name_of_business'
                             type='text'
-                            // value={formData.name}
-                            onChange={handleInputChange}
-                        disabled={!isEditable}
-
-                        />
-                        <Inputfeild
-                            label='Status'
-                            name='Status'
+                            application={application}
                             // value={formData.name}
                             onChange={handleInputChange}
                             disabled={!isEditable}
-                            type='text'
+                        />
+
+                        <SelectMenuNew
+                            onChange={handleInputChange}
+                            formData={formData}
+                            name='status'
+                            disabled={!isEditable}
                         />
                         <Inputfeild
+                            formData={formData}
                             label='Status Description'
-                            name='Status Description'
+                            name='status_description'
                             type='text'
+                            application={application.status}
                             // value={formData.name}
                             onChange={handleInputChange}
-                        disabled={!isEditable}
+                            disabled={!isEditable}
 
                         />
                     </div>
@@ -115,40 +157,68 @@ const Application = ({ add }) => {
                     <div className='flex w-full mx-2 mt-[40px]'>
 
                         <div className='w-[45%] '>
-                            <h2 className='text-[13px] text-black'>Bank Statement</h2>
+                            <h2 className='text-[13px] text-black'>Application</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                <FileUpload
-                                    //  value={formData.name}
-                                    onChange={handleInputChange}
+                                {applicaitonPdfs[0] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20} />
+                                    </div>
+                                </> : <>
+                                    <FileUpload
+                                        //  value={formData.name}
+                                        onChange={handleInputChange}
 
-                                />
-                                <FileUpload
-                                    //  value={formData.name}
-                                    onChange={handleInputChange}
+                                    />
+                                </>}
+                                {applicaitonPdfs[1] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20} />
+                                    </div>
+                                </> : <>
+                                    <FileUpload
+                                        //  value={formData.name}
+                                        onChange={handleInputChange}
 
-                                />
+                                    />
+                                </>}
+                                {applicaitonPdfs[2] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20} />
+                                    </div>
+                                </> : <>
+                                    <FileUpload
+                                        //  value={formData.name}
+                                        onChange={handleInputChange}
 
-                                <FileUpload
-                                    // value={formData.name}
-                                    onChange={handleInputChange}
-
-                                />
+                                    />
+                                </>}
                             </div>
                         </div>
                         <div className='w-[30%]'>
-                            <h2 className='text-[13px] text-black'>Application</h2>
+                            <h2 className='text-[13px] text-black'>Bank Statement</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                <FileUpload
-                                    //  value={formData.name}
-                                    onChange={handleInputChange}
+                                {statementPdfs[0] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20} />
+                                    </div>
+                                </> : <>
+                                    <FileUpload
+                                        //  value={formData.name}
+                                        onChange={handleInputChange}
 
-                                />
-                                <FileUpload
-                                    //  value={formData.name}
-                                    onChange={handleInputChange}
+                                    />
+                                </>}
+                                {statementPdfs[1] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20} />
+                                    </div>
+                                </> : <>
+                                    <FileUpload
+                                        //  value={formData.name}
+                                        onChange={handleInputChange}
 
-                                />
-
+                                    />
+                                </>}
                             </div>
                         </div>
 
@@ -174,30 +244,36 @@ const Application = ({ add }) => {
                             <div className='w-[40%]'>
 
                                 <Inputfeild
+                                    formData={formData}
                                     label='Advanced Amount'
-                                    name='Advanced Amount'
-                                    type='text'
+                                    name='advanced_price'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
                                 />
                             </div>
                             <div className='flex gap-3 w-[60%] '>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Commisson'
-                                    name='Commisson'
-                                    type='text'
+                                    name='commission_price'
+                                    type='number'
+                                    application={application}
                                     // Value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
                                 />
                                 <Inputfeild
+                                    formData={formData}
                                     label='%'
-                                    name='percent'
-                                    type='text'
+                                    name='percentage'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
@@ -206,23 +282,27 @@ const Application = ({ add }) => {
                         <div className='flex gap-1 w-full flex-1 '>
                             <div className='w-[40%]'>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Factor'
-                                    name='Factor'
-                                    type='text'
+                                    name='factor'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
                             <div className='flex gap-3 w-[60%] '>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Total fee'
-                                    name='Total fee'
-                                    type='text'
+                                    name='total_fee'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
@@ -232,32 +312,38 @@ const Application = ({ add }) => {
                         <div className='flex gap-1 w-full flex-1 '>
                             <div className='w-[40%]'>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Payback'
-                                    name='Payback'
-                                    type='text'
+                                    name='payback'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
                             <div className='flex gap-3 w-[60%] '>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Term'
-                                    name='Term'
-                                    type='text'
+                                    name='term'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                                 <Inputfeild
+                                    formData={formData}
                                     label='Frequency'
-                                    name='Frequency'
-                                    type='text'
+                                    name='frequency'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
@@ -267,23 +353,27 @@ const Application = ({ add }) => {
                         <div className='flex gap-1 w-full flex-1 '>
                             <div className='w-[40%]'>
                                 <Inputfeild
+                                    formData={formData}
                                     label='Payment'
-                                    name='Payment'
-                                    type='text'
+                                    name='payment'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
                             <div className='flex gap-3 w-[60%] '>
                                 <Inputfeild
-                                    label='Not Funding Amount'
-                                    name='Not Funding Amount'
-                                    type='text'
+                                    formData={formData}
+                                    label='Net Funding Amount'
+                                    name='net_funding_amount'
+                                    type='number'
+                                    application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                disabled={!isEditable}
+                                    disabled={!isEditable}
 
                                 />
                             </div>
@@ -292,7 +382,8 @@ const Application = ({ add }) => {
 
                         {isEditable && <div className='mt-[90px] flex justify-center gap-4 items-center w-[50%] mx-[100px]'>
 
-                            <button type='submit' className='px-4 py-2  rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 ' >Submit</button>
+                            <button type='submit' className='px-4 py-2  rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '>{loading ? "processsing..." : "Submit"}</button>
+
                             <h2 className='mt-[-15px]'>request additional info</h2>
 
                             {/* <Emailverifybutton
@@ -316,3 +407,49 @@ const Application = ({ add }) => {
 }
 
 export default Application
+
+
+const Inputfeild = (props) => {
+    // console.log(props.formData[props.name]);
+    const [value, setValue] = useState('')
+
+    useEffect(() => {
+        const defaultVal = props?.application?.[props?.name]
+        setValue(defaultVal)
+    }, [props])
+
+    return (
+        <div className='flex gap-1 flex-col mx-3 my-2'>
+            <label className='text-[14px]'>{props.label}</label>
+            <input type={props.type}
+                name={props.name}
+                readOnly={props.read}
+                disabled={props.disabled}
+                // value={value}
+                onChange={props.onChange}
+                value={props.formData[props.name] ? props.formData[props.name] : props?.application?.[props?.name]}
+                placeholder={props.plholder}
+                className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' id="" />
+        </div>
+    )
+};
+
+const SelectMenuNew = (props) => {
+    return (<>
+        <div className='flex gap-1 flex-col mx-3 my-2'>
+
+            <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg'
+                disabled={props.disabled} name={props.name} onChange={props.onChange}>
+                <option value="Submitted">Submitted</option>
+                <option value="Error Submitting">Error Submitting</option>
+                <option value="Approved">Approved</option>
+                <option value="Declined">Declined</option>
+                <option value="Scraping Data">Scraping Data</option>
+                <option value="Needs Manual Entry">Needs Manual Entry</option>
+                <option value="Ready for Review">Ready for Review</option>
+                <option value="Error Scraping">Error Scraping</option>
+            </select>
+
+        </div>
+    </>)
+}

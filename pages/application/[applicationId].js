@@ -7,13 +7,14 @@ import API from '../../components/API';
 import Application from '../../components/applicatiom'
 
 
-const ApplicationDetail = ()=>{
+const ApplicationDetail = () => {
     const router = useRouter();
     const { applicationId } = router.query;
     console.log(applicationId);
     const [application, setApplication] = useState([])
 
     useEffect(() => {
+        if (!applicationId) return;
         const refreshMovies = async () => {
             await API.get(`/${applicationId}/`)
                 .then((res) => {
@@ -21,16 +22,18 @@ const ApplicationDetail = ()=>{
                 })
                 .catch(console.error);
         };
-        refreshMovies()
+        if (applicationId) {
+            refreshMovies()
+        }
     }, [applicationId])
 
     console.log(application);
-    
-    return(
+
+    return (
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
 
-                <Application />
+            {application && <Application application={application} />}
 
         </div>
     )

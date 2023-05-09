@@ -9,6 +9,9 @@ import Link from 'next/link'
 import { data, states } from '../components/makeData';
 import API from '../components/API';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { handleLogout } from '../utils/helpers';
 // import { parseCookies } from 'nookies';
 // import jwt from 'jsonwebtoken';
 
@@ -38,27 +41,69 @@ import { useEffect, useState } from 'react';
 //   }
 // }
 
-export default function Home({  }) {
+const APIN = axios.create({
+  baseURL: 'http://localhost:8000/',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  // credentials: 'include',
+  withCredentials: true
+})
+
+export default function Home() {
+  const router = useRouter()
+  const [user, setUser] = useState({
+    email: '',
+    name: ''
+  })
   const [applications, setApplications] = useState([])
+
+  useEffect(() => {
+    const refreshMovies = async () => {
+      try {
+        const response = await APIN.get('api/getcurrentuser/')
+        // console.log(response);
+        setUser(response.data)
+      } catch (error) {
+        console.log(error);
+        // alert('Unthenticated!')
+        router.push('/login')
+      }
+    };
+    refreshMovies()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const refreshMovies = async () => {
       await API.get("/")
         .then((res) => {
-          setApplications(res.data)
+          setApplications(res?.data)
         })
         .catch(console.error);
     };    
     refreshMovies()
   }, [])
 
+
   return (
     <div className="mx-auto w-full md:w-[80%] my-[50px] border border-slate-500 rounded-lg ">
-      <header className="flex gap-10 items-center justify-end p-5">
-        <Link href='/login' className="text-sm text-blue-800 font-bold">
-          Log out
-        </Link>
-      </header>
+      {user?.email && <header className="flex gap-10 items-center justify-between p-5">
+        <div className="text-lg font-bold">{user?.name}</div>
+        <div className="flex items-center gap-2">
+          <div className="">{user?.email}</div>
+          <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={async () => {
+            await handleLogout()
+            setUser({})
+            router.push('/login')
+          }}>
+            Log out
+          </div>
+        </div>
+      </header>}
+          {/* <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={handleLogout}>
+            Log out
+          </div> */}
 
       <Data />
 

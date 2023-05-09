@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { connectDB } from '../components/db'
-import Selectmenu from '../components/Selectmenu'
+import Selectmenu from './SelectMenu'
 import FileUpload from './FileUpload';
 import axios from 'axios'
 import Inputfeild from '../components/inputfeild'

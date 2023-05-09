@@ -9,7 +9,8 @@ import Addmoreinfo from '../components/additionalinfo'
 
 
 const Additionalinfo = () =>{
-    const pdfUrl = '/add';
+    const pdfUrl = `/20192270_42.pdf`
+
     return(
        
 

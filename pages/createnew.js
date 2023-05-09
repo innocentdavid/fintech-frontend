@@ -1,16 +1,14 @@
 
 
 import axios from 'axios';
-import { connectDB } from '../components/db'
-import Creates from '../components/create'
 import { useEffect, useState } from 'react';
 import Inputfeild from '../components/inputfeild';
-import Selectmenu from '../components/Selectmenu';
+import SelectMenuNew from '../components/SelectMenuNew';
 import { AiFillCheckCircle } from 'react-icons/ai'
-import FileUpload from '../components/FileUpload';
 import API from '../components/API';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import RadioFeild from '../components/Radio';
 
 
 export async function getServerSideProps() {
@@ -18,19 +16,24 @@ export async function getServerSideProps() {
   return { props: {} };
 }
 
+const date = new Date();
+const year = date.getFullYear(); // e.g. 2022
+const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get the actual month number (e.g. 5 for May)
+const day = date.getDate(); // e.g. 28
+const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+
 const Createnew = () => {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [application_id, setApplication_id] = useState('')
   const [formData, setFormData] = useState({
-    date_submitted: '',
+    date_submitted: today,
+    status_date: today,
     status: '',
+
     name_of_business: '',
-    status_date: '',
     legal_business_name: '',
     owners: '',
-    users_cash_advance: '',
-    have_cash_advance: '',
     dba: '',
     address: '',
     suite: '',
@@ -38,12 +41,16 @@ const Createnew = () => {
     state: '',
     zip: '',
     phone: '',
+    mobile: '',
+    email: '',
+
     legal_entry: '',
     state_inc: '',
     federal_tax_id: '',
+    state_of_inc: '',
+    legal_entity: '',
     date_business_started: '',
-    mobile: '',
-    email: '',
+
     owner_first_name: '',
     owner_last_name: '',
     owner_home_address: '',
@@ -55,29 +62,26 @@ const Createnew = () => {
     owner_percentage_of_ownership: '',
     owner_dob: '',
     owner_phone: '',
-    federal_tax_id: '',
-    state_of_inc: '',
-    legal_entity: '',
-    date_business_started: '',
+    
     gross_monthly_sales: '',
     type_of_product_sold: '',
-    has_open_cash_advances: '',
-    has_used_cash_advance_plan_before: '',
+    has_open_cash_advances: 'NO',
+    has_used_cash_advance_plan_before: 'NO',
     using_money_for: '',
     description_of_business: '',
     length_of_ownership: '',
     years_at_location: '',
-    credit_score: '',
-    business_name_match_flag: '',
+
     advanced_price: '',
     commission_price: '',
-
-    bank_name: '',
-    begin_bal_date: '',
-    begin_bal_amount: '',
-    ending_bal_amount: '',
-    ending_bal_date: '',
-    total_deposit: '',
+    percentage: '',
+    factor: '',
+    total_fee: '',
+    payback: '',
+    term: '',
+    frequency: '',
+    payment: '',
+    net_funding_amount: ''
   });
   const [formData2, setFormData2] = useState({
     business_name: '',
@@ -108,6 +112,7 @@ const Createnew = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // console.log(formData);
   };
 
   return (<>
@@ -116,7 +121,7 @@ const Createnew = () => {
     }}>
       {/* <Creates/> */}
       <div className='md:w-[80%] w-full mx-auto p-2 border flex flex-col justify-center'>
-        <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >Create New </h1>
+        <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >Create New Application</h1>
 
         <form method='POST' action='' onSubmit={handleSubmit} >
 
@@ -181,9 +186,13 @@ const Createnew = () => {
                   plholder='City'
                 />
               </div>
-              <div className='flex gap-5 max-w-[200px] justify-center'>
+              <div className='w-[70%] mx-2 my-5'>
                 <span className='mt-1 mx-3'>State</span>
-                <Selectmenu />
+                <SelectMenuNew
+                  onChange={handleChange}
+                  formData={formData}
+                  name='state'
+                />
               </div>
             </div>
 
@@ -193,9 +202,11 @@ const Createnew = () => {
                 <Inputfeild
                   onChange={handleChange}
                   formData={formData}
-                  type='text'
+                  type='number'
                   name='zip'
                   plholder='ZIP'
+                  min={5}
+                  max={9}
                 />
               </div>
               <div className=' w-[70%] mx-2 my-5'>
@@ -205,6 +216,8 @@ const Createnew = () => {
                   onChange={handleChange}
                   formData={formData}
                   name='phone'
+                  min={7}
+                  max={10}
                   plholder='Phone'
                 />
               </div>
@@ -218,6 +231,8 @@ const Createnew = () => {
                   formData={formData}
                   type='number'
                   name='mobile'
+                  min={7}
+                  max={10}
                   plholder='Mobile'
                 />
               </div>
@@ -246,12 +261,10 @@ const Createnew = () => {
               </div>
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>State of Inc</span>
-                <Inputfeild
+                <SelectMenuNew
                   onChange={handleChange}
                   formData={formData}
-                  type='text'
                   name='state_inc'
-                  plholder='State of Inc'
                 />
               </div>
             </div>
@@ -273,7 +286,7 @@ const Createnew = () => {
                   onChange={handleChange}
                   formData={formData}
                   type='date'
-                  name='date_bussiness_started'
+                  name='date_business_started'
                   plholder='Date Business Started'
                 />
               </div>
@@ -286,7 +299,7 @@ const Createnew = () => {
                   type='number'
                   onChange={handleChange}
                   formData={formData}
-                  name='length of ownership'
+                  name='length_of_ownership'
                   plholder='Length of Owernship'
                 />
               </div>
@@ -300,8 +313,19 @@ const Createnew = () => {
                   plholder='Years at Location'
                 />
               </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Number Of Locations</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='number_of_locations'
+                  plholder='Number Of Locations'
+                />
+              </div>
             </div>
           </div>
+
 
           <div className='md:max-w-[700px] w-full mx-auto'>
 
@@ -354,21 +378,24 @@ const Createnew = () => {
             </div>
 
             <div className="flex justify-between items-center">
-              <div className='flex gap-5'>
+              <div className='w-[70%] mx-2 my-5'>
                 <span className='mt-1 mx-3'>State</span>
-                <Selectmenu
+                <SelectMenuNew
                   onChange={handleChange}
                   formData={formData}
+                  name="owner_state"
                 />
               </div>
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>ZIP</span>
                 <Inputfeild
-                  type='text'
+                  type='number'
                   onChange={handleChange}
                   formData={formData}
                   name='owner_zip'
                   plholder='ZIP'
+                  min={5}
+                  max={9}
                 />
               </div>
             </div>
@@ -410,84 +437,18 @@ const Createnew = () => {
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>Phone</span>
                 <Inputfeild
-                  type='date'
+                  type='number'
                   onChange={handleChange}
                   formData={formData}
                   name='owner_phone'
                   plholder='Phone'
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Federal Tax ID</span>
-                <Inputfeild
-                  type='text'
-                  onChange={handleChange}
-                  formData={formData}
-                  name='federal_tax_id'
-                  plholder='Federal Tax ID'
-                />
-              </div>
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>State of Inc</span>
-                <Inputfeild
-                  type='text'
-                  name='state_inc'
-                  onChange={handleChange}
-                  formData={formData}
-                  plholder='State of Inc'
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Legal Entry</span>
-                <Inputfeild
-                  type='text'
-                  onChange={handleChange}
-                  formData={formData}
-                  name='legal_entry'
-                  plholder='Legal Entry'
-                />
-              </div>
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Date Business Started</span>
-                <Inputfeild
-                  type='date'
-                  onChange={handleChange}
-                  formData={formData}
-                  name='date_bussiness_started'
-                  plholder='Date Business Started'
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Length of Owernship</span>
-                <Inputfeild
-                  type='number'
-                  onChange={handleChange}
-                  formData={formData}
-                  name='length of ownership'
-                  plholder='Length of Owernship'
-                />
-              </div>
-              <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Years at Location</span>
-                <Inputfeild
-                  type='number'
-                  onChange={handleChange}
-                  formData={formData}
-                  name='years_at_location'
-                  plholder='Years at Location'
+                  min={7}
+                  max={10}
                 />
               </div>
             </div>
           </div>
+
 
           <div className='max-w-[700px] mx-auto'>
 
@@ -495,23 +456,33 @@ const Createnew = () => {
 
             <div className="flex justify-between items-center">
               <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Name Of Business</span>
+                <Inputfeild
+                  name='name_of_business'
+                  onChange={handleChange}
+                  formData={formData}
+                  type='text'
+                  plholder='Name Of Business'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>Gross Monthly Sale</span>
                 <Inputfeild
                   name='gross_monthly_sales'
                   onChange={handleChange}
                   formData={formData}
-                  type='text'
+                  type='number'
                   plholder='Gross Monthly Sale'
                 />
               </div>
               <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>Type of Product</span>
+                <span className='mt-4 mx-3'>Type of Product Sold</span>
                 <Inputfeild
-                  name='type_of_product'
+                  name='type_of_product_sold'
                   onChange={handleChange}
                   formData={formData}
                   type='text'
-                  plholder='Type of Product'
+                  plholder='Type of Product Sold'
                 />
               </div>
             </div>
@@ -519,22 +490,22 @@ const Createnew = () => {
             <div className="flex justify-between items-center">
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>Do you have any open Cash Advances [Y/N]</span>
-                <Inputfeild
-                  type='text'
+                <RadioFeild
+                  type='radio'
                   onChange={handleChange}
                   formData={formData}
+                  options={['YES', 'NO']}
                   name='has_open_cash_advances'
-                  plholder='Do you have any open Cash Advances'
                 />
               </div>
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'> Have you used a Cash Advance plan before [Y/N]</span>
-                <Inputfeild
-                  name='has_used_cash_advance_plan_before '
+                <RadioFeild
+                  type='radio'
                   onChange={handleChange}
                   formData={formData}
-                  type='text'
-                  plholder='Have you used a Cash Advance plan before'
+                  options={['YES', 'NO']}
+                  name='has_used_cash_advance_plan_before'
                 />
               </div>
             </div>
@@ -543,7 +514,7 @@ const Createnew = () => {
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'> Using the Money For</span>
                 <Inputfeild
-                  name='using_money_for '
+                  name='using_money_for'
                   onChange={handleChange}
                   formData={formData}
                   type='text'
@@ -553,11 +524,129 @@ const Createnew = () => {
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'> Description of Business: Retail</span>
                 <Inputfeild
-                  name='description_of_business '
+                  name='description_of_business'
                   onChange={handleChange}
                   formData={formData}
                   type='text'
                   plholder='Description of Business: Retail'
+                />
+              </div>
+            </div>
+          </div>
+
+
+          <div className='max-w-[700px] mx-auto'>
+
+            <h2 className='text-[19px] m-2 p-2 bg-slate-400'>Advance Information</h2>
+
+            <div className="flex justify-between items-center">
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Advanced Amount</span>
+                <Inputfeild
+                  name='advanced_price'
+                  onChange={handleChange}
+                  formData={formData}
+                  type='number'
+                  plholder='Advanced Amount'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Commission Amount</span>
+                <Inputfeild
+                  name='commission_price'
+                  onChange={handleChange}
+                  formData={formData}
+                  type='number'
+                  plholder='Commission Amount'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>%</span>
+                <Inputfeild
+                  name='percentage'
+                  onChange={handleChange}
+                  formData={formData}
+                  type='number'
+                  plholder='percentage'
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Factor</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='factor'
+                  plholder='Factor'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Total Fee</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='total_fee'
+                  plholder='Total Fee'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Payment</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='payment'
+                  plholder='Payment'
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Payback</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='payback'
+                  plholder='Payback'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Term</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='term'
+                  plholder='Term'
+                />
+              </div>
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'>Frequency</span>
+                <Inputfeild
+                  type='number'
+                  onChange={handleChange}
+                  formData={formData}
+                  name='frequency'
+                  plholder='Frequency'
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className=' w-[70%] mx-2 my-5'>
+                <span className='mt-4 mx-3'> Net Funding Amount</span>
+                <Inputfeild
+                  name='net_funding_amount'
+                  onChange={handleChange}
+                  formData={formData}
+                  type='number'
+                  plholder='Net Funding Amount'
                 />
               </div>
             </div>
@@ -608,14 +697,23 @@ const Createnew = () => {
 export default Createnew
 
 const UploadFiles = ({ title, application_id, formData }) => {
-  const [formData2, setFormData2] = useState(formData)
+  const [formData2, setFormData2] = useState({
+    business_name: '',
+    bank_name: '',
+    begin_bal_date: '',
+    begin_bal_amount: '',
+    ending_bal_amount: '',
+    ending_bal_date: '',
+    total_deposit: '',
+  })
   const [file, setFile] = useState({});
   const [hasUploaded, setHasUploaded] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData2((prevData) => ({ ...prevData, [name]: value }));
+    const d = (prevData) => ({ ...prevData, [name]: value })
+    setFormData2(d);
   };
 
   const handleFileChange = (e) => {
@@ -642,6 +740,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
     if (!file?.name) return alert('You have not selected any file!')
     setLoading(true)
     console.log({ formData2 });
+    // return;
     const baseUrl = 'http://localhost:8000/pdfs/'
     const config = {
       headers: {
@@ -665,9 +764,10 @@ const UploadFiles = ({ title, application_id, formData }) => {
         'pdf_file', file ? file : {}, file?.name ? file.name : ''
       );
 
+      console.log({ formDataWithFiles });
       const response = await axios.post(baseUrl, formDataWithFiles, config);
       console.log({ response });
-      if (response.statusText) {
+      if (response.statusText === "Created") {
         setHasUploaded(true)
       }
     } catch (error) {
@@ -731,7 +831,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
               name='total_deposit'
               onChange={handleChange}
               formData={formData2}
-              type='text'
+              type='number'
               plholder='Total Deposit'
             />
           </div>
@@ -751,7 +851,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
               name='ending_bal_amount'
               onChange={handleChange}
               formData={formData2}
-              type='text'
+              type='number'
               plholder='Ending Balance Amount'
             />
           </div>
@@ -763,7 +863,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
             name='begin_bal_amount'
             onChange={handleChange}
             formData={formData2}
-            type='text'
+            type='number'
             plholder='Beginning Balance Amount'
           />
         </div>
