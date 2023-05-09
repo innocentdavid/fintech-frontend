@@ -18,11 +18,13 @@ const PdfViewer = ({ url }) => {
   }
 
   const pdfUrl = 'http://www.gci.org.uk/Documents/Global-Warming-the-Complete-Briefing.pdf'
+  const u = `http://localhost:8000/pdf_files/CHM_305_COMBINED_6x2j0nT.pdf`
 
   return (
     <>
       {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${pdfUrl}`} width="100%" height="600" frameBorder="0" /> */}
-      <iframe src={`/20192270_42.pdf`} width="100%" height="600" frameBorder="0" />
+      {/* <iframe src={`/CHM 305 COMBINED.pdf`} width="100%" height="600" frameBorder="0" /> */}
+      <iframe src={url} width="100%" height="600" frameBorder="0" />
       {/* <Document file={'http://www.gci.org.uk/Documents/Global-Warming-the-Complete-Briefing.pdf'} onLoadSuccess={onDocumentLoadSuccess} options={options}>
         {Array.from(new Array(numPages), (el, index) => (
           <Page key={`page_${index + 1}`} pageNumber={index + 1} />

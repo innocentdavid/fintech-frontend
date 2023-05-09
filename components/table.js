@@ -16,22 +16,24 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import LoadingModal from './LoadingModal ';
 
 const Table = ({ data }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
         if (!data.length>0) return;
-        const list = []
-        data.forEach(item => {
-            const o = item.status
-            const d = {...item, status: o?.name}
-            list.push(d)
-        });
-        setTableData(list)
+        // const list = []
+        // data.forEach(item => {
+        //     const o = item.status
+        //     const d = {...item, status: o?.name}
+        //     list.push(d)
+        // });
+        setTableData(data)
     }, [data])
 
 
@@ -52,51 +54,6 @@ const Table = ({ data }) => {
     const handleCancelRowEdits = () => {
         setValidationErrors({});
     };
-
-    const handleDeleteRow = useCallback(
-        (row) => {
-            if (
-                !confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
-            ) {
-                return;
-            }
-            //send api delete request here, then refetch or update local table data for re-render
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
-        },
-        [tableData],
-    );
-
-    const getCommonEditTextFieldProps = useCallback(
-        (cell) => {
-            return {
-                error: !!validationErrors[cell.id],
-                helperText: validationErrors[cell.id],
-                onBlur: (event) => {
-                    const isValid =
-                        cell.column.id === 'email'
-                            ? validateEmail(event.target.value)
-                            : cell.column.id === 'age'
-                                ? validateAge(+event.target.value)
-                                : validateRequired(event.target.value);
-                    if (!isValid) {
-                        //set validation error for cell if invalid
-                        setValidationErrors({
-                            ...validationErrors,
-                            [cell.id]: `${cell.column.columnDef.header} is required`,
-                        });
-                    } else {
-                        //remove validation error for cell if valid
-                        delete validationErrors[cell.id];
-                        setValidationErrors({
-                            ...validationErrors,
-                        });
-                    }
-                },
-            };
-        },
-        [validationErrors],
-    );
 
     // const columns = useMemo(
     //     () => [
@@ -169,20 +126,22 @@ const Table = ({ data }) => {
 
     const columns = [
         {
-            accessorKey: 'application_id',
+            accessorKey: 'count',
             header: 'ID',
             enableColumnOrdering: false,
             enableEditing: false, //disable editing on this column
             enableSorting: false,
             size: 80,
         },
+        // {
+        //     accessorKey: 'date_submitted',
+        //     header: 'Date Submitted',
+        //     size: 140,
+        // },
         {
             accessorKey: 'date_submitted',
             header: 'Date Submitted',
             size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            // }),
         },
         {
             accessorKey: 'status',
@@ -242,11 +201,13 @@ const Table = ({ data }) => {
     ]
 
     const handleRoswClick = (e) => {
+        setLoading(true)
         router.push(`application/${e.application_id}`)
     }
 
     return (
         <>
+            <LoadingModal loading={loading} />
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {

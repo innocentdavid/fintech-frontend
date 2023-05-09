@@ -1,8 +1,4 @@
 
-
-
-
-
 import Head from 'next/head'
 import Image from 'next/image'
 import Inputfeild from '../components/inputfeild'
@@ -10,46 +6,11 @@ import Link from "next/link";
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-
-
-
-// const [formData, setFormData] = useState({});
-
-//     const handleSubmit = async (event) => {
-//       event.preventDefault();
-
-//       try {
-//         const response = await fetch('http://localhost:8000/applications', {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(formData),
-//           const { token } = response.data
-//           setCookie(null, 'token', token, { path: './login' });
-//         });
-
-//         if (response.ok) {
-//           // Handle success
-//           console.log(response)
-//         } else {
-//           // Handle error
-//           console.log(response)
-//         }
-//       } catch (error) {
-//         // Handle error
-//         console.log(response)
-//       }
-//     };
-
-//     const handleChange = (event) => {
-//       const { name, value } = event.target;
-//       setFormData((prevData) => ({ ...prevData, [name]: value }));
-//     };
-
+import LoadingModal from '../components/LoadingModal ';
 
 export default function Register() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -73,35 +34,20 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log({ formData });
-      const response = await API.post('api/register/', formData)
-      console.log(response);
-      router.push('/')
-    } catch (error) {
-      console.log(error);
+    setLoading(true)
+    const response = await API.post('api/register/', formData)
+    // console.log(response);
+    if (response.data.message) {
+      alert(response.data.message)
+      setLoading(false)
+      return;
     }
+    router.push('/')
+    // setLoading(false)
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     console.log({ formData });
-
-  //     const response = await axios.post('http://localhost:8000/api/register/', formData);
-  //     console.log(response);
-  //     // if(response.statusText){
-
-  //     // }
-  //     // const { token } = response.data;
-  //     // setCookie(null, 'token', token, { path: './login' });
-  //     // Redirect the user to a protected page
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  return (
+  return (<>
+    <LoadingModal loading={loading} />
     <div className='mx-auto my-[100px] md:w-[30%] py-1 pb-4  px-7 h-[400px] md:border border-blue-50 flex flex-col justify-center align-middle' >
 
       <h1 className='text-[18px] ml-5 md:ml-0 py-1 text-blue-500' >Register</h1>
@@ -144,5 +90,6 @@ export default function Register() {
 
 
     </div>
+  </>
   )
 }

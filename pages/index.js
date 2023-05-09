@@ -59,10 +59,10 @@ export default function Home() {
   const [applications, setApplications] = useState([])
 
   useEffect(() => {
-    const refreshMovies = async () => {
+    const fetch = async () => {
       try {
         const response = await APIN.get('api/getcurrentuser/')
-        // console.log(response);
+        // console.log(response.data);
         setUser(response.data)
       } catch (error) {
         console.log(error);
@@ -70,7 +70,7 @@ export default function Home() {
         router.push('/login')
       }
     };
-    refreshMovies()
+    fetch()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -79,15 +79,15 @@ export default function Home() {
       await API.get("/")
         .then((res) => {
           setApplications(res?.data)
+          // console.log(res?.data)
         })
         .catch(console.error);
     };    
     refreshMovies()
   }, [])
 
-
-  return (
-    <div className="mx-auto w-full md:w-[80%] my-[50px] border border-slate-500 rounded-lg ">
+  return (<>    
+    <div className="w-full my-[10px] px-5">
       {user?.email && <header className="flex gap-10 items-center justify-between p-5">
         <div className="text-lg font-bold">{user?.name}</div>
         <div className="flex items-center gap-2">
@@ -101,15 +101,13 @@ export default function Home() {
           </div>
         </div>
       </header>}
-          {/* <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={handleLogout}>
-            Log out
-          </div> */}
 
       <Data />
 
-      <Table data={applications} />
+      {/* <Table data={applications} /> */}
 
     </div>
+  </>
 
   )
 }

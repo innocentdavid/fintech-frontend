@@ -8,10 +8,12 @@ import axios from 'axios';
 import { setCookie } from 'nookies';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import LoadingModal from '../components/LoadingModal ';
 
 
 export default function Login() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -21,27 +23,6 @@ export default function Login() {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
-
-  // const handlelogin = async (event) => {
-  
-  //   event.preventDefault();
-  
-  //   const response = await fetch('http://localhost:8000/applications', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ email, password }),
-  //   });
-  
-  //   if (response.ok) {
-  //     const { token } = await response.json();(
-  //     console.log(token)
-  //     // Save the token to local storage or cookies
-  //   )} else {
-  //     const { message } = await response.json();
-  //     // Display an error message to the user
-  //   }
-  // }
-
 
   const API = axios.create({
     baseURL: 'http://localhost:8000/',
@@ -54,18 +35,23 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log({ formData });
-      const response = await API.post('api/login/', formData)
-      // const response = await axios.post();
-      console.log(response);
-      router.push('/')
-    } catch (error) {
-      console.log(error);
+    setLoading(true)
+    const response = await API.post('api/login/', formData).catch((err => {
+      console.log(err);
+    }))
+    // const response = await axios.post();
+    // console.log(response);
+    if (response?.data?.message && response?.data?.message !== "success") {
+      alert(response.data.message)
+      setLoading(false)
+      return;
     }
+    router.push('/')
+    // setLoading(false)
   };
 
-  return (
+  return (<>
+    <LoadingModal loading={loading} />
     <div className='mx-auto my-[100px] w-full px[10px] md:w-[30%] py-2  md:px-7 h-[250px] md:border border-blue-50 flex flex-col justify-center align-middle' >
 
       <h1 className='text-[18px] md:mx-0 mx-7 py-1 text-blue-500' >Login Now!!</h1>
@@ -98,5 +84,6 @@ export default function Login() {
       </form>
 
     </div>
+  </>
   )
 } 

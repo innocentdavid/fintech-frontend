@@ -13,7 +13,7 @@ const Inputfeild = (props) => {
                 readOnly={props.read}
                 disabled={props.disabled}
                 onChange={props.onChange}
-                value={props.formData[props.name]}
+                value={props?.formData?.[props?.name] ? props.formData[props.name] : ''}
                 placeholder={props.plholder}
                 className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' id="" />
         </div>

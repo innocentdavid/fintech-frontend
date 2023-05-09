@@ -9,6 +9,7 @@ import API from '../components/API';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import RadioFeild from '../components/Radio';
+import LoadingModal from '../components/LoadingModal ';
 
 
 export async function getServerSideProps() {
@@ -26,11 +27,12 @@ const Createnew = () => {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [application_id, setApplication_id] = useState('')
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     date_submitted: today,
     status_date: today,
-    status: '',
-
+    status: 'Created',
+    status_description: 'Created',
     name_of_business: '',
     legal_business_name: '',
     owners: '',
@@ -95,6 +97,7 @@ const Createnew = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true)
     console.log({ formData });
 
     try {
@@ -107,6 +110,7 @@ const Createnew = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false)
   };
 
   const handleChange = (event) => {
@@ -116,6 +120,7 @@ const Createnew = () => {
   };
 
   return (<>
+    <LoadingModal loading={loading} />
     <div className={`${step === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto flex justify-center rounded-lg mt-[60px] mb-10`} style={{
       transition: 'all .15s ease-in'
     }}>
@@ -675,19 +680,22 @@ const Createnew = () => {
         <UploadFiles title={'Application file 2'} application_id={application_id}
           formData={formData2} setFormData={setFormData2}
         />
-        <UploadFiles title={'Application file 3'} application_id={application_id}
-          formData={formData2} setFormData={setFormData2}
-        />
         <UploadFiles title={'Statement 1'} application_id={application_id}
           formData={formData2} setFormData={setFormData2}
         />
         <UploadFiles title={'Statement 2'} application_id={application_id}
           formData={formData2} setFormData={setFormData2}
         />
+        <UploadFiles title={'Statement 3'} application_id={application_id}
+          formData={formData2} setFormData={setFormData2}
+        />
 
         <div className='my-[40px] flex justify-center gap-4 items-center w-full mx-auto'>
           <button type='submit' className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
-            onClick={() => router.push('/')}>Complete</button>
+            onClick={() => {
+              setLoading(true)
+              router.push('/')
+            }}>Complete</button>
         </div>
       </div>
     </div>
@@ -777,6 +785,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
   };
 
   return (<>
+    <LoadingModal loading={loading} />
     <form method='POST' action='' onSubmit={handleSubmit} >
       <div className="flex justify-around mb-3">
         <h3 className='font-bold'>{title}</h3>

@@ -10,7 +10,6 @@ import Application from '../../components/applicatiom'
 const ApplicationDetail = () => {
     const router = useRouter();
     const { applicationId } = router.query;
-    console.log(applicationId);
     const [application, setApplication] = useState([])
 
     useEffect(() => {
@@ -27,8 +26,6 @@ const ApplicationDetail = () => {
         }
     }, [applicationId])
 
-    console.log(application);
-
     return (
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
@@ -40,36 +37,3 @@ const ApplicationDetail = () => {
 }
 
 export default ApplicationDetail
-
-// const API = axios.create({
-//     baseURL: 'http://localhost:8000/applications/',
-//     headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json',
-//     }
-// })
-
-// export async function getStaticProps({ params }) {
-//     const applicationId = params.applicationId
-//     const res = await API.get(`/${applicationId}/`)
-
-//     return {
-//         props: {
-//             data: res.data
-//         },
-//         revalidate: 60
-//     }
-// }
-
-// export async function getStaticPaths() {
-//     const allApplications = await API.get("/")
-//     return {
-//         paths:
-//             allApplications.data?.map((application) => ({
-//                 params: {
-//                     applicationId: application?.application_id,
-//                 },
-//             })) || [],
-//         fallback: true,
-//     }
-// }
