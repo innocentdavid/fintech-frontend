@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { handleLogout } from '../utils/helpers';
+import LoadingModal from '../components/LoadingModal ';
 // import { parseCookies } from 'nookies';
 // import jwt from 'jsonwebtoken';
 
@@ -57,21 +58,20 @@ export default function Home() {
     name: ''
   })
   const [applications, setApplications] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetch = async () => {
-      try {
-        const response = await APIN.get('api/getcurrentuser/')
-        // console.log(response.data);
-        setUser(response.data)
-      } catch (error) {
-        console.log(error);
-        // alert('Unthenticated!')
+      const response = await APIN.get('api/getcurrentuser/')
+      setUser(response.data)
+      console.log(response);
+      if (response.data.message !== "success") {
         router.push('/login')
+        return;
       }
     };
     fetch()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -82,31 +82,33 @@ export default function Home() {
           // console.log(res?.data)
         })
         .catch(console.error);
-    };    
+    };
     refreshMovies()
   }, [])
 
-  return (<>    
-    <div className="w-full my-[10px] px-5">
-      {user?.email && <header className="flex gap-10 items-center justify-between p-5">
-        <div className="text-lg font-bold">{user?.name}</div>
-        <div className="flex items-center gap-2">
-          <div className="">{user?.email}</div>
-          <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={async () => {
-            await handleLogout()
-            setUser({})
-            router.push('/login')
-          }}>
-            Log out
+  return (<>
+    {loading ? < LoadingModal loading={loading} /> :
+      <div className="w-full my-[10px] px-5">
+        {user?.email && <header className="flex gap-10 items-center justify-between p-5">
+          <div className="text-lg font-bold">{user?.name}</div>
+          <div className="flex items-center gap-2">
+            <div className="">{user?.email}</div>
+            <div className="text-sm text-blue-800 font-bold cursor-pointer" onClick={async () => {
+              await handleLogout()
+              setUser({})
+              router.push('/login')
+            }}>
+              Log out
+            </div>
           </div>
-        </div>
-      </header>}
+        </header>}
 
-      <Data />
+        <Data />
 
-      {/* <Table data={applications} /> */}
+        <Table data={applications} />
 
-    </div>
+      </div>
+    }
   </>
 
   )
