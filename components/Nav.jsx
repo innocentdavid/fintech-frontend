@@ -13,6 +13,7 @@ export default function Nav({user, setUser}) {
           <div className="flex items-center gap-2">
               <div className="flex items-center gap-3 md:mr-4">
                   <Link href="/" className='font-bold'>Applications</Link>
+                  <Link href="/submittedapplication" className='font-bold'>Submitted Application</Link>
                   <Link href="/funders" className='font-bold'>Funders</Link>
               </div>
               <div className="text-sm font-bold cursor-pointer" onClick={async () => {

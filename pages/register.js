@@ -37,7 +37,9 @@ export default function Register() {
     e.preventDefault();
     if(formData.password !== formData.cpassword) return alert("Your password must be the same!")
     setLoading(true)
-    const response = await API.post('api/register/', formData)
+    const response = await API.post('api/register/', formData).catch(err => {
+      
+    })
     // console.log(response);
     if (response?.data?.message && response?.data?.message === 'success' ) {
       router.push('/')

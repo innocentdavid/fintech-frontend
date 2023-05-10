@@ -10,6 +10,11 @@ const Inputfeild = (props) => {
                 name={props.name}
                 // min={props.min}
                 // max={props.max}
+                // min={3}
+                // max={5}
+                // title={props.min && props.max ? `title="Please enter a value between ${props.min} and ${props.max}"`: ''}
+                // minLength={props.min}
+                // maxLength={props.max}
                 readOnly={props.read}
                 disabled={props.disabled}
                 onChange={props.onChange}

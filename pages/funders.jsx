@@ -57,7 +57,7 @@ const Funders = () => {
         const fetch = async () => {
             setLoading(true)
             const res = await API.get("/")
-            // console.log(res);
+            console.log(res);
             if (res.data) {
                 setFundersList(res.data)
             } else {

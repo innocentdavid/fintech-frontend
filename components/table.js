@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import LoadingModal from './LoadingModal ';
 
-const Table = ({ data, applicationsLoading }) => {
+const Table = ({ data, page, applicationsLoading }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
@@ -202,7 +202,7 @@ const Table = ({ data, applicationsLoading }) => {
 
     const handleRoswClick = (e) => {
         setLoading(true)
-        router.push(`application/${e.application_id}`)
+        router.push(`submittedapplication/${e.application_id}`)
     }
 
     return (

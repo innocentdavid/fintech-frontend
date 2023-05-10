@@ -1,7 +1,8 @@
 
 
 import React, { useEffect } from 'react'
-import { FaCloudUploadAlt, FaTimes, FaTimesCircle } from 'react-icons/fa'
+import { FaCheck, FaCloudUploadAlt, FaTimes, FaTimesCircle } from 'react-icons/fa'
+import { FiTriangle } from 'react-icons/fi'
 import axios from 'axios';
 import { useState } from 'react'
 import { useRouter } from 'next/router';
@@ -15,7 +16,7 @@ const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get t
 const day = date.getDate(); // e.g. 28
 const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
-const Application = ({ application }) => {
+const Application = ({ application, page }) => {
     const router = useRouter()
     const [applicaitonPdfs, setApplicaitonPdfs] = useState([])
     const [statementPdfs, setStatementPdfs] = useState([])
@@ -118,6 +119,7 @@ const Application = ({ application }) => {
 
     const [fundersArray, setFundersArray] = useState([])
     const [fundersArrayO, setFundersArrayO] = useState([])
+
     useEffect(() => {
         const API = axios.create({
             baseURL: 'http://localhost:8000/funders/',
@@ -143,12 +145,15 @@ const Application = ({ application }) => {
             if (res2?.status === 200) {
                 if(!res?.data) return;
                 var l = []
+                var newItems = [];
                 res2.data.forEach(item => {
-                    console.log(item?.funder?.name);
                     const newList = res?.data?.find(funder => funder?.name !== item?.funder?.name)
                     l.push(newList)
+                    const newItem = res?.data?.find(funder => funder?.name === item?.funder?.name)
+                    newItems.push({ ...newItem, submited: true })
                 });
-                funders=l
+                const d = [...l, ...newItems]
+                funders=d
             } else {
                 funders = res.data
             }
@@ -186,20 +191,27 @@ const Application = ({ application }) => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px]">
                 <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => setShowFunders(false)} />
                 <div className="w-full flex gap-2">
-                    <div className="flex flex-col gap-2 border w-1/2">
+                    <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
                         {fundersArray.map(funder => {
                             return (
-                                <div key={`main_${funder?.name}`} className="hover:bg-slate-200 p-3 cursor-pointer" onClick={() => {
+                                <div key={`main_${funder?.name}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
+                                    if (funder?.submited) return;
                                     const selected = fundersArray.find(item => item.name === funder?.name)
                                     const newSelectedFundersArray = [...selectedFundersArray, selected]
                                     setSelectedFundersArray(newSelectedFundersArray)
                                     const newFundersArray = fundersArray.filter(item => item.name !== funder?.name)
                                     setFundersArray(newFundersArray)
-                                }}>{funder?.name}</div>
+                                }}>{funder?.name} {funder?.submited && <FaCheck />}</div>
                             )
                         })}
                     </div>
-                    <div className="flex flex-col gap-2 border w-1/2">
+                    <div className="flex items-center justify-center">
+                        <div className="">
+                            <FiTriangle className='rotate-90' />
+                            <FiTriangle className='-rotate-90 mt-4' />
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
                         {selectedFundersArray.map(funder => {
                             return (
                                 <div key={`selected_${funder?.name}`} className="hover:bg-slate-200 p-3 cursor-pointer" onClick={() => {
@@ -222,8 +234,8 @@ const Application = ({ application }) => {
                 setLoading(true)
                 router.back()
             }} /></span>
-            <form action="" method="post" className='flex' onSubmit={handleSubmit} >
 
+            <form action="" method="post" className='flex' onSubmit={handleSubmit} >
                 <div className='w-[45%] mb-[160px] '>
                     <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
                         <h3>APPLICATION DATA</h3>
@@ -276,7 +288,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
+                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
 
                                     {statementPdfs[1] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -288,7 +300,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
+                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
 
                                     {statementPdfs[2] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -300,7 +312,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
+                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
                                 </div>
                             </div>
 
@@ -317,7 +329,7 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
+                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
 
                                     {applicaitonPdfs[1] ? <>
                                         <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
@@ -329,26 +341,26 @@ const Application = ({ application }) => {
                                             />
                                         </div>
                                     </> :
-                                        <FileUpload disabled={!isEditable} onChange={handleInputChange} />}
+                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
                                 </div>
                             </div>
                         </div>
                         :
                         "Loading..."}
 
-                    <div className="w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
-                        onClick={() => setShowFunders(true)}>Submit Application</div>
+                    {!page && <div className="w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
+                        onClick={() => setShowFunders(true)}>Submit Application</div>}
 
                 </div>
 
                 <div className='w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
                         <h3>Additional Information</h3>
-                        <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
+                        {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
                             onClick={handleEditButtonClick}
                         >
                             {isEditable ? 'Cancel' : 'Edit'}
-                        </button>
+                        </button>}
 
                     </div>
                     <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
