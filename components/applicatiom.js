@@ -20,6 +20,7 @@ const Application = ({ application }) => {
     const [applicaitonPdfs, setApplicaitonPdfs] = useState([])
     const [statementPdfs, setStatementPdfs] = useState([])
     const [showPdfModal, setShowPdfModal] = useState(false)
+    const [showFunders, setShowFunders] = useState(false)
     const [pdf, setPdf] = useState()
     const [formData, setFormData] = useState({
         name_of_business: '',
@@ -115,10 +116,106 @@ const Application = ({ application }) => {
         });
     };
 
-    // console.log(pdf);
+    const [fundersArray, setFundersArray] = useState([])
+    const [fundersArrayO, setFundersArrayO] = useState([])
+    useEffect(() => {
+        const API = axios.create({
+            baseURL: 'http://localhost:8000/funders/',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+
+        const fetch = async () => {
+            setLoading(true)
+            var funders = []
+            const res = await API.get("/")
+            // console.log(res.data);
+            const res2 = await axios.get(`http://localhost:8000/api/submittedApplications/${application?.application_id}/`, {
+                headers: {
+                    'Accept': 'application/json'
+                },
+            }).catch(err => {
+                console.log(err);
+            })
+            console.log(res2);
+            if (res2?.status === 200) {
+                if(!res?.data) return;
+                var l = []
+                res2.data.forEach(item => {
+                    console.log(item?.funder?.name);
+                    const newList = res?.data?.find(funder => funder?.name !== item?.funder?.name)
+                    l.push(newList)
+                });
+                funders=l
+            } else {
+                funders = res.data
+            }
+            // console.log(res);
+            setFundersArray(funders)
+            setFundersArrayO(funders)
+            setSelectedFundersArray([])
+            setLoading(false)
+        }
+        if (application?.application_id) {
+            console.log(application?.application_id);
+            fetch()
+        }
+    }, [application])
+
+    const [selectedFundersArray, setSelectedFundersArray] = useState([])
+
+    const handleSendApplication = async () => {
+        setLoading(true)
+        const formData = { ...application, funder_names: selectedFundersArray }
+        const res = await axios.post("http://localhost:8000/submittedApplications/", formData).catch(err => {
+            console.log(err);
+        })
+        setFundersArray(fundersArrayO)
+        setSelectedFundersArray([])
+        console.log(res);
+        setLoading(false)
+    }
 
     return (<>
         <LoadingModal loading={loading} />
+
+        <div className={`${showFunders ? "opacity-100 z-10" : "opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen grid place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
+            <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => setShowFunders(false)}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px]">
+                <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => setShowFunders(false)} />
+                <div className="w-full flex gap-2">
+                    <div className="flex flex-col gap-2 border w-1/2">
+                        {fundersArray.map(funder => {
+                            return (
+                                <div key={`main_${funder?.name}`} className="hover:bg-slate-200 p-3 cursor-pointer" onClick={() => {
+                                    const selected = fundersArray.find(item => item.name === funder?.name)
+                                    const newSelectedFundersArray = [...selectedFundersArray, selected]
+                                    setSelectedFundersArray(newSelectedFundersArray)
+                                    const newFundersArray = fundersArray.filter(item => item.name !== funder?.name)
+                                    setFundersArray(newFundersArray)
+                                }}>{funder?.name}</div>
+                            )
+                        })}
+                    </div>
+                    <div className="flex flex-col gap-2 border w-1/2">
+                        {selectedFundersArray.map(funder => {
+                            return (
+                                <div key={`selected_${funder?.name}`} className="hover:bg-slate-200 p-3 cursor-pointer" onClick={() => {
+                                    const selected = selectedFundersArray.find(item => item.name === funder?.name)
+                                    const newFunderArray = [...fundersArray, selected]
+                                    setFundersArray(newFunderArray)
+                                    const newSelectedFundersArray = selectedFundersArray.filter(item => item.name !== funder?.name)
+                                    setSelectedFundersArray(newSelectedFundersArray)
+                                }}>{funder?.name}</div>
+                            )
+                        })}
+                    </div>
+                </div>
+                <button className="mt-4 py-2 px-8 bg-black text-white" onClick={handleSendApplication}>Send</button>
+            </div>
+        </div>
 
         <div className='w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
             <span className='absolute top-6 right-10 text-[15px] h-[20px] w-[20px] flex justify-center my-2' ><FaTimes size={20} className="cursor-pointer" onClick={() => {
@@ -238,6 +335,9 @@ const Application = ({ application }) => {
                         </div>
                         :
                         "Loading..."}
+
+                    <div className="w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
+                        onClick={() => setShowFunders(true)}>Submit Application</div>
 
                 </div>
 

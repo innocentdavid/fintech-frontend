@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import LoadingModal from './LoadingModal ';
 
-const Table = ({ data }) => {
+const Table = ({ data, applicationsLoading }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
@@ -206,8 +206,8 @@ const Table = ({ data }) => {
     }
 
     return (
-        <>
-            <LoadingModal loading={loading} />
+        <div className='relative'>
+            <LoadingModal loading={loading || applicationsLoading} />
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {
@@ -253,7 +253,7 @@ const Table = ({ data }) => {
                     // >
                     //     Create New Account
                     // </Button>
-                    <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg">Add New Application</Link>
+                    <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg text-xs md:text-base">Add New Application</Link>
                 )}
             />
             <CreateNewAccountModal
@@ -262,7 +262,7 @@ const Table = ({ data }) => {
                 onClose={() => setCreateModalOpen(false)}
                 onSubmit={handleCreateNewRow}
             />
-        </>
+        </div>
     );
 };
 

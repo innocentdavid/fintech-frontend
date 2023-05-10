@@ -13,6 +13,8 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { handleLogout } from '../utils/helpers';
 import LoadingModal from '../components/LoadingModal ';
+import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
+import Nav from '../components/Nav';
 // import { parseCookies } from 'nookies';
 // import jwt from 'jsonwebtoken';
 
@@ -59,6 +61,13 @@ export default function Home() {
   })
   const [applications, setApplications] = useState([])
   const [loading, setLoading] = useState(false)
+  const [applicationsLoading, setApplicationsLoading] = useState(true)
+  const [showStarts, setShowStarts] = useState(false)
+
+  useEffect(() => {
+    if (applications.length > 0) return setApplicationsLoading(false)
+  }, [applications])
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -78,6 +87,7 @@ export default function Home() {
     const fetch = async () => {
       await API.get("/")
         .then((res) => {
+          setApplicationsLoading(false)
           setApplications(res?.data)
           // console.log(res?.data)
         })
@@ -92,25 +102,17 @@ export default function Home() {
   }, [])
 
   return (<>
-    {loading ? < LoadingModal loading={loading} /> :<>
-        {user?.email && <header className="flex gap-10 items-center justify-between p-5 bg-black text-white">
-          <div className="text-lg font-bold">Fintech</div>
-          <div className="flex items-center gap-2">
-            <div className="">{user?.email}</div>
-            <div className="text-sm font-bold cursor-pointer" onClick={async () => {
-              await handleLogout()
-              setUser({})
-              router.push('/login')
-            }}>
-              Log out
-            </div>
-          </div>
-        </header>}
+    {loading ? < LoadingModal loading={loading} /> : <>
+      {user?.email && <Nav user={user} setUser={setUser} />}
       <div className="w-full my-[10px] px-5">
 
-        <Data />
+        <div className="flex justify-center my-10 md:hidden">
+          <div className="flex items-center cursor-pointer" onClick={() => setShowStarts(!showStarts)}>See starts <FaAngleDown size={16} /></div>
+        </div>
+        {showStarts && <div className="md:hidden"><Data /></div>}
+        <div className="hidden md:block"><Data /></div>
 
-        <Table data={applications} />
+        <Table data={applications} applicationsLoading={applicationsLoading} />
 
       </div></>
     }

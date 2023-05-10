@@ -39,12 +39,13 @@ export default function Register() {
     setLoading(true)
     const response = await API.post('api/register/', formData)
     // console.log(response);
-    if (response.data.message) {
+    if (response?.data?.message && response?.data?.message === 'success' ) {
+      router.push('/')
+    }else{
       alert(response.data.message)
       setLoading(false)
       return;
     }
-    router.push('/')
     // setLoading(false)
   };
 
