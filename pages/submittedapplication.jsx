@@ -26,7 +26,7 @@ const APIN = axios.create({
 })
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/submittedapplications/',
+    baseURL: 'http://localhost:8000/submittedApplications/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -92,6 +92,8 @@ export default function Home() {
         </div>
         {showStarts && <div className="md:hidden"><Data /></div>}
         <div className="hidden md:block"><Data /></div> */}
+
+                <h1 className="text-center font-bold text-2xl my-10">All Submitted Applications</h1>
 
                 <Table data={applications} page='submittedapplication' applicationsLoading={applicationsLoading} />
 

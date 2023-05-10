@@ -112,6 +112,8 @@ export default function Home() {
         {showStarts && <div className="md:hidden"><Data /></div>}
         <div className="hidden md:block"><Data /></div> */}
 
+        <h1 className="text-center font-bold text-2xl my-10">All Applications</h1>
+
         <Table data={applications} applicationsLoading={applicationsLoading} />
 
       </div></>
