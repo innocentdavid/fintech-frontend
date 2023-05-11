@@ -2,18 +2,16 @@
 
 
 // import styles from '../styles/Home.module.css'
-import Data from '../components/Data'
 import Table from '../components/table'
 // import axios from 'axios';
-import Link from 'next/link'
-import { data, states } from '../components/makeData';
+import { data } from '../components/makeData';
 import API from '../components/API';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { handleLogout } from '../utils/helpers';
+// import { handleLogout } from '../utils/helpers';
 import LoadingModal from '../components/LoadingModal ';
-import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
+// import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
 import Nav from '../components/Nav';
 // import { parseCookies } from 'nookies';
 // import jwt from 'jsonwebtoken';

@@ -1,11 +1,9 @@
 
 
 
-import Emailverifybutton from '../components/Buttons/Emailverifybutton'
 import Inputfeild from '../components/inputfeild'
 import Link from "next/link";
 import axios from 'axios';
-import { setCookie } from 'nookies';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import LoadingModal from '../components/LoadingModal ';
