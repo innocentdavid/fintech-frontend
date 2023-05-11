@@ -202,7 +202,8 @@ const Table = ({ data, page, applicationsLoading }) => {
 
     const handleRoswClick = (e) => {
         setLoading(true)
-        router.push(`submittedapplication/${e.application_id}`)
+        var p = page || 'application'
+        router.push(`${p}/${e.application_id}`)
     }
 
     return (
@@ -253,7 +254,10 @@ const Table = ({ data, page, applicationsLoading }) => {
                     // >
                     //     Create New Account
                     // </Button>
-                    <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg text-xs md:text-base">Add New Application</Link>
+                    <div className="flex items-center gap-3">
+                        {!page && <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg text-xs md:text-base">Add New Application</Link>}
+                        {applicationsLoading && <div className="animate-pulse tracking-[1em]">Loading...</div>}
+                    </div>
                 )}
             />
             <CreateNewAccountModal

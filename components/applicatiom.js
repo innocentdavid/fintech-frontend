@@ -141,7 +141,7 @@ const Application = ({ application, page }) => {
             }).catch(err => {
                 console.log(err);
             })
-            console.log(res2);
+            // console.log(res2);
             if (res2?.status === 200) {
                 if(!res?.data) return;
                 var l = []
@@ -674,6 +674,8 @@ function purifyData(str) {
     return '';
 }
 const Inputfeild = ({ type, application, label, read, name, disabled, onChange, formData, plholder }) => {
+    // console.log({ type, application, label, read, name, disabled, onChange, formData, plholder });
+    
     return (
         <div className='flex gap-1 flex-col mx-3 my-2'>
             <label className='text-[14px]'>{label}</label>

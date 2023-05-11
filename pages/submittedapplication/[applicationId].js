@@ -7,7 +7,7 @@ import Application from '../../components/applicatiom'
 import LoadingModal from '../../components/LoadingModal ';
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/submittedapplications/',
+    baseURL: 'http://localhost:8000/submittedApplications/',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

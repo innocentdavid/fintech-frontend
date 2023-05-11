@@ -42,7 +42,7 @@ export default function Home() {
     })
     const [applications, setApplications] = useState([])
     const [loading, setLoading] = useState(false)
-    const [applicationsLoading, setApplicationsLoading] = useState(false)
+    const [applicationsLoading, setApplicationsLoading] = useState(true)
     const [showStarts, setShowStarts] = useState(false)
 
     // useEffect(() => {
@@ -68,11 +68,11 @@ export default function Home() {
         const fetch = async () => {
             await API.get("/")
                 .then((res) => {
-                    setApplicationsLoading(false)
                     setApplications(res?.data)
                     // console.log(res?.data)
                 })
                 .catch(console.error);
+                setApplicationsLoading(false)
         };
         // fetch()
         // Schedule fetch data every 10 seconds

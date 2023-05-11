@@ -53,7 +53,8 @@ const APIN = axios.create({
   withCredentials: true
 })
 
-export default function Home() {
+export default function Home({data}) {
+  console.log(data);
   const router = useRouter()
   const [user, setUser] = useState({
     email: '',
@@ -61,7 +62,7 @@ export default function Home() {
   })
   const [applications, setApplications] = useState([])
   const [loading, setLoading] = useState(false)
-  const [applicationsLoading, setApplicationsLoading] = useState(false)
+  const [applicationsLoading, setApplicationsLoading] = useState(true)
   const [showStarts, setShowStarts] = useState(false)
 
   // useEffect(() => {
@@ -87,11 +88,11 @@ export default function Home() {
     const fetch = async () => {
       await API.get("/")
         .then((res) => {
-          setApplicationsLoading(false)
           setApplications(res?.data)
           // console.log(res?.data)
         })
         .catch(console.error);
+        setApplicationsLoading(false)
     };
     // fetch()
     // Schedule fetch data every 10 seconds
@@ -121,4 +122,25 @@ export default function Home() {
   </>
 
   )
+}
+
+
+
+export async function getServerSideProps(context) {
+  console.log(context);
+  try {
+    const res = await fetch('http://localhost:8000/applications/');
+
+    // console.log(res);
+    // const data = await res.json();
+    
+  } catch (error) {
+    // console.log(error);
+  }
+
+  return {
+    props: {
+      data,
+    },
+  };
 }
