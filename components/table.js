@@ -170,12 +170,12 @@ const Table = ({ data, page, applicationsLoading }) => {
         },
         {
             accessorKey: 'legal_business_name',
-            header: 'legal_business_name',
+            header: 'Legal Business Name',
             size: 140,
         },
         {
-            accessorKey: 'oweners',
-            header: 'Oweners',
+            accessorKey: 'owners',
+            header: 'Owners',
             size: 140,
         },
         {

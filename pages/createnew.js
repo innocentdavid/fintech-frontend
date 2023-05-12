@@ -694,7 +694,7 @@ const Createnew = () => {
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>Term</span>
                 <Inputfeild
-                  type='number'
+                  type='text'
                   onChange={handleChange}
                   formData={formData}
                   name='term'

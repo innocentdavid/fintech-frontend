@@ -521,7 +521,7 @@ const Application = ({ application, page }) => {
                                     formData={formData}
                                     label='Term'
                                     name='term'
-                                    type='number'
+                                    type='text'
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
