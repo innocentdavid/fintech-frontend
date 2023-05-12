@@ -3,7 +3,7 @@
 import axios from 'axios'
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
-import Application from '../../components/applicatiom'
+import Application from '../../components/application'
 import LoadingModal from '../../components/LoadingModal ';
 
 const API = axios.create({

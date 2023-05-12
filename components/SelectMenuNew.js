@@ -8,6 +8,7 @@ const SelectMenuNew = (props)=>{
 
             <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg' 
             name={props.name} onChange={props.onChange}>
+                <option value="">SELECT</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>

@@ -16,7 +16,7 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import LoadingModal from './LoadingModal ';
+// import LoadingModal from './LoadingModal ';
 
 const Table = ({ data, page, applicationsLoading }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -27,13 +27,13 @@ const Table = ({ data, page, applicationsLoading }) => {
 
     useEffect(() => {
         if (!data.length>0) return;
-        // const list = []
-        // data.forEach(item => {
-        //     const o = item.status
-        //     const d = {...item, status: o?.name}
-        //     list.push(d)
-        // });
-        setTableData(data)
+        const list = []
+        data.forEach(item => {
+            const funder = item.funder
+            const d = { ...item, funder_name: funder?.name}
+            list.push(d)
+        });
+        setTableData(list)
     }, [data])
 
 
@@ -123,8 +123,8 @@ const Table = ({ data, page, applicationsLoading }) => {
     //     ],
     //     [],
     // );
-
-    const columns = [
+    
+    var columns = [
         {
             accessorKey: 'count',
             header: 'ID',
@@ -200,15 +200,98 @@ const Table = ({ data, page, applicationsLoading }) => {
         },
     ]
 
+    if (page){
+        columns = [
+            {
+                accessorKey: 'count',
+                header: 'ID',
+                enableColumnOrdering: false,
+                enableEditing: false, //disable editing on this column
+                enableSorting: false,
+                size: 80,
+            },
+
+            {
+                accessorKey: 'funder_name',
+                header: 'Funder',
+                size: 140,
+            },
+            {
+                accessorKey: 'date_submitted',
+                header: 'Date Submitted',
+                size: 140,
+            },
+            {
+                accessorKey: 'status',
+                header: 'Status',
+                size: 140,
+                // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                //     ...getCommonEditTextFieldProps(cell),
+                // }),
+            },
+            {
+                accessorKey: 'status_date',
+                header: 'Status Date',
+                size: 140,
+                // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                //     ...getCommonEditTextFieldProps(cell),
+                // }),
+            },
+            {
+                accessorKey: 'name_of_business',
+                header: 'Name Of Business',
+                size: 140,
+                // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                //     ...getCommonEditTextFieldProps(cell),
+                //     type: 'email',
+                // }),
+            },
+            {
+                accessorKey: 'legal_business_name',
+                header: 'legal_business_name',
+                size: 140,
+            },
+            {
+                accessorKey: 'oweners',
+                header: 'Oweners',
+                size: 140,
+            },
+            {
+                accessorKey: 'has_open_cash_advances',
+                header: 'Open Cash Advance',
+                size: 140,
+            },
+            {
+                accessorKey: 'has_used_cash_advance_plan_before',
+                header: 'Have Used Cash Advance',
+                size: 200,
+            },
+            {
+                accessorKey: 'credit_score',
+                header: 'Credit Score',
+                size: 140,
+            },
+            {
+                accessorKey: 'business_name_match_flag',
+                header: 'Business Name Match Flag',
+                size: 250,
+            },
+        ]
+    }
+
     const handleRoswClick = (e) => {
         setLoading(true)
         var p = page || 'application'
-        router.push(`${p}/${e.application_id}`)
+        if(page){
+            router.push(`${p}/${e.submittedApplication_id}`)
+        }else{
+            router.push(`application/${e.application_id}`)
+        }
     }
 
     return (
         <div className='relative'>
-            <LoadingModal loading={loading || applicationsLoading} />
+            {/* <LoadingModal loading={loading || applicationsLoading} /> */}
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {

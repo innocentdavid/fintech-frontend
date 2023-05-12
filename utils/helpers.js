@@ -14,7 +14,15 @@ export const handleLogout = async () => {
         console.log(response);
     } catch (error) {
         console.log(error);
-        // alert('Unthenticated!')
-        // router.push('login')
     }
+}
+
+
+export const getAllApplications = async () => {
+    
+}
+
+
+export const getApplicationById = async () => {
+
 }

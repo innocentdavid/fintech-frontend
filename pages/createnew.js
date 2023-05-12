@@ -64,7 +64,7 @@ const Createnew = () => {
     owner_percentage_of_ownership: '',
     owner_dob: '',
     owner_phone: '',
-    
+
     gross_monthly_sales: '',
     type_of_product_sold: '',
     has_open_cash_advances: 'NO',
@@ -85,6 +85,14 @@ const Createnew = () => {
     payment: '',
     net_funding_amount: ''
   });
+  const [zipError, setZipError] = useState("");
+  const [ownerZipError, setOwnerZipError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [mobileError, setMobileError] = useState("");
+  const [ownerPhoneError, setOwnerPhoneError] = useState("");
+  const [ownerSsnError, setOwnerSsnError] = useState("");
+  // const [emailError, setEmailError] = useState("");
+
   const [formData2, setFormData2] = useState({
     business_name: '',
     bank_name: '',
@@ -95,16 +103,69 @@ const Createnew = () => {
     total_deposit: '',
   });
 
+  function minMaxValidator(v, min, max) {
+    const value = v.split("");
+    if(value.length >= min && value.length <=max){
+      return true;      
+    }
+    return false;
+  }
+
+  function validateZipCode(zipCode) {
+    const zipCodeRegex = /^(\d{5}|\d{8}|\d{9})$/;
+    return zipCodeRegex.test(zipCode);
+  }
+
+  function scrollToInput(name) {
+    const input = document.querySelector(`input[name="${name}"]`);
+    if (input) {
+      input.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    var zipError, ownerZipError, phoneError, mobileError, ownerPhoneError;
+    // perform check
+    console.log(formData.phone);
+    console.log(minMaxValidator(formData.phone, 7, 10));
+    if (formData.zip && !validateZipCode(formData.zip)) { zipError = true; setZipError('Zip code must be either 5, 8, or 9 characters') }
+    if (formData.owner_zip && !validateZipCode(formData.owner_zip)) { ownerZipError = true; setOwnerZipError('Zip code must be either 5, 8, or 9 characters') }
+    if (formData.phone && !minMaxValidator(formData.phone, 7, 10)) { phoneError = true; setPhoneError('number must be either 7 or 10 characters') }
+    if (formData.mobile && !minMaxValidator(formData.mobile, 7, 10)) { mobileError = true; setMobileError('number must be either 7 or 10 characters') }
+    if (formData.owner_phone && !minMaxValidator(formData.owner_phone, 7, 10)) { ownerPhoneError = true; setOwnerPhoneError('number must be either 7 or 10 characters') }
+
+    if (zipError) {
+      scrollToInput('zip')
+      return
+    } else { setZipError('') }
+    if (ownerZipError) {
+      scrollToInput('owner_zip')
+      return
+    } else { setOwnerZipError('') }
+    if (phoneError) {
+      scrollToInput('phone')
+      return
+    } else { setPhoneError('') }
+    if (mobileError) {
+      scrollToInput('mobile')
+      return
+    } else { setMobileError('') }
+    if (ownerPhoneError) {
+      scrollToInput('owner_phone')
+      return
+    } else { setOwnerPhoneError('') }
+
+    console.log('all-good!');
+    setZipError(''); setOwnerZipError('');
+
+
     setLoading(true)
-    console.log({ formData });
+    // console.log({ formData });
 
     try {
       const res = await API.post("/", formData)
-      console.log(res);
-      console.log(res.data.application_id);
-      setApplication_id(res.data.application_id)
+      setApplication_id(res?.data?.application_id)
       setStep(1)
       document.getElementById('step2').scrollIntoView()
     } catch (error) {
@@ -116,7 +177,6 @@ const Createnew = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    // console.log(formData);
   };
 
   return (<>
@@ -217,6 +277,7 @@ const Createnew = () => {
                   min={5}
                   max={9}
                 />
+                <p className="-mt-3 ml-3 text-red-500">{zipError}</p>
               </div>
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>Phone</span>
@@ -229,6 +290,7 @@ const Createnew = () => {
                   max={10}
                   plholder='Phone'
                 />
+                <p className="-mt-3 ml-3 text-red-500">{phoneError}</p>
               </div>
             </div>
 
@@ -244,6 +306,7 @@ const Createnew = () => {
                   max={10}
                   plholder='Mobile'
                 />
+                <p className="-mt-3 ml-3 text-red-500">{mobileError}</p>
               </div>
               <div className=' w-[70%] mx-2 my-5'>
                 <span className='mt-4 mx-3'>E-mail</span>
@@ -406,17 +469,19 @@ const Createnew = () => {
                   min={5}
                   max={9}
                 />
+                <p className="-mt-3 ml-3 text-red-500">{ownerZipError}</p>
               </div>
             </div>
 
             <div className="flex justify-between items-center">
               <div className=' w-[70%] mx-2 my-5'>
-                <span className='mt-4 mx-3'>SSN</span>
+                <span className='mt-4 mx-3'>SSN (999-99-9999)</span>
                 <Inputfeild
-                  type='number'
+                  type='text'
                   onChange={handleChange}
                   formData={formData}
                   name='owner_ssn'
+                  pattern="\d{3}-\d{2}-\d{4}"
                   plholder='999-99-9999'
                 />
               </div>
@@ -454,6 +519,7 @@ const Createnew = () => {
                   min={7}
                   max={10}
                 />
+                <p className="-mt-3 ml-3 text-red-500">{ownerPhoneError}</p>
               </div>
             </div>
           </div>
@@ -729,7 +795,6 @@ const UploadFiles = ({ title, application_id, formData }) => {
   };
 
   const handleFileChange = (e) => {
-    console.log('Valid PDF');
     const file = e.target.files[0];
     if (file && file.type === 'application/pdf') {
       setFile(file)
@@ -751,7 +816,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
     event.preventDefault();
     if (!file?.name) return alert('You have not selected any file!')
     setLoading(true)
-    console.log({ formData2 });
+    // console.log({ formData2 });
     // return;
     const baseUrl = 'http://localhost:8000/pdfs/'
     const config = {
@@ -776,9 +841,9 @@ const UploadFiles = ({ title, application_id, formData }) => {
         'pdf_file', file ? file : {}, file?.name ? file.name : ''
       );
 
-      console.log({ formDataWithFiles });
+      // console.log({ formDataWithFiles });
       const response = await axios.post(baseUrl, formDataWithFiles, config);
-      console.log({ response });
+      // console.log({ response });
       if (response.statusText === "Created") {
         setHasUploaded(true)
       }

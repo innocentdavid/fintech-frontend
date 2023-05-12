@@ -42,8 +42,24 @@ const Application = ({ application, page }) => {
     const [loading, setLoading] = useState(false)
     const [isEditable, setIsEditable] = useState(false)
     const [loadingPdfs, setLoadingPdfs] = useState(false)
+    const [refreshFunders, setRefreshFunders] = useState(false)
+    const [showAddPdf, setShowAddPdf] = useState(false)
+    const [reFreshPdf, setReFreshPdf] = useState(false)
+    const [pdfToAdd, setPdfToAdd] = useState({
+        application_id: '',
+        pdf_type: "",
+        business_name: "",
+        bank_name: "",
+        begin_bal_date: "",
+        begin_bal_amount: "",
+        total_deposit: "",
+        ending_bal_date: "",
+        ending_bal_amount: "",
+    })
 
+    // set details and get pdfs
     useEffect(() => {
+        setPdfToAdd({ ...pdfToAdd, application_id: application.application_id });
         application && setFormData({
             name_of_business: application?.name_of_business,
             status: application?.status || 'Created',
@@ -72,31 +88,37 @@ const Application = ({ application, page }) => {
             };
             const response = await axios.get(baseUrl, config);
             // console.log({ response });
-            response.data.pdfs.forEach(item => {
-                const type = item?.pdf_type?.toString()
-                // console.log(type);
-                if (type.includes('Application')) {
-                    setApplicaitonPdfs([...applicaitonPdfs, item])
-                } else {
-                    setStatementPdfs([...statementPdfs, item])
-                }
-            });
+            if (response?.data) {
+                var applicaitonPdfs = []
+                var statementPdfs = []
+                response?.data?.pdfs?.forEach(item => {
+                    const type = item?.pdf_type?.toString()
+                    // console.log(type);
+                    if (type.includes('Application')) {
+                        applicaitonPdfs.push(item)
+                    } else {
+                        statementPdfs.push(item)
+                    }
+                });
+                setApplicaitonPdfs(applicaitonPdfs)
+                setStatementPdfs(statementPdfs)
+            }
             setLoadingPdfs(false)
         }
         if (application?.application_id) {
             fetch()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [application])
+    }, [application, reFreshPdf])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true)
-        console.log({ formData });
+        // console.log({ formData });
 
         try {
             const res = await API.put(`/${application?.application_id}/`, formData)
-            console.log(res);
+            // console.log(res);
             if (res.statusText === "Created") {
                 setIsEditable(false)
             }
@@ -120,6 +142,7 @@ const Application = ({ application, page }) => {
     const [fundersArray, setFundersArray] = useState([])
     const [fundersArrayO, setFundersArrayO] = useState([])
 
+    // get Funders
     useEffect(() => {
         const API = axios.create({
             baseURL: 'http://localhost:8000/funders/',
@@ -134,6 +157,7 @@ const Application = ({ application, page }) => {
             var funders = []
             const res = await API.get("/")
             // console.log(res.data);
+            if (!!!res?.data) return;
             const res2 = await axios.get(`http://localhost:8000/api/submittedApplications/${application?.application_id}/`, {
                 headers: {
                     'Accept': 'application/json'
@@ -142,8 +166,7 @@ const Application = ({ application, page }) => {
                 console.log(err);
             })
             // console.log(res2);
-            if (res2?.status === 200) {
-                if(!res?.data) return;
+            if (res2?.data.length > 0) {
                 var l = []
                 var newItems = [];
                 res2.data.forEach(item => {
@@ -153,7 +176,7 @@ const Application = ({ application, page }) => {
                     newItems.push({ ...newItem, submited: true })
                 });
                 const d = [...l, ...newItems]
-                funders=d
+                funders = d
             } else {
                 funders = res.data
             }
@@ -164,10 +187,10 @@ const Application = ({ application, page }) => {
             setLoading(false)
         }
         if (application?.application_id) {
-            console.log(application?.application_id);
+            // console.log(application?.application_id);
             fetch()
         }
-    }, [application])
+    }, [application, refreshFunders])
 
     const [selectedFundersArray, setSelectedFundersArray] = useState([])
 
@@ -180,11 +203,14 @@ const Application = ({ application, page }) => {
         setFundersArray(fundersArrayO)
         setSelectedFundersArray([])
         console.log(res);
+        setShowFunders(false)
+        setRefreshFunders(!refreshFunders)
+        // window.location.reload()
         setLoading(false)
     }
 
     return (<>
-        <LoadingModal loading={loading} />
+        <LoadingModal loading={loading || loadingPdfs} />
 
         <div className={`${showFunders ? "opacity-100 z-10" : "opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen grid place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => setShowFunders(false)}></div>
@@ -229,20 +255,20 @@ const Application = ({ application, page }) => {
             </div>
         </div>
 
-        <div className='w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
+        <div className='md:first-letter:w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
             <span className='absolute top-6 right-10 text-[15px] h-[20px] w-[20px] flex justify-center my-2' ><FaTimes size={20} className="cursor-pointer" onClick={() => {
                 setLoading(true)
                 router.back()
             }} /></span>
 
-            <form action="" method="post" className='flex' onSubmit={handleSubmit} >
-                <div className='w-[45%] mb-[160px] '>
+            <form action="" method="post" className='flex flex-col-reverse lg:flex-row' onSubmit={handleSubmit} >
+                <div className='w-full lg:w-[45%] mb-[160px] '>
                     <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
                         <h3>APPLICATION DATA</h3>
                     </div>
                     <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
 
-                    <div className='w-[75%]'>
+                    <div className='w-full md:w-[75%]'>
                         <Inputfeild
                             formData={formData}
                             label='Business Name'
@@ -273,87 +299,128 @@ const Application = ({ application, page }) => {
                         />
                     </div>
 
-                    {!loadingPdfs && !loading ?
-                        <div className='flex items-center gap-5 w-full mx-2 mt-[40px]'>
-                            <div className=''>
-                                <h2 className='text-[13px] text-black'>Bank Statement</h2>
-                                <div className='flex items-center gap-2 mt-1'>
-                                    {statementPdfs[0] ? <>
-                                        <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
-                                            <AiFillFilePdf size={20}
-                                                onClick={() => {
-                                                    setPdf(statementPdfs[0])
-                                                    setShowPdfModal(true)
-                                                }}
-                                            />
-                                        </div>
-                                    </> :
-                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
+                    <div className='flex flex-col md:flex-row items-center gap-2 md:gap-5 w-full md:pl-2 mt-5 md:mt-[40px]'>
+                        <div className=''>
+                            <h2 className='text-[13px] text-black'>Bank Statement</h2>
+                            <div className='flex items-center gap-2 mt-1'>
+                                {statementPdfs[0] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20}
+                                            onClick={() => {
+                                                setPdf(statementPdfs[0])
+                                                setShowPdfModal(true)
+                                            }}
+                                        />
+                                    </div>
+                                </> :
+                                    <div className={!isEditable && "cursor-not-allowed"}>
+                                        <FileUpload
+                                            pdfToAdd={pdfToAdd}
+                                            setPdfToAdd={setPdfToAdd}
+                                            type={'Statement 1'}
+                                            setShowAddPdf={setShowAddPdf}
+                                            disabled={!isEditable}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>}
 
-                                    {statementPdfs[1] ? <>
-                                        <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
-                                            <AiFillFilePdf size={20}
-                                                onClick={() => {
-                                                    setPdf(statementPdfs[1])
-                                                    setShowPdfModal(true)
-                                                }}
-                                            />
-                                        </div>
-                                    </> :
-                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
+                                {statementPdfs[1] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20}
+                                            onClick={() => {
+                                                setPdf(statementPdfs[1])
+                                                setShowPdfModal(true)
+                                            }}
+                                        />
+                                    </div>
+                                </> :
+                                    <div className={!isEditable && "cursor-not-allowed"}><FileUpload
+                                        pdfToAdd={pdfToAdd}
+                                        setPdfToAdd={setPdfToAdd}
+                                        type={'Statement 2'}
+                                        setShowAddPdf={setShowAddPdf}
+                                        disabled={!isEditable}
+                                        onChange={handleInputChange}
+                                    />
+                                    </div>}
 
-                                    {statementPdfs[2] ? <>
-                                        <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
-                                            <AiFillFilePdf size={20}
-                                                onClick={() => {
-                                                    setPdf(statementPdfs[2])
-                                                    setShowPdfModal(true)
-                                                }}
-                                            />
-                                        </div>
-                                    </> :
-                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
-                                </div>
-                            </div>
-
-                            <div className=''>
-                                <h2 className='text-[13px] text-black'>Application</h2>
-                                <div className='flex items-center gap-2 mt-1'>
-                                    {applicaitonPdfs[0] ? <>
-                                        <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
-                                            <AiFillFilePdf size={20}
-                                                onClick={() => {
-                                                    setPdf(applicaitonPdfs[0])
-                                                    setShowPdfModal(true)
-                                                }}
-                                            />
-                                        </div>
-                                    </> :
-                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
-
-                                    {applicaitonPdfs[1] ? <>
-                                        <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
-                                            <AiFillFilePdf size={20}
-                                                onClick={() => {
-                                                    setPdf(applicaitonPdfs[1])
-                                                    setShowPdfModal(true)
-                                                }}
-                                            />
-                                        </div>
-                                    </> :
-                                        <div className={!isEditable && "cursor-not-allowed"}><FileUpload disabled={!isEditable} onChange={handleInputChange} /></div>}
-                                </div>
+                                {statementPdfs[2] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20}
+                                            onClick={() => {
+                                                setPdf(statementPdfs[2])
+                                                setShowPdfModal(true)
+                                            }}
+                                        />
+                                    </div>
+                                </> :
+                                    <div className={!isEditable && "cursor-not-allowed"}><FileUpload
+                                        pdfToAdd={pdfToAdd}
+                                        setPdfToAdd={setPdfToAdd}
+                                        type={'Statement 3'}
+                                        setShowAddPdf={setShowAddPdf}
+                                        disabled={!isEditable}
+                                        onChange={handleInputChange}
+                                    />
+                                    </div>}
                             </div>
                         </div>
-                        :
-                        "Loading..."}
 
-                    {!page && <div className="w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
+                        <div className=''>
+                            <h2 className='text-[13px] text-black'>Application</h2>
+                            <div className='flex items-center gap-2 mt-1'>
+                                {applicaitonPdfs[0] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20}
+                                            onClick={() => {
+                                                setPdf(applicaitonPdfs[0])
+                                                setShowPdfModal(true)
+                                            }}
+                                        />
+                                    </div>
+                                </> :
+                                    <div className={!isEditable && "cursor-not-allowed"}><FileUpload
+                                        pdfToAdd={pdfToAdd}
+                                        setPdfToAdd={setPdfToAdd}
+                                        type={'Application file 1'}
+                                        setShowAddPdf={setShowAddPdf}
+                                        disabled={!isEditable}
+                                        onChange={handleInputChange}
+                                    />
+                                    </div>}
+
+                                {applicaitonPdfs[1] ? <>
+                                    <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+                                        <AiFillFilePdf size={20}
+                                            onClick={() => {
+                                                setPdf(applicaitonPdfs[1])
+                                                setShowPdfModal(true)
+                                            }}
+                                        />
+                                    </div>
+                                </> :
+                                    <div className={!isEditable && "cursor-not-allowed"}><FileUpload
+                                        pdfToAdd={pdfToAdd}
+                                        setPdfToAdd={setPdfToAdd}
+                                        type={'Application file 2'}
+                                        setShowAddPdf={setShowAddPdf}
+                                        disabled={!isEditable}
+                                        onChange={handleInputChange}
+                                    />
+                                    </div>}
+                            </div>
+                        </div>
+                    </div>
+                    {/* {!loadingPdfs && !loading ?
+                        :
+                        "Loading..."} */}
+
+                    {!page && <div className="ml-2 w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
 
                 </div>
 
-                <div className='w-[55%]'>
+                <div className='w-full lg:w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
                         <h3>Additional Information</h3>
                         {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
@@ -367,9 +434,8 @@ const Application = ({ application, page }) => {
 
                     <div className=' gap-1 w-full flex-1 '>
 
-                        <div className='flex'>
-                            <div className='w-[40%]'>
-
+                        <div className='flex flex-col md:flex-row'>
+                            <div className='w-full md:w-[40%]'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Advanced Amount'
@@ -381,7 +447,7 @@ const Application = ({ application, page }) => {
                                     disabled={!isEditable}
                                 />
                             </div>
-                            <div className='flex gap-3 w-[60%] '>
+                            <div className='flex gap-3 w-full md:w-[60%] '>
                                 <Inputfeild
                                     formData={formData}
                                     label='Commisson'
@@ -406,8 +472,8 @@ const Application = ({ application, page }) => {
                             </div>
                         </div>
 
-                        <div className='flex gap-1 w-full flex-1 '>
-                            <div className='w-[40%]'>
+                        <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
+                            <div className='w-full md:w-[40%]'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Factor'
@@ -420,7 +486,7 @@ const Application = ({ application, page }) => {
 
                                 />
                             </div>
-                            <div className='flex gap-3 w-[60%] '>
+                            <div className='flex gap-3 w-full md:w-[60%] '>
                                 <Inputfeild
                                     formData={formData}
                                     label='Total fee'
@@ -436,8 +502,8 @@ const Application = ({ application, page }) => {
 
                         </div>
 
-                        <div className='flex gap-1 w-full flex-1 '>
-                            <div className='w-[40%]'>
+                        <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
+                            <div className='w-full md:w-[40%]'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Payback'
@@ -450,7 +516,7 @@ const Application = ({ application, page }) => {
 
                                 />
                             </div>
-                            <div className='flex gap-3 w-[60%] '>
+                            <div className='flex flex-col md:flex-row gap-3 w-full md:w-[60%] '>
                                 <Inputfeild
                                     formData={formData}
                                     label='Term'
@@ -478,7 +544,7 @@ const Application = ({ application, page }) => {
                         </div>
 
                         <div className='flex gap-1 w-full flex-1 '>
-                            <div className='w-[40%]'>
+                            <div className='w-full md:w-[40%]'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Payment'
@@ -491,7 +557,7 @@ const Application = ({ application, page }) => {
 
                                 />
                             </div>
-                            <div className='flex gap-3 w-[60%] '>
+                            <div className='flex gap-3 w-full md:w-[60%] '>
                                 <Inputfeild
                                     formData={formData}
                                     label='Net Funding Amount'
@@ -530,48 +596,181 @@ const Application = ({ application, page }) => {
         </div>
 
         {showPdfModal && <Viewer pdfObj={pdf} setShowPdfModal={setShowPdfModal} />}
+        {showAddPdf && <AddPdf pdfToAdd={pdfToAdd} setPdfToAdd={setPdfToAdd} setShowAddPdf={setShowAddPdf} reFreshPdf={reFreshPdf} setReFreshPdf={setReFreshPdf} />}
     </>)
 
 }
 
+
 export default Application
 
-const Viewer = ({ pdfObj, setShowPdfModal }) => {
-    // console.log(pdfObj);
-    // const [file, setFile] = useState()
-    // const [pdfUrl, setPdfUrl] = useState()
+
+const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPdf }) => {
     const [loading, setLoading] = useState(false);
-    // console.log(`http://localhost:8000${pdfObj?.pdf_urls}`);
-    const baseUrl = `http://localhost:8000${pdfObj?.pdf_urls}`
+    const [file, setFile] = useState()
 
-    // useEffect(() => {
-    //     const fetch = async () => {
-    //         setLoading(true)
-    //         const config = {
-    //             responseType: 'blob',
-    //             headers: {
-    //                 'Content-Type': 'application/pdf',
-    //             }
-    //         };
-    //         const response = await axios.get(baseUrl, config);
-    //         var pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-    //         var pdfUrl = URL.createObjectURL(pdfBlob);
-    //         setPdfUrl(pdfUrl);
+    const handleFileChange = (e) => {
+        console.log('Valid PDF');
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            setFile(file)
+        } else {
+            // Handle invalid file type here
+            console.log('Invalid file type');
+        }
+    };
 
-    //         setLoading(false)
+    const handleInputChange = (e) => {
+        setPdfToAdd({
+            ...pdfToAdd,
+            [e.target.name]: e.target.value,
+        });
+    };
 
-    //         // Create a URL for the blob using the createObjectURL method
-    //         //   console.log({ response });
-    //         //   setFile(response.data)
-    //         //   const url = URL.createObjectURL(response.data);
-    //         //   console.log(url);
-    //         //   return () => URL.revokeObjectURL(url);
-    //     }
-    //     fetch()
-    // }, [pdfObj])
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!pdfToAdd.application_id) return alert('Application not found!');
+        if (!file?.name) return alert('You have not selected any file!')
+        setLoading(true)
+        console.log({ pdfToAdd });
+        // return;
+        const baseUrl = 'http://localhost:8000/pdfs/'
+        const config = {
+            headers: {
+                // 'Content-Type': 'application/json',
+                'content-type': 'multipart/form-data',
+            }
+        };
+
+        try {
+            const formDataWithFiles = new FormData();
+            formDataWithFiles.append('pdf_type', pdfToAdd.pdf_type);
+            formDataWithFiles.append('application_id', pdfToAdd.application_id);
+            formDataWithFiles.append('business_name', pdfToAdd?.business_name ? pdfToAdd.business_name : '');
+            formDataWithFiles.append('bank_name', pdfToAdd?.bank_name ? pdfToAdd.bank_name : '');
+            formDataWithFiles.append('begin_bal_date', pdfToAdd?.begin_bal_date ? pdfToAdd.begin_bal_date : '');
+            formDataWithFiles.append('begin_bal_amount', pdfToAdd?.begin_bal_amount ? pdfToAdd.begin_bal_amount : '');
+            formDataWithFiles.append('ending_bal_amount', pdfToAdd?.ending_bal_amount ? pdfToAdd.ending_bal_amount : '');
+            formDataWithFiles.append('ending_bal_date', pdfToAdd?.ending_bal_date ? pdfToAdd.ending_bal_date : '');
+            formDataWithFiles.append('total_deposit', pdfToAdd?.total_deposit ? pdfToAdd.total_deposit : '');
+            formDataWithFiles.append(
+                'pdf_file', file ? file : {}, file?.name ? file.name : ''
+            );
+
+            // console.log({ formDataWithFiles });
+            const response = await axios.post(baseUrl, formDataWithFiles, config);
+            // console.log({ response });
+            if (response.statusText === "Created") {
+                setReFreshPdf(!reFreshPdf)
+                setShowAddPdf(false)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setLoading(false)
+    };
 
     return (<>
         <LoadingModal loading={loading} />
+        <div className="fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
+            <FaTimesCircle className='absolute right-5 top-5 cursor-pointer' onClick={() => setShowAddPdf(false)} />
+
+            <div className='w-[90%] m-auto'>
+                <div className="">
+                    <div className="mt-1 mb-3 text-center font-bold text-lg">
+                        {pdfToAdd.pdf_type}
+                    </div>
+
+                    <div className="flex justify-center mt-7 mb-4"><input type="file" accept="application/pdf" name="pdf_file" className="mr-[-100px] md:mr-0" onChange={handleFileChange} /></div>
+
+                    <div className="flex flex-col items-center">
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Inputfeild2
+                                type='text'
+                                label='business_name'
+                                name="business_name"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                            <Inputfeild2
+                                type='text'
+                                label='bank_name'
+                                name="bank_name"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                        </div>
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Inputfeild2
+                                type='number'
+                                label='begin_bal_amount'
+                                name="begin_bal_amount"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                            <Inputfeild2
+                                type='date'
+                                label='begin_bal_date'
+                                name="begin_bal_date"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                        </div>
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Inputfeild2
+                                type='number'
+                                label='ending_bal_amount'
+                                name="ending_bal_amount"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                            <Inputfeild2
+                                type='date'
+                                label='ending_bal_date'
+                                name="ending_bal_date"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                        </div>
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Inputfeild2
+                                type='number'
+                                label='total_deposit'
+                                name="total_deposit"
+                                plholder=""
+                                disabled={false}
+                                onChange={handleInputChange}
+                                formData={pdfToAdd}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-center">
+                        <button className='py-2 px-4 bg-black text-white'
+                            onClick={handleSubmit}
+                        >Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </>)
+}
+
+const Viewer = ({ pdfObj, setShowPdfModal }) => {
+    const baseUrl = `http://localhost:8000${pdfObj?.pdf_urls}`
+
+    return (<>
         <div className="fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
             <FaTimesCircle className='absolute right-5 top-5 cursor-pointer' onClick={() => setShowPdfModal(false)} />
             <div className='w-[90%] m-auto flex flex-col-reverse md:flex-row justify-between'>
@@ -580,74 +779,74 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                         {pdfObj.pdf_type}
                     </div>
                     <div className="">
-                        <div className="flex items-center">
+                        <div className="flex flex-col lg:flex-row items-center">
                             <Inputfeild2
                                 type='text'
-                                label='business_name'
+                                label='Business Name'
                                 name="business_name"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
                                 type='text'
-                                label='bank_name'
+                                label='Bank Name'
                                 name="bank_name"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex flex-col lg:flex-row items-center">
                             <Inputfeild2
-                                type='text'
-                                label='begin_bal_amount'
+                                type='number'
+                                label='Begin Balance Amount'
                                 name="begin_bal_amount"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
-                                type='text'
-                                label='begin_bal_date'
+                                type='date'
+                                label='Begin Balance Date'
                                 name="begin_bal_date"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex flex-col lg:flex-row items-center">
                             <Inputfeild2
-                                type='text'
-                                label='ending_bal_amount'
+                                type='number'
+                                label='Ending Balance Amount'
                                 name="ending_bal_amount"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
-                                type='text'
-                                label='ending_bal_date'
+                                type='date'
+                                label='Ending Balance Date'
                                 name="ending_bal_date"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex flex-col lg:flex-row items-center">
                             <Inputfeild2
-                                type='text'
-                                label='total_deposit'
+                                type='number'
+                                label='Total Deposit'
                                 name="total_deposit"
                                 plholder=""
-                                disabled='false'
-                                onChange={() => { }}
+                                disabled={true}
+                                onChange={() => {}}
                                 formData={pdfObj}
                             />
                         </div>
@@ -662,7 +861,6 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
     </>)
 }
 
-
 function removeQuotes(str) {
     return str.replace(/'/g, '');
 }
@@ -671,11 +869,12 @@ function purifyData(str) {
     if (match) {
         return removeQuotes(match[1]);
     }
-    return '';
+    return str;
 }
+
 const Inputfeild = ({ type, application, label, read, name, disabled, onChange, formData, plholder }) => {
     // console.log({ type, application, label, read, name, disabled, onChange, formData, plholder });
-    
+
     return (
         <div className='flex gap-1 flex-col mx-3 my-2'>
             <label className='text-[14px]'>{label}</label>
@@ -711,27 +910,14 @@ const Inputfeild2 = ({ type, application, label, read, name, disabled, onChange,
 
 
 function FileUpload(props) {
-
-    // const handleFileUpload = (event) => {
-    //     const file = event.target.files[0];
-    //     if (file && file.type === 'application/pdf') {
-    //         // Handle the valid PDF file here
-    //         console.log('Valid PDF file:', file);
-    //     } else {
-    //         // Handle invalid file type here
-    //         throw ('Invalid file type');
-    //     }
-    // };
-
-    // console.log(props.disabled);
-
     return (
-        <label htmlFor="bankstatement1" className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
+        <label htmlFor="bankstatement1" className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]' onClick={() => {
+            if (!props.disabled) {
+                props.setPdfToAdd({ ...props.pdfToAdd, pdf_type: props.type })
+                props.setShowAddPdf(true)
+            }
+        }}>
             <FaCloudUploadAlt size={20} />
-            <input type="file"
-                disabled={props.disabled}
-                // disabled={true}
-                id="bankstatement1" name={props.name} accept="application/pdf" onChange={props.onChange} readable={props.read} className='hidden' />
         </label>
     )
 }

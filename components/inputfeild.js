@@ -8,6 +8,7 @@ const Inputfeild = (props) => {
             <label className='text-[14px]'>{props.label}</label>
             <input type={props.type}
                 name={props.name}
+                pattern={props.pattern}
                 // min={props.min}
                 // max={props.max}
                 // min={3}

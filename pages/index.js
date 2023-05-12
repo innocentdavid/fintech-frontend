@@ -4,13 +4,13 @@
 // import styles from '../styles/Home.module.css'
 import Table from '../components/table'
 // import axios from 'axios';
-import { data } from '../components/makeData';
+// import { data } from '../components/makeData';
 import API from '../components/API';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 // import { handleLogout } from '../utils/helpers';
-import LoadingModal from '../components/LoadingModal ';
+// import LoadingModal from '../components/LoadingModal ';
 // import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
 import Nav from '../components/Nav';
 // import { parseCookies } from 'nookies';
@@ -51,8 +51,8 @@ const APIN = axios.create({
   withCredentials: true
 })
 
-export default function Home({data}) {
-  console.log(data);
+export default function Home() {
+  // console.log(data);
   const router = useRouter()
   const [user, setUser] = useState({
     email: '',
@@ -70,12 +70,19 @@ export default function Home({data}) {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await APIN.get('api/getcurrentuser/')
-      setUser(response.data)
-      // console.log(response);
-      if (response.data.message !== "success") {
-        router.push('/login')
-        return;
+      const response = await APIN.get('api/getcurrentuser/').catch(error => {
+        console.log(error);
+        if (error?.message === "Network Error"){
+          alert("Network Error, please check if the backend is running...")
+        }
+      })
+      if(response?.data){
+        setUser(response?.data)
+        // console.log(response);
+        if (response.data.message !== "success") {
+          router.push('/login')
+          return;
+        }
       }
     };
     fetch()
@@ -88,9 +95,10 @@ export default function Home({data}) {
         .then((res) => {
           setApplications(res?.data)
           // console.log(res?.data)
+        }).catch(error => {
+          console.log(error);
         })
-        .catch(console.error);
-        setApplicationsLoading(false)
+      setApplicationsLoading(false)
     };
     // fetch()
     // Schedule fetch data every 10 seconds
@@ -101,22 +109,22 @@ export default function Home({data}) {
   }, [])
 
   return (<>
-    {loading ? < LoadingModal loading={loading} /> : <>
-      {user?.email && <Nav user={user} setUser={setUser} />}
-      <div className="w-full my-[10px] px-5">
+    {/* {loading ? < LoadingModal loading={loading} /> : <> */}
+    <Nav user={user} setUser={setUser} />
+    <div className="w-full my-[10px] px-5">
 
-        {/* <div className="flex justify-center my-10 md:hidden">
+      {/* <div className="flex justify-center my-10 md:hidden">
           <div className="flex items-center cursor-pointer" onClick={() => setShowStarts(!showStarts)}>See starts <FaAngleDown size={16} /></div>
         </div>
         {showStarts && <div className="md:hidden"><Data /></div>}
         <div className="hidden md:block"><Data /></div> */}
 
-        <h1 className="text-center font-bold text-2xl my-10">All Applications</h1>
+      <h1 className="text-center font-bold text-2xl my-10">All Applications</h1>
 
-        <Table data={applications} applicationsLoading={applicationsLoading} />
+      <Table data={applications} applicationsLoading={applicationsLoading} />
 
-      </div></>
-    }
+    </div>
+  {/* </>} */}
   </>
 
   )
@@ -124,21 +132,22 @@ export default function Home({data}) {
 
 
 
-export async function getServerSideProps(context) {
-  console.log(context);
-  try {
-    const res = await fetch('http://localhost:8000/applications/');
+// export async function getServerSideProps(context) {
+//   // console.log(context);
+//   const res = await axios.get('http://localhost:8000/applications/', {
+//     headers: {
+//       "Content-Type": 'application/json'
+//     }
+//   }).catch(err => {
+//     console.log(err);
+//   });
 
-    // console.log(res);
-    // const data = await res.json();
-    
-  } catch (error) {
-    // console.log(error);
-  }
+//   console.log(res);
+//   // const data = await res.json();
 
-  return {
-    props: {
-      data,
-    },
-  };
-}
+//   return {
+//     props: {
+//       data: {},
+//     },
+//   };
+// }
