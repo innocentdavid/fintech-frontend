@@ -1,22 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
 import {
-    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    IconButton,
-    MenuItem,
     Stack,
     TextField,
-    Tooltip,
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-// import LoadingModal from './LoadingModal ';
+import LoadingModal from './LoadingModal ';
 
 const Table = ({ data, page, applicationsLoading }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -55,153 +50,8 @@ const Table = ({ data, page, applicationsLoading }) => {
         setValidationErrors({});
     };
 
-    // const columns = useMemo(
-    //     () => [
-    //         {
-    //             accessorKey: 'application_id',
-    //             header: 'ID',
-    //             enableColumnOrdering: false,
-    //             enableEditing: false, //disable editing on this column
-    //             enableSorting: false,
-    //             size: 80,
-    //         },
-    //         {
-    //             accessorKey: 'date_submitted',
-    //             header: 'Date Submitted',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'status',
-    //             header: 'Status',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'name_of_business',
-    //             header: 'Name Of Business',
-    //             size: 140,
-    //             // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-    //             //     ...getCommonEditTextFieldProps(cell),
-    //             //     type: 'email',
-    //             // }),
-    //         },
-    //         {
-    //             accessorKey: 'legal_business_name',
-    //             header: 'legal_business_name',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'oweners',
-    //             header: 'Oweners',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'users_cash_advance',
-    //             header: 'Users Cash Advance',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'have_cash_advance',
-    //             header: 'Have Cash Advance',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'credit_score',
-    //             header: 'Credit Score',
-    //             size: 140,
-    //         },
-    //         {
-    //             accessorKey: 'business_name_match_flag',
-    //             header: 'Business Name Match Flag',
-    //             size: 250,
-    //         },
-    //     ],
-    //     [],
-    // );
-    
-    var columns = [
-        {
-            accessorKey: 'count',
-            header: 'ID',
-            enableColumnOrdering: false,
-            enableEditing: false, //disable editing on this column
-            enableSorting: false,
-            size: 80,
-        },
-        // {
-        //     accessorKey: 'date_submitted',
-        //     header: 'Date Submitted',
-        //     size: 140,
-        // },
-        {
-            accessorKey: 'date_submitted',
-            header: 'Date Submitted',
-            size: 140,
-        },
-        {
-            accessorKey: 'status',
-            header: 'Status',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            // }),
-        },
-        {
-            accessorKey: 'status_date',
-            header: 'Status Date',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            // }),
-        },
-        {
-            accessorKey: 'name_of_business',
-            header: 'Name Of Business',
-            size: 140,
-            // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            //     ...getCommonEditTextFieldProps(cell),
-            //     type: 'email',
-            // }),
-        },
-        {
-            accessorKey: 'legal_business_name',
-            header: 'Legal Business Name',
-            size: 140,
-        },
-        {
-            accessorKey: 'owners',
-            header: 'Owners',
-            size: 140,
-        },
-        {
-            accessorKey: 'has_open_cash_advances',
-            header: 'Open Cash Advance',
-            size: 140,
-        },
-        {
-            accessorKey: 'has_used_cash_advance_plan_before',
-            header: 'Have Used Cash Advance',
-            size: 200,
-        },
-        {
-            accessorKey: 'credit_score',
-            header: 'Credit Score',
-            size: 140,
-        },
-        {
-            accessorKey: 'business_name_match_flag',
-            header: 'Business Name Match Flag',
-            size: 250,
-        },
-    ]
-
-    if (page){
-        columns = [
+    var columns = useMemo(
+        () => [
             {
                 accessorKey: 'count',
                 header: 'ID',
@@ -210,11 +60,11 @@ const Table = ({ data, page, applicationsLoading }) => {
                 enableSorting: false,
                 size: 80,
             },
-
             {
                 accessorKey: 'funder_name',
                 header: 'Funder',
                 size: 140,
+                hidden: page ? true : false,
             },
             {
                 accessorKey: 'date_submitted',
@@ -225,17 +75,11 @@ const Table = ({ data, page, applicationsLoading }) => {
                 accessorKey: 'status',
                 header: 'Status',
                 size: 140,
-                // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                //     ...getCommonEditTextFieldProps(cell),
-                // }),
             },
             {
                 accessorKey: 'status_date',
                 header: 'Status Date',
                 size: 140,
-                // muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                //     ...getCommonEditTextFieldProps(cell),
-                // }),
             },
             {
                 accessorKey: 'name_of_business',
@@ -248,12 +92,12 @@ const Table = ({ data, page, applicationsLoading }) => {
             },
             {
                 accessorKey: 'legal_business_name',
-                header: 'legal_business_name',
+                header: 'Legal Business Name',
                 size: 140,
             },
             {
-                accessorKey: 'oweners',
-                header: 'Oweners',
+                accessorKey: 'owners',
+                header: 'Owners',
                 size: 140,
             },
             {
@@ -276,8 +120,9 @@ const Table = ({ data, page, applicationsLoading }) => {
                 header: 'Business Name Match Flag',
                 size: 250,
             },
-        ]
-    }
+        ],
+        [page],
+    );
 
     const handleRoswClick = (e) => {
         setLoading(true)
@@ -303,6 +148,7 @@ const Table = ({ data, page, applicationsLoading }) => {
                 }}
                 columns={columns}
                 data={tableData}
+                initialState={{ columnVisibility: { funder_name: page ? true : false } }}
                 editingMode="modal" //default
                 enableColumnOrdering
                 enableEditing={false}
@@ -310,33 +156,11 @@ const Table = ({ data, page, applicationsLoading }) => {
                 onEditingRowCancel={handleCancelRowEdits}
                 muiTableBodyRowProps={({ row }) => {
                     return ({
-                        // onClick: row.getToggleSelectedHandler(),
                         onClick: () => handleRoswClick(row.original),
                         sx: { cursor: 'pointer' },
                     })
                 }}
-                // renderRowActions={({ row, table }) => (
-                //     <Box sx={{ display: 'flex', gap: '1rem' }}>
-                //         <Tooltip arrow placement="left" title="Edit">
-                //             <IconButton onClick={() => table.setEditingRow(row)}>
-                //                 <Edit />
-                //             </IconButton>
-                //         </Tooltip>
-                //         <Tooltip arrow placement="right" title="Delete">
-                //             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                //                 <Delete />
-                //             </IconButton>
-                //         </Tooltip>
-                //     </Box>
-                // )}
                 renderTopToolbarCustomActions={() => (
-                    // <Button
-                    //     color="secondary"
-                    //     onClick={() => setCreateModalOpen(true)}
-                    //     variant="contained"
-                    // >
-                    //     Create New Account
-                    // </Button>
                     <div className="flex items-center gap-3">
                         {!page && <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg text-xs md:text-base">Add New Application</Link>}
                         {applicationsLoading && <div className="animate-pulse tracking-[1em]">Loading...</div>}

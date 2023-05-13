@@ -17,12 +17,17 @@ export const handleLogout = async () => {
     }
 }
 
-
-export const getAllApplications = async () => {
-    
+export function minMaxValidator(v, min, max) {
+    const value = v.split("");
+    if (value.length >= min && value.length <= max) {
+        return true;
+    }
+    return false;
 }
 
-
-export const getApplicationById = async () => {
-
+export function scrollToInput(name) {
+    const input = document.querySelector(`input[name="${name}"]`);
+    if (input) {
+        input.scrollIntoView({ behavior: "smooth" });
+    }
 }

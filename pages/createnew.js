@@ -10,6 +10,7 @@ import { FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import RadioFeild from '../components/Radio';
 import LoadingModal from '../components/LoadingModal ';
+import { minMaxValidator, scrollToInput } from '../utils/helpers';
 
 
 export async function getServerSideProps() {
@@ -102,25 +103,10 @@ const Createnew = () => {
     ending_bal_date: '',
     total_deposit: '',
   });
-
-  function minMaxValidator(v, min, max) {
-    const value = v.split("");
-    if(value.length >= min && value.length <=max){
-      return true;      
-    }
-    return false;
-  }
-
+  
   function validateZipCode(zipCode) {
     const zipCodeRegex = /^(\d{5}|\d{8}|\d{9})$/;
     return zipCodeRegex.test(zipCode);
-  }
-
-  function scrollToInput(name) {
-    const input = document.querySelector(`input[name="${name}"]`);
-    if (input) {
-      input.scrollIntoView({ behavior: "smooth" });
-    }
   }
 
   const handleSubmit = async (event) => {
