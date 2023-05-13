@@ -6,13 +6,14 @@ import Table from '../components/table'
 // import axios from 'axios';
 // import { data } from '../components/makeData';
 import API from '../components/API';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 // import { handleLogout } from '../utils/helpers';
 // import LoadingModal from '../components/LoadingModal ';
 // import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
 import Nav from '../components/Nav';
+import { AuthContext } from '../context/AuthContext';
 // import { parseCookies } from 'nookies';
 // import jwt from 'jsonwebtoken';
 
@@ -54,6 +55,7 @@ const APIN = axios.create({
 export default function Home() {
   // console.log(data);
   const router = useRouter()
+  // const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   const [user, setUser] = useState({
     email: '',
     name: ''
@@ -72,11 +74,11 @@ export default function Home() {
     const fetch = async () => {
       const response = await APIN.get('api/getcurrentuser/').catch(error => {
         console.log(error);
-        if (error?.message === "Network Error"){
+        if (error?.message === "Network Error") {
           alert("Network Error, please check if the backend is running...")
         }
       })
-      if(response?.data){
+      if (response?.data) {
         setUser(response?.data)
         // console.log(response);
         if (response.data.message !== "success") {
@@ -124,7 +126,7 @@ export default function Home() {
       <Table data={applications} applicationsLoading={applicationsLoading} />
 
     </div>
-  {/* </>} */}
+    {/* </>} */}
   </>
 
   )

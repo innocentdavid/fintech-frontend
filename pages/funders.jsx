@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FaTimes, FaUserCircle } from 'react-icons/fa'
 import LoadingModal from "../components/LoadingModal ";
 import Nav from "../components/Nav";
-import { handleLogout } from "../utils/helpers";
+import { handleLogout, minMaxValidator, scrollToInput } from "../utils/helpers";
 
 const API = axios.create({
     baseURL: 'http://localhost:8000/funders/',
@@ -34,6 +34,7 @@ const Funders = () => {
     const [nameError, setNameError] = useState('')
     const [emailError, setEmailError] = useState('')
     const [phone, setPhone] = useState('')
+    const [phoneError, setPhoneError] = useState("");
     const [user, setUser] = useState({
         email: '',
         name: ''
@@ -52,7 +53,7 @@ const Funders = () => {
         fetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-  
+
     useEffect(() => {
         const fetch = async () => {
             setLoading(true)
@@ -71,6 +72,14 @@ const Funders = () => {
 
     const handleAdd = async (e) => {
         e.preventDefault();
+        var phoneError;
+        if (phone && !minMaxValidator(phone, 7, 10)) { phoneError = true; setPhoneError('number must be either 7 or 10 characters') }
+
+        if (phoneError) {
+            scrollToInput('phone')
+            return
+        } else { setPhoneError('') }
+
         setLoading(true)
         const res = await API.post("/", { name, email, phone }).catch(err => {
             console.log(err);
@@ -88,6 +97,7 @@ const Funders = () => {
             setPhone('')
             setNameError('')
             setEmailError('')
+            setPhoneError('')
             setShowAddModal(false)
         }
         setLoading(false)
@@ -127,6 +137,7 @@ const Funders = () => {
                         <div className="">
                             <input type="number" className="rounded-lg border-none outline-none bg-slate-100 h-10 px-2" placeholder="name" name="name" onChange={e => setPhone(e.target.value)} value={phone} />
                         </div>
+                        <p className="-mt-3 ml-3 text-red-500">{phoneError}</p>
                     </div>
                     <div className="my-4">
                         <div className="">

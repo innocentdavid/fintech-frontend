@@ -141,7 +141,20 @@ const Application = ({ application, page }) => {
 
     const [fundersArray, setFundersArray] = useState([])
     const [fundersArrayO, setFundersArrayO] = useState([])
+    
+    function mergeArrays(A, B) {
+        let result = [...B];
 
+        for (let i = 0; i < A.length; i++) {
+            const index = result.findIndex((item) => item.name === A[i].name);
+            if (index >= 0) {
+                result.splice(index, 1);
+            }
+        }
+
+        return [...A, ...result];
+    }
+    
     // get Funders
     useEffect(() => {
         const API = axios.create({
@@ -155,32 +168,33 @@ const Application = ({ application, page }) => {
         const fetch = async () => {
             setLoading(true)
             var funders = []
-            const res = await API.get("/")
-            // console.log(res.data);
-            if (!!!res?.data) return;
-            const res2 = await axios.get(`http://localhost:8000/api/submittedApplications/${application?.application_id}/`, {
+            const fundersResponse = await API.get("/")
+            const submittedApplications = await axios.get(`http://localhost:8000/api/submittedApplications/${application?.application_id}/`, {
                 headers: {
                     'Accept': 'application/json'
                 },
             }).catch(err => {
                 console.log(err);
             })
-            // console.log(res2);
-            if (res2?.data.length > 0) {
-                var l = []
+            console.log({submittedApplications});
+            if (submittedApplications?.data.length > 0) {
+                var fundersNotSentToList = []
                 var newItems = [];
-                res2.data.forEach(item => {
-                    const newList = res?.data?.find(funder => funder?.name !== item?.funder?.name)
-                    l.push(newList)
-                    const newItem = res?.data?.find(funder => funder?.name === item?.funder?.name)
-                    newItems.push({ ...newItem, submited: true })
+                submittedApplications.data.forEach(application => {
+                    const fundersNotSentTo = fundersResponse?.data?.filter(funder => funder?.name !== application?.funder?.name)
+                    const mergeArraysRes = mergeArrays(fundersNotSentToList, fundersNotSentTo);
+                    fundersNotSentToList = mergeArraysRes
+
+
+                    const fundersSentTo = fundersResponse?.data?.find(funder => funder?.name === application?.funder?.name)
+                    newItems.push({ ...fundersSentTo, submited: true })
                 });
-                const d = [...l, ...newItems]
+                const d = [...fundersNotSentToList, ...newItems]
                 funders = d
             } else {
-                funders = res.data
+                funders = fundersResponse.data
             }
-            // console.log(res);
+            // console.log({funders});
             setFundersArray(funders)
             setFundersArrayO(funders)
             setSelectedFundersArray([])
@@ -213,14 +227,20 @@ const Application = ({ application, page }) => {
         <LoadingModal loading={loading || loadingPdfs} />
 
         <div className={`${showFunders ? "opacity-100 z-10" : "opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen grid place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
-            <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => setShowFunders(false)}></div>
+            <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
+                setShowFunders(false)
+                setFundersArray(fundersArrayO)
+            }}></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px]">
-                <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => setShowFunders(false)} />
+                <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => {
+                    setShowFunders(false)
+                    setFundersArray(fundersArrayO)
+                }} />
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
-                        {fundersArray.map(funder => {
+                        {fundersArray.map((funder, index) => {
                             return (
-                                <div key={`main_${funder?.name}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
+                                <div key={`main_${funder?.name}_${index+1}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
                                     if (funder?.submited) return;
                                     const selected = fundersArray.find(item => item.name === funder?.name)
                                     const newSelectedFundersArray = [...selectedFundersArray, selected]
@@ -786,7 +806,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="business_name"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
@@ -795,7 +815,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="bank_name"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                         </div>
@@ -806,7 +826,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="begin_bal_amount"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
@@ -815,7 +835,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="begin_bal_date"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                         </div>
@@ -826,7 +846,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="ending_bal_amount"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
@@ -835,7 +855,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="ending_bal_date"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                         </div>
@@ -846,7 +866,7 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 name="total_deposit"
                                 plholder=""
                                 disabled={true}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 formData={pdfObj}
                             />
                         </div>
