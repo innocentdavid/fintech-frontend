@@ -1,87 +1,78 @@
 
 
 
-// import styles from '../styles/Home.module.css'
-import Data from '../components/Data'
-import Table from '../components/table'
-// import axios from 'axios';
-import Link from 'next/link'
-import { data, states } from '../components/makeData';
-import API from '../components/API';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
-import { handleLogout } from '../utils/helpers';
-import LoadingModal from '../components/LoadingModal ';
-import { FaAngleDown, FaUserCircle } from 'react-icons/fa';
-import Nav from '../components/Nav';
+import Boxfield from '../components/boxfield';
+import Extrabox from '../components/extrabox';
 
-const APIN = axios.create({
-  baseURL: 'http://localhost:8000/',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  // credentials: 'include',
-  withCredentials: true
-})
-
-export default function Home() {
-  const router = useRouter()
-  const [user, setUser] = useState({
-    email: '',
-    name: ''
-  })
-  const [applications, setApplications] = useState([])
-  const [loading, setLoading] = useState(false)
-  // const [applicationsLoading, setApplicationsLoading] = useState(true)
-  const [showStarts, setShowStarts] = useState(false)
-
-  // useEffect(() => {
-  //   if (applications.length > 0) return setApplicationsLoading(false)
-  // }, [applications])
-
-
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await APIN.get('api/getcurrentuser/')
-      setUser(response.data)
-      // console.log(response);
-      if (response.data.message !== "success") {
-        router.push('/login')
-        return;
-      }
-    };
-    fetch()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     await API.get("/")
-  //       .then((res) => {
-  //         setApplicationsLoading(false)
-  //         setApplications(res?.data)
-  //         // console.log(res?.data)
-  //       })
-  //       .catch(console.error);
-  //   };
-  //   // fetch()
-  //   // Schedule fetch data every 10 seconds
-  //   const intervalId = setInterval(fetch, 10000);
-
-  //   // Clean up interval when the component unmounts
-  //   return () => clearInterval(intervalId);
-  // }, [])
+export default function Home({ data }) {
 
   return (<>
-    {loading ? < LoadingModal loading={loading} /> : <>
-      {user?.email && <Nav user={user} setUser={setUser} />}
+    <div className=' flex md:flex-row flex-col my-[40px] md:my-[70px] w-full '>
+      <div className='md:w-[30%] flex  justify-center align-middle '>
+        <Boxfield
+          title='Awaiting statements'
+          count={data['awaiting'].count}
+          amount={data['awaiting'].sum}
+        />
+      </div>
 
-      <div className="w-full my-[10px] px-5">
+      <div className='md:w-[70%] justify-center md:mr-8 w-full mx-auto flex flex-col'>
+        <div className=' flex  justify-center md:flex-row flex-col md:w-full'>
+          <Boxfield
+            title='Submitted'
+            count={data['submitted'].count}
+            amount={data['submitted'].sum}
+          />
 
-        <div className=""><Data /></div>
+          <Boxfield
+            title='Approved'
+            count={data['approved'].count}
+            amount={data['approved'].sum}
+          />
 
-      </div></>
-    }
+          <Boxfield
+            title='Funded'
+            count={data['funded'].count}
+            amount={data['funded'].sum}
+          />
+        </div>
+
+        <div className=' flex justify-center md:flex-row flex-col'>
+          <Boxfield
+            title='Declined'
+            count={data['declined'].count}
+            amount={data['declined'].sum}
+          />
+
+          <Extrabox
+            title='Commission'
+            count={data['commission'].count}
+            amount={data['commission'].sum}
+            percent='6'
+          />
+
+        </div>
+
+      </div>
+
+    </div>
   </>)
+}
+
+
+export async function getServerSideProps(context) {
+  const res = await axios.get('http://localhost:8000/api/get_starts/', {
+    headers: {
+      "Content-Type": 'application/json'
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+
+  return {
+    props: {
+      data: res?.data,
+    },
+  };
 }

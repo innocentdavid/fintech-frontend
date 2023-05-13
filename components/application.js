@@ -16,7 +16,7 @@ const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get t
 const day = date.getDate(); // e.g. 28
 const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
-const Application = ({ application, page }) => {
+const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
     const router = useRouter()
     const [applicaitonPdfs, setApplicaitonPdfs] = useState([])
     const [statementPdfs, setStatementPdfs] = useState([])
@@ -41,7 +41,6 @@ const Application = ({ application, page }) => {
     });
     const [loading, setLoading] = useState(false)
     const [isEditable, setIsEditable] = useState(false)
-    const [loadingPdfs, setLoadingPdfs] = useState(false)
     const [refreshFunders, setRefreshFunders] = useState(false)
     const [showAddPdf, setShowAddPdf] = useState(false)
     const [reFreshPdf, setReFreshPdf] = useState(false)
@@ -77,39 +76,23 @@ const Application = ({ application, page }) => {
             net_funding_amount: application?.net_funding_amount,
         })
 
-        const fetch = async () => {
-            setLoadingPdfs(true)
-            const baseUrl = `http://localhost:8000/api/applications/${application.application_id}/pdfs/`
-            const config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+        if (defaultPdfs) {
+            var applicaitonPdfs = []
+            var statementPdfs = []
+            defaultPdfs?.pdfs?.forEach(item => {
+                const type = item?.pdf_type?.toString()
+                // console.log(type);
+                if (type.includes('Application')) {
+                    applicaitonPdfs.push(item)
+                } else {
+                    statementPdfs.push(item)
                 }
-            };
-            const response = await axios.get(baseUrl, config);
-            // console.log({ response });
-            if (response?.data) {
-                var applicaitonPdfs = []
-                var statementPdfs = []
-                response?.data?.pdfs?.forEach(item => {
-                    const type = item?.pdf_type?.toString()
-                    // console.log(type);
-                    if (type.includes('Application')) {
-                        applicaitonPdfs.push(item)
-                    } else {
-                        statementPdfs.push(item)
-                    }
-                });
-                setApplicaitonPdfs(applicaitonPdfs)
-                setStatementPdfs(statementPdfs)
-            }
-            setLoadingPdfs(false)
-        }
-        if (application?.application_id) {
-            fetch()
+            });
+            setApplicaitonPdfs(applicaitonPdfs)
+            setStatementPdfs(statementPdfs)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [application, reFreshPdf])
+    }, [])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -141,7 +124,7 @@ const Application = ({ application, page }) => {
 
     const [fundersArray, setFundersArray] = useState([])
     const [fundersArrayO, setFundersArrayO] = useState([])
-    
+
     function mergeArrays(A, B) {
         let result = [...B];
 
@@ -154,45 +137,29 @@ const Application = ({ application, page }) => {
 
         return [...A, ...result];
     }
-    
+
     // get Funders
     useEffect(() => {
-        const API = axios.create({
-            baseURL: 'http://localhost:8000/funders/',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        })
-
-        const fetch = async () => {
+        const fetch = () => {
             setLoading(true)
             var funders = []
-            const fundersResponse = await API.get("/")
-            const submittedApplications = await axios.get(`http://localhost:8000/api/submittedApplications/${application?.application_id}/`, {
-                headers: {
-                    'Accept': 'application/json'
-                },
-            }).catch(err => {
-                console.log(err);
-            })
-            console.log({submittedApplications});
-            if (submittedApplications?.data.length > 0) {
+            // console.log({ submittedApplications });
+            if (submittedApplications.length > 0) {
                 var fundersNotSentToList = []
                 var newItems = [];
-                submittedApplications.data.forEach(application => {
-                    const fundersNotSentTo = fundersResponse?.data?.filter(funder => funder?.name !== application?.funder?.name)
+                submittedApplications.forEach(application => {
+                    const fundersNotSentTo = fundersResponse?.filter(funder => funder?.name !== application?.funder?.name)
                     const mergeArraysRes = mergeArrays(fundersNotSentToList, fundersNotSentTo);
                     fundersNotSentToList = mergeArraysRes
 
 
-                    const fundersSentTo = fundersResponse?.data?.find(funder => funder?.name === application?.funder?.name)
+                    const fundersSentTo = fundersResponse?.find(funder => funder?.name === application?.funder?.name)
                     newItems.push({ ...fundersSentTo, submited: true })
                 });
                 const d = [...fundersNotSentToList, ...newItems]
                 funders = d
             } else {
-                funders = fundersResponse.data
+                funders = fundersResponse
             }
             // console.log({funders});
             setFundersArray(funders)
@@ -204,13 +171,19 @@ const Application = ({ application, page }) => {
             // console.log(application?.application_id);
             fetch()
         }
-    }, [application, refreshFunders])
+    }, [application, fundersResponse, refreshFunders, submittedApplications])
 
     const [selectedFundersArray, setSelectedFundersArray] = useState([])
 
     const handleSendApplication = async () => {
         setLoading(true)
-        const formData = { ...application, funder_names: selectedFundersArray }
+        const formData = {
+            ...application,
+            date_submitted: today,
+            status: 'Submitted',
+            status_description: 'Submitted',
+            funder_names: selectedFundersArray
+        }
         const res = await axios.post("http://localhost:8000/submittedApplications/", formData).catch(err => {
             console.log(err);
         })
@@ -224,7 +197,7 @@ const Application = ({ application, page }) => {
     }
 
     return (<>
-        <LoadingModal loading={loading || loadingPdfs} />
+        <LoadingModal loading={loading} />
 
         <div className={`${showFunders ? "opacity-100 z-10" : "opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen grid place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
@@ -236,11 +209,12 @@ const Application = ({ application, page }) => {
                     setShowFunders(false)
                     setFundersArray(fundersArrayO)
                 }} />
+                
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
                         {fundersArray.map((funder, index) => {
                             return (
-                                <div key={`main_${funder?.name}_${index+1}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
+                                <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
                                     if (funder?.submited) return;
                                     const selected = fundersArray.find(item => item.name === funder?.name)
                                     const newSelectedFundersArray = [...selectedFundersArray, selected]
@@ -275,11 +249,11 @@ const Application = ({ application, page }) => {
             </div>
         </div>
 
-        <div className='md:first-letter:w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px]'>
-            <span className='absolute top-6 right-10 text-[15px] h-[20px] w-[20px] flex justify-center my-2' ><FaTimes size={20} className="cursor-pointer" onClick={() => {
-                setLoading(true)
+        <div className='md:first-letter:w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px] relative'>
+            <FaTimes size={20} className="cursor-pointer absolute z-[2] top-0 right-2 text-[15px] h-[20px] w-[20px] flex justify-center my-2" onClick={() => {
+                // setLoading(true)
                 router.back()
-            }} /></span>
+            }} />
 
             <form action="" method="post" className='flex flex-col-reverse lg:flex-row' onSubmit={handleSubmit} >
                 <div className='w-full lg:w-[45%] mb-[160px] '>
@@ -297,14 +271,16 @@ const Application = ({ application, page }) => {
                             application={application}
                             // value={formData.name}
                             onChange={handleInputChange}
-                            disabled={!isEditable}
+                            // disabled={!isEditable}
+                            disabled={true}
                         />
 
                         <SelectMenuNew
                             onChange={handleInputChange}
                             formData={formData}
                             name='status'
-                            disabled={!isEditable}
+                            // disabled={!isEditable}
+                            disabled={true}
                         />
                         <Inputfeild
                             formData={formData}
@@ -314,7 +290,8 @@ const Application = ({ application, page }) => {
                             application={application}
                             // value={formData.name}
                             onChange={handleInputChange}
-                            disabled={!isEditable}
+                            // disabled={!isEditable}
+                            disabled={true}
 
                         />
                     </div>
@@ -431,9 +408,17 @@ const Application = ({ application, page }) => {
                             </div>
                         </div>
                     </div>
-                    {/* {!loadingPdfs && !loading ?
-                        :
-                        "Loading..."} */}
+                    <div className="flex items-center gap-4 mt-7">
+                        {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 focus:bg-slate-300 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
+                            onClick={handleEditButtonClick}
+                        >
+                            {isEditable ? 'Done' : 'Edit'}
+                        </button>}
+
+                        {/* {isEditable && <div className='flex justify-center gap-4 items-center'>
+                            <button type='submit' className='px-4 py-2  rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '>{loading ? "processsing..." : "Submit"}</button>
+                        </div>} */}
+                    </div>
 
                     {!page && <div className="ml-2 w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
@@ -443,17 +428,10 @@ const Application = ({ application, page }) => {
                 <div className='w-full lg:w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
                         <h3>Additional Information</h3>
-                        {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
-                            onClick={handleEditButtonClick}
-                        >
-                            {isEditable ? 'Cancel' : 'Edit'}
-                        </button>}
-
                     </div>
                     <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
 
                     <div className=' gap-1 w-full flex-1 '>
-
                         <div className='flex flex-col md:flex-row'>
                             <div className='w-full md:w-[40%]'>
                                 <Inputfeild
@@ -464,7 +442,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
                                 />
                             </div>
                             <div className='flex gap-3 w-full md:w-[60%] '>
@@ -476,7 +455,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // Value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
                                 />
                                 <Inputfeild
                                     formData={formData}
@@ -486,7 +466,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -502,7 +483,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -515,7 +497,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -532,7 +515,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -545,7 +529,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                                 <Inputfeild
@@ -556,7 +541,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -573,7 +559,8 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
@@ -586,31 +573,15 @@ const Application = ({ application, page }) => {
                                     application={application}
                                     // value={formData.name}
                                     onChange={handleInputChange}
-                                    disabled={!isEditable}
+                                    // disabled={!isEditable}
+                                    disabled={true}
 
                                 />
                             </div>
 
                         </div>
-
-                        {isEditable && <div className='mt-[40px] flex justify-center gap-4 items-center w-[50%] mx-[100px]'>
-
-                            <button type='submit' className='px-4 py-2  rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '>{loading ? "processsing..." : "Submit"}</button>
-
-                            <h2 className='mt-[-15px] cursor-pointer'>request additional info</h2>
-
-                            {/* <Emailverifybutton
-                            title = 'request additional info'
-                        /> */}
-
-                        </div>}
-
-
-
                     </div>
-
                 </div>
-
             </form>
 
         </div>

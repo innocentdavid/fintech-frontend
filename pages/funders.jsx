@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { FaTimes, FaUserCircle } from 'react-icons/fa'
+import { AiFillEdit } from 'react-icons/ai'
 import LoadingModal from "../components/LoadingModal ";
 import Nav from "../components/Nav";
 import { handleLogout, minMaxValidator, scrollToInput } from "../utils/helpers";
@@ -35,24 +36,8 @@ const Funders = () => {
     const [emailError, setEmailError] = useState('')
     const [phone, setPhone] = useState('')
     const [phoneError, setPhoneError] = useState("");
-    const [user, setUser] = useState({
-        email: '',
-        name: ''
-    })
-
-    useEffect(() => {
-        const fetch = async () => {
-            const response = await APIN.get('api/getcurrentuser/')
-            setUser(response.data)
-            // console.log(response);
-            if (response.data.message !== "success") {
-                router.push('/login')
-                return;
-            }
-        };
-        fetch()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const [editMode, seteditMode] = useState(false)
+    const [itemToEdit, setItemToEdit] = useState()
 
     useEffect(() => {
         const fetch = async () => {
@@ -69,6 +54,15 @@ const Funders = () => {
         fetch()
     }, [])
 
+    // set edit
+    useEffect(() => {
+        if (editMode) {
+            setName(itemToEdit.name)
+            setEmail(itemToEdit.email)
+            setPhone(itemToEdit.phone)
+        }
+    }, [editMode, itemToEdit])
+
 
     const handleAdd = async (e) => {
         e.preventDefault();
@@ -81,17 +75,32 @@ const Funders = () => {
         } else { setPhoneError('') }
 
         setLoading(true)
-        const res = await API.post("/", { name, email, phone }).catch(err => {
-            console.log(err);
-            setEmailError(err?.response?.data?.email?.[0])
-            setNameError(err?.response?.data?.name?.[0])
-            // if (!err?.response?.data?.email?.[0] && !err?.response?.data?.name?.[0]){
-            //     alert('something sent wrong')
-            // }
-        })
-        console.log(res);
+        var res;
+        var newFundersList = fundersList
+        // return;
+        if (editMode) {
+            res = await API.put(`/${itemToEdit.id ?? 1}/`, { name, email, phone }).catch(err => {
+                console.log(err);
+                setEmailError(err?.response?.data?.email?.[0])
+                setNameError(err?.response?.data?.name?.[0])
+                // if (!err?.response?.data?.email?.[0] && !err?.response?.data?.name?.[0]){
+                //     alert('something sent wrong')
+                // }
+            })
+            const r = fundersList.filter(funder => funder.id !== res.data.id)
+            if(res.data) {newFundersList=r}
+        } else {
+            res = await API.post("/", { name, email, phone }).catch(err => {
+                console.log(err);
+                setEmailError(err?.response?.data?.email?.[0])
+                setNameError(err?.response?.data?.name?.[0])
+                // if (!err?.response?.data?.email?.[0] && !err?.response?.data?.name?.[0]){
+                //     alert('something sent wrong')
+                // }
+            })
+        }
         if (res?.data) {
-            setFundersList([...fundersList, res.data])
+            setFundersList([...newFundersList, res.data])
             setName('')
             setEmail('')
             setPhone('')
@@ -104,8 +113,6 @@ const Funders = () => {
     }
 
     return (<>
-        {user?.email && <Nav user={user} setUser={setUser} />}
-
         <div className="container mx-auto px-2 md:px-10 lg:px-32">
             <LoadingModal loading={loading} />
             {/* <FaTimes className="absolute top-10 right-10 cursor-pointer" size={20} onClick={() => { setLoading(true); router.push('/') }} /> */}
@@ -154,13 +161,14 @@ const Funders = () => {
                             <th className="py-3 px-6 text-left">Name</th>
                             <th className="py-3 px-6 text-left">Email</th>
                             <th className="py-3 px-6 text-left">Phone</th>
+                            <th className="py-3 px-6 text-left"></th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
-                        {fundersList.map((funder) => (
+                        {fundersList.sort((a, b) => a.id - b.id).map((funder) => (
                             <tr
                                 key={funder.id}
-                                className="border-b border-gray-200 hover:bg-gray-100"
+                                className={`${itemToEdit?.name === funder?.name && 'bg-gray-100'} border-b border-gray-200 hover:bg-gray-100`}
                             >
                                 <td className="py-3 px-6 text-left whitespace-nowrap">
                                     {funder.id}
@@ -168,6 +176,16 @@ const Funders = () => {
                                 <td className="py-3 px-6 text-left">{funder.name}</td>
                                 <td className="py-3 px-6 text-left">{funder.email}</td>
                                 <td className="py-3 px-6 text-left">{funder.phone}</td>
+                                <td className="py-3 px-6 text-left"><AiFillEdit className="cursor-pointer" onClick={() => {
+                                    setShowAddModal(!showAddModal)
+                                    seteditMode(true)
+                                    setItemToEdit(funder)
+                                    // if(editMode){
+                                    //     seteditMode(false)
+                                    //     setItemToEdit()                                  
+                                    // }else{
+                                    // }
+                                }} /></td>
                             </tr>
                         ))}
                     </tbody>

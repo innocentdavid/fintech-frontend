@@ -4,13 +4,15 @@
 import Inputfeild from '../components/inputfeild'
 import Link from "next/link";
 import axios from 'axios';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import LoadingModal from '../components/LoadingModal ';
+import { AuthContext } from '../context/AuthContext';
 
 
 export default function Login() {
   const router = useRouter()
+  const { login } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -33,18 +35,20 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    const response = await API.post('api/login/', formData).catch((err => {
-      console.log(err);
-    }))
+    await login(formData)
+    // setLoading(true)
+    // const response = await API.post('api/login/', formData).catch((err => {
+    //   console.log(err);
+    // }))
     // const response = await axios.post();
     // console.log(response);
-    if (response?.data?.message && response?.data?.message !== "success") {
-      alert(response.data.message)
-      setLoading(false)
-      return;
-    }
-    router.push('/')
+    // if (response?.data?.message && response?.data?.message !== "success") {
+    //   alert(response.data.message)
+    //   setLoading(false)
+    //   return;
+    // }
+    
+    
     // setLoading(false)
   };
 
@@ -71,8 +75,8 @@ export default function Login() {
         />
         <div className=' flex justify-between align-center max-w-[200px] mx-auto md:max-w-[400px]'>
 
-          <div className='px-8 py-2 text-sm w-[30%] flex justify-center bg-blue-900 text-slate-100 rounded-lg'>
-            <button type='Submit' className='text-sm text-white font-bold' >Login
+          <div className=''>
+            <button type='Submit' className='button ripple px-8 py-2 w-[30%] flex justify-center bg-blue-900 rounded-lg text-sm text-white font-bold' >Login
             </button>
           </div>
           <Link href='/register' className="text-sm text-blue-800 font-bold mt-2">Back to Register</Link>

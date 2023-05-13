@@ -3,7 +3,7 @@ import axios from "axios";
 const API = axios.create({
     baseURL: 'http://localhost:8000/',
     headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
         // withCredentials: true
     },
 })
@@ -11,9 +11,11 @@ const API = axios.create({
 export const handleLogout = async () => {
     try {
         const response = await API.post('api/logout/',{})
-        console.log(response);
+        // console.log(response);
+        return {message: 'success', response}
     } catch (error) {
         console.log(error);
+        return error
     }
 }
 

@@ -1,32 +1,40 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
-import { useRouter } from 'next/router';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    MenuItem,
+    Stack,
+    TextField,
+    Tooltip,
+} from '@mui/material';
+import { Delete, Edit } from '@mui/icons-material';
 import Link from 'next/link';
-import LoadingModal from './LoadingModal ';
+import { FiExternalLink } from 'react-icons/fi';
+import { useRouter } from 'next/router';
+// import { data, states } from './makeData';
 
-const Table = ({ data, page, applicationsLoading }) => {
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [tableData, setTableData] = useState([]);
-    const [validationErrors, setValidationErrors] = useState({});
-    const [loading, setLoading] = useState(false)
+const Table = ({ data, page }) => {
     const router = useRouter()
+    const [tableData, setTableData] = useState(() => data);
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
-        if (!data.length>0) return;
+        if (!data.length > 0) return;
         const list = []
         data.forEach(item => {
             const funder = item.funder
-            const d = { ...item, funder_name: funder?.name}
+            const id = item.count
+            const d = { ...item, id, funder_name: funder?.name }
             list.push(d)
         });
         setTableData(list)
     }, [data])
-
-
-    const handleCreateNewRow = (values) => {
-        tableData.push(values);
-        setTableData([...tableData]);
-    };
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
@@ -41,10 +49,26 @@ const Table = ({ data, page, applicationsLoading }) => {
         setValidationErrors({});
     };
 
+    const handleDeleteRow = useCallback(
+        (row) => {
+            const application_id = row.getValue('application_id')
+            console.log(application_id);
+            if (
+                !confirm(`Are you sure you want to delete ${row.getValue('application_id')}`)
+            ) {
+                return;
+            }
+            //send api delete request here, then refetch or update local table data for re-render
+            tableData.splice(row.index, 1);
+            setTableData([...tableData]);
+        },
+        [tableData],
+    );
+
     var columns = useMemo(
         () => [
             {
-                accessorKey: 'count',
+                accessorKey: 'id',
                 header: 'ID',
                 enableColumnOrdering: false,
                 enableEditing: false, //disable editing on this column
@@ -115,19 +139,8 @@ const Table = ({ data, page, applicationsLoading }) => {
         [page],
     );
 
-    const handleRoswClick = (e) => {
-        setLoading(true)
-        var p = page || 'application'
-        if(page){
-            router.push(`${p}/${e.submittedApplication_id}`)
-        }else{
-            router.push(`application/${e.application_id}`)
-        }
-    }
-
     return (
-        <div className='relative'>
-            {/* <LoadingModal loading={loading || applicationsLoading} /> */}
+        <>
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {
@@ -142,23 +155,44 @@ const Table = ({ data, page, applicationsLoading }) => {
                 initialState={{ columnVisibility: { funder_name: page ? true : false } }}
                 editingMode="modal" //default
                 enableColumnOrdering
-                enableEditing={false}
+                enableEditing
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
-                muiTableBodyRowProps={({ row }) => {
-                    return ({
-                        onClick: () => handleRoswClick(row.original),
-                        sx: { cursor: 'pointer' },
-                    })
-                }}
+                renderRowActions={({ row, table }) => (
+                    <Box sx={{ display: 'flex', gap: '1rem' }}>
+                        {!page && <Tooltip arrow placement="left" title="Edit">
+                            <IconButton onClick={() => {
+                                router.push(`/edit/${row.original.application_id}`)
+                                }}>
+                                <Edit />
+                            </IconButton>
+                        </Tooltip>}
+                        <Tooltip arrow placement="right" title="Delete">
+                            <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                                <Delete />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip arrow placement="left" title="View">
+                            <IconButton onClick={() => {
+                                var p = page || 'application'
+                                if (page) {
+                                    router.push(`${p}/${row?.original?.submittedApplication_id}`)
+                                } else {
+                                    router.push(`application/${row?.original?.application_id}`)
+                                }
+                            }}>
+                                <FiExternalLink />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
                 renderTopToolbarCustomActions={() => (
                     <div className="flex items-center gap-3">
-                        {!page && <Link href="/createnew" className="bg-black text-white py-2 px-4 rounded-lg text-xs md:text-base">Add New Application</Link>}
-                        {applicationsLoading && <div className="animate-pulse tracking-[1em]">Loading...</div>}
+                        {!page && <div className='rippleButton ripple cursor-pointer'><Link href="/createnew" className="">Add New Application</Link></div>}
                     </div>
                 )}
             />
-        </div>
+        </>
     );
 };
 
