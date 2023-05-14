@@ -902,7 +902,7 @@ const Inputfeild2 = ({ type, application, label, read, name, disabled, onChange,
 
 function FileUpload(props) {
     return (
-        <label htmlFor="bankstatement1" className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]' onClick={() => {
+        <label htmlFor="bankstatement1" title={`${props.disabled && 'cannot edit'}`} className={`${props.disabled ? 'cursor-not-allowed': 'cursor-pointer'} bg-gray-300 rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]`} onClick={() => {
             if (!props.disabled) {
                 props.setPdfToAdd({ ...props.pdfToAdd, pdf_type: props.type })
                 props.setShowAddPdf(true)

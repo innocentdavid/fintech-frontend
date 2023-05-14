@@ -4,6 +4,7 @@
 import axios from 'axios';
 import Boxfield from '../components/boxfield';
 import Extrabox from '../components/extrabox';
+import { formatNumber } from '../utils/helpers';
 
 export default function Home({ data }) {
 
@@ -13,7 +14,7 @@ export default function Home({ data }) {
         <Boxfield
           title='Awaiting statements'
           count={data['awaiting'].count}
-          amount={data['awaiting'].sum}
+          amount={formatNumber(data['awaiting'].sum)}
         />
       </div>
 
@@ -22,19 +23,19 @@ export default function Home({ data }) {
           <Boxfield
             title='Submitted'
             count={data['submitted'].count}
-            amount={data['submitted'].sum}
+            amount={formatNumber(data['submitted'].sum)}
           />
 
           <Boxfield
             title='Approved'
             count={data['approved'].count}
-            amount={data['approved'].sum}
+            amount={formatNumber(data['approved'].sum)}
           />
 
           <Boxfield
             title='Funded'
             count={data['funded'].count}
-            amount={data['funded'].sum}
+            amount={formatNumber(data['funded'].sum)}
           />
         </div>
 
@@ -42,13 +43,13 @@ export default function Home({ data }) {
           <Boxfield
             title='Declined'
             count={data['declined'].count}
-            amount={data['declined'].sum}
+            amount={formatNumber(data['declined'].sum)}
           />
 
           <Extrabox
             title='Commission'
             count={data['commission'].count}
-            amount={data['commission'].sum}
+            amount={formatNumber(data['commission'].sum)}
             percent='6'
           />
 

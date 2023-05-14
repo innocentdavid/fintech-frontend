@@ -145,13 +145,9 @@ const Create = ({ application }) => {
 
 
         setLoading(true)
-        // console.log({ formData });
-
         try {
             var res;
             if (application){
-                console.log("application: ");
-                console.log(application);
                 res = await axios.put(`http://localhost:8000/applications/${application?.application_id}/`, formData, {
                     headers:{
                         'Content-Type': 'application/json'
@@ -160,7 +156,7 @@ const Create = ({ application }) => {
                     console.log(err);
                 })
                 console.log(res);
-                if(res.data){
+                if (res.statusText === "Created"){
                     setLoading(false)
                     router.back()                    
                 }

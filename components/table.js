@@ -17,6 +17,7 @@ import { Delete, Edit } from '@mui/icons-material';
 import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 // import { data, states } from './makeData';
 
 const Table = ({ data, page }) => {
@@ -50,19 +51,18 @@ const Table = ({ data, page }) => {
     };
 
     const handleDeleteRow = useCallback(
-        (row) => {
-            const application_id = row.getValue('application_id')
-            console.log(application_id);
-            if (
-                !confirm(`Are you sure you want to delete ${row.getValue('application_id')}`)
-            ) {
-                return;
-            }
+        async (row) => {
+            if (!confirm(`Are you sure you want to delete this data?`)) return;
             //send api delete request here, then refetch or update local table data for re-render
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+            var url = page ? `http://localhost:8000/submittedApplications/${row.original.submittedApplication_id}/` : `http://localhost:8000/applications/${row.original.application_id}/`;
+            var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json' } }).catch(err => console.log(err))
+            // console.log(res);
+            if (res.status === 204) {
+                tableData.splice(row.index, 1);
+                setTableData([...tableData]);
+            }
         },
-        [tableData],
+        [page, tableData],
     );
 
     var columns = useMemo(
@@ -163,7 +163,7 @@ const Table = ({ data, page }) => {
                         {!page && <Tooltip arrow placement="left" title="Edit">
                             <IconButton onClick={() => {
                                 router.push(`/edit/${row.original.application_id}`)
-                                }}>
+                            }}>
                                 <Edit />
                             </IconButton>
                         </Tooltip>}

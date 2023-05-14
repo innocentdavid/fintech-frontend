@@ -23,6 +23,7 @@ const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplic
                 defaultPdfs={pdfs}
                 fundersResponse={fundersResponse}
                 submittedApplications={submittedApplications}
+                page={true}
             />}
 
         </div>
