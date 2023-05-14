@@ -9,7 +9,7 @@ import { parseCookies } from 'nookies';
 
 
 const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplications }) => {
-
+    // console.log(application, pdfs,fundersResponse,submittedApplications);
     return (
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
@@ -57,7 +57,7 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true
     }).catch(err => {
-        console.log(err);
+        // console.log(err);
     })
 
     const submittedApplications = await axios.get(`http://localhost:8000/api/submittedApplications/${context.params.applicationId}/`, {

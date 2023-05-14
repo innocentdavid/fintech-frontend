@@ -36,30 +36,30 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
-            data: res?.data ?? [],
+            application: res?.data ?? [],
         },
     };
 }
 
-export async function getStaticProps({ params }) {
-    const appRes = await API.get(`/${params.applicationId}/`)
+// export async function getStaticProps({ params }) {
+//     const appRes = await API.get(`/${params.applicationId}/`)
 
-    return {
-        props: {
-            application: appRes.data ?? {}
-        }
-    };
-}
+//     return {
+//         props: {
+//             application: appRes.data ?? {}
+//         }
+//     };
+// }
 
-export async function getStaticPaths() {
-    const apps = await axios.get('http://localhost:8000/applications/', {
-        headers: {
-            "Content-Type": 'application/json'
-        }
-    }).catch(err => {
-        console.log(err);
-    });
+// export async function getStaticPaths() {
+//     const apps = await axios.get('http://localhost:8000/applications/', {
+//         headers: {
+//             "Content-Type": 'application/json'
+//         }
+//     }).catch(err => {
+//         console.log(err);
+//     });
 
-    const paths = apps?.data?.map(app => ({ params: { applicationId: app?.application_id } }));
-    return { paths, fallback: false };
-}
+//     const paths = apps?.data?.map(app => ({ params: { applicationId: app?.application_id } }));
+//     return { paths, fallback: false };
+// }

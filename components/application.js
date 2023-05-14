@@ -133,8 +133,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         return A.filter(a => !B.find(b => a.id === b.id));
     }
 
-
-
     // get Funders
     useEffect(() => {
         if (fundersResponse){
@@ -168,7 +166,12 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             status_description: 'Submitted',
             funder_names: selectedFundersArray
         }
-        const res = await axios.post("http://localhost:8000/submittedApplications/", formData).catch(err => {
+        const res = await axios.post("http://localhost:8000/submittedApplications/", formData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            withCredentials: true
+        }).catch(err => {
             console.log(err);
         })
         if(res?.statusText){
@@ -203,7 +206,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
-                        {!!!fundersArray && fundersArray?.map((funder, index) => {
+                        {!!fundersArray && fundersArray?.map((funder, index) => {
                             return (
                                 <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} 
                                 onClick={() => {

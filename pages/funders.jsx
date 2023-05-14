@@ -1,12 +1,9 @@
 import axios from "axios";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { FaTimes, FaUserCircle } from 'react-icons/fa'
+import { FaTimes } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import LoadingModal from "../components/LoadingModal ";
-import Nav from "../components/Nav";
-import { handleLogout, minMaxValidator, scrollToInput } from "../utils/helpers";
+import { minMaxValidator, scrollToInput } from "../utils/helpers";
 import { parseCookies } from "nookies";
 
 const API = axios.create({
@@ -18,17 +15,7 @@ const API = axios.create({
     withCredentials: true
 })
 
-const APIN = axios.create({
-    baseURL: 'http://localhost:8000/',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    // credentials: 'include',
-    withCredentials: true
-})
-
 const Funders = ({ data }) => {
-    const router = useRouter()
     const [fundersList, setFundersList] = useState(data)
     const [showAddModal, setShowAddModal] = useState(false)
     const [loading, setLoading] = useState(false);
@@ -40,21 +27,6 @@ const Funders = ({ data }) => {
     const [phoneError, setPhoneError] = useState("");
     const [editMode, seteditMode] = useState(false)
     const [itemToEdit, setItemToEdit] = useState()
-
-    // useEffect(() => {
-    //     const fetch = async () => {
-    //         setLoading(true)
-    //         const res = await API.get("/")
-    //         console.log(res);
-    //         if (res.data) {
-    //             // setFundersList(res.data)
-    //         } else {
-    //             alert('something went wrong')
-    //         }
-    //         setLoading(false)
-    //     }
-    //     fetch()
-    // }, [])
 
     // set edit
     useEffect(() => {
@@ -90,7 +62,7 @@ const Funders = ({ data }) => {
                 // }
             })
             const r = fundersList.filter(funder => funder.id !== res.data.id)
-            if(res.data) {newFundersList=r}
+            if (res.data) { newFundersList = r }
         } else {
             res = await API.post("/", { name, email, phone }).catch(err => {
                 console.log(err);
@@ -115,7 +87,7 @@ const Funders = ({ data }) => {
     }
 
     return (<>
-        <div className="container mx-auto px-2 md:px-10 lg:px-32">
+        <div className="container mx-auto px-2 md:px-10 lg:px-32 pb-20">
             <LoadingModal loading={loading} />
             {/* <FaTimes className="absolute top-10 right-10 cursor-pointer" size={20} onClick={() => { setLoading(true); router.push('/') }} /> */}
 
@@ -150,7 +122,7 @@ const Funders = ({ data }) => {
                     </div>
                     <div className="my-4">
                         <div className="">
-                            <input type="submit" value={editMode ? 'Update': "Create"} className="w-full cursor-pointer rounded-lg border-none outline-none bg-black text-white h-10 px-2" placeholder="name" />
+                            <input type="submit" value={editMode ? 'Update' : "Create"} className="w-full cursor-pointer rounded-lg border-none outline-none bg-black text-white h-10 px-2" placeholder="name" />
                         </div>
                     </div>
                 </form>
@@ -167,7 +139,7 @@ const Funders = ({ data }) => {
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
-                        {!!!fundersList && fundersList?.sort((a, b) => a.id - b.id).map((funder) => (
+                        {!!fundersList && fundersList?.sort((a, b) => a.id - b.id).map((funder) => (
                             <tr
                                 key={funder.id}
                                 className={`${itemToEdit?.name === funder?.name && 'bg-gray-100'} border-b border-gray-200 hover:bg-gray-100`}

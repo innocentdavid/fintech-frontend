@@ -111,8 +111,6 @@ const Create = ({ application }) => {
         event.preventDefault();
         var zipError, ownerZipError, phoneError, mobileError, ownerPhoneError;
         // perform check
-        console.log(formData.phone);
-        console.log(minMaxValidator(formData.phone, 7, 10));
         if (formData.zip && !validateZipCode(formData.zip)) { zipError = true; setZipError('Zip code must be either 5, 8, or 9 characters') }
         if (formData.owner_zip && !validateZipCode(formData.owner_zip)) { ownerZipError = true; setOwnerZipError('Zip code must be either 5, 8, or 9 characters') }
         if (formData.phone && !minMaxValidator(formData.phone, 7, 10)) { phoneError = true; setPhoneError('number must be either 7 or 10 characters') }
@@ -139,10 +137,8 @@ const Create = ({ application }) => {
             scrollToInput('owner_phone')
             return
         } else { setOwnerPhoneError('') }
-
-        console.log('all-good!');
+        
         setZipError(''); setOwnerZipError('');
-
 
         setLoading(true)
         try {
@@ -151,7 +147,8 @@ const Create = ({ application }) => {
                 res = await axios.put(`http://localhost:8000/applications/${application?.application_id}/`, formData, {
                     headers:{
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    withCredentials: true
                 }).catch(err => {
                     console.log(err);
                 })

@@ -40,8 +40,6 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(context) {
   const cookies = parseCookies(context)
-  console.log("cookies: ");
-  console.log(cookies);
   const res = await axios.get('http://localhost:8000/applications/', {
     headers: {
       'Content-Type': 'application/json',
