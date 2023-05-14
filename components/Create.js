@@ -189,7 +189,7 @@ const Create = ({ application }) => {
                     setLoading(true)
                     router.back()
                 }} />
-                <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >Create New Application</h1>
+                <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >{application ? "Update Application" : 'Create New Application'}</h1>
 
                 <form method='POST' action='' onSubmit={handleSubmit} >
                     <div className='md:max-w-[700px] w-full mx-auto'>

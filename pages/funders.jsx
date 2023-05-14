@@ -7,13 +7,15 @@ import { AiFillEdit } from 'react-icons/ai'
 import LoadingModal from "../components/LoadingModal ";
 import Nav from "../components/Nav";
 import { handleLogout, minMaxValidator, scrollToInput } from "../utils/helpers";
+import { parseCookies } from "nookies";
 
 const API = axios.create({
     baseURL: 'http://localhost:8000/funders/',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-    }
+    },
+    withCredentials: true
 })
 
 const APIN = axios.create({
@@ -25,9 +27,9 @@ const APIN = axios.create({
     withCredentials: true
 })
 
-const Funders = () => {
+const Funders = ({ data }) => {
     const router = useRouter()
-    const [fundersList, setFundersList] = useState([])
+    const [fundersList, setFundersList] = useState(data)
     const [showAddModal, setShowAddModal] = useState(false)
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('')
@@ -39,20 +41,20 @@ const Funders = () => {
     const [editMode, seteditMode] = useState(false)
     const [itemToEdit, setItemToEdit] = useState()
 
-    useEffect(() => {
-        const fetch = async () => {
-            setLoading(true)
-            const res = await API.get("/")
-            console.log(res);
-            if (res.data) {
-                setFundersList(res.data)
-            } else {
-                alert('something went wrong')
-            }
-            setLoading(false)
-        }
-        fetch()
-    }, [])
+    // useEffect(() => {
+    //     const fetch = async () => {
+    //         setLoading(true)
+    //         const res = await API.get("/")
+    //         console.log(res);
+    //         if (res.data) {
+    //             // setFundersList(res.data)
+    //         } else {
+    //             alert('something went wrong')
+    //         }
+    //         setLoading(false)
+    //     }
+    //     fetch()
+    // }, [])
 
     // set edit
     useEffect(() => {
@@ -148,7 +150,7 @@ const Funders = () => {
                     </div>
                     <div className="my-4">
                         <div className="">
-                            <input type="submit" value="Create" className="w-full cursor-pointer rounded-lg border-none outline-none bg-black text-white h-10 px-2" placeholder="name" />
+                            <input type="submit" value={editMode ? 'Update': "Create"} className="w-full cursor-pointer rounded-lg border-none outline-none bg-black text-white h-10 px-2" placeholder="name" />
                         </div>
                     </div>
                 </form>
@@ -165,7 +167,7 @@ const Funders = () => {
                         </tr>
                     </thead>
                     <tbody className="text-gray-600 text-sm font-light">
-                        {fundersList.sort((a, b) => a.id - b.id).map((funder) => (
+                        {!!!fundersList && fundersList?.sort((a, b) => a.id - b.id).map((funder) => (
                             <tr
                                 key={funder.id}
                                 className={`${itemToEdit?.name === funder?.name && 'bg-gray-100'} border-b border-gray-200 hover:bg-gray-100`}
@@ -197,3 +199,23 @@ const Funders = () => {
 };
 
 export default Funders;
+
+export async function getServerSideProps(context) {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
+    const res = await axios.get('http://localhost:8000/funders/', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+        },
+        withCredentials: true
+    }).catch(err => {
+        // console.log(err);
+    });
+
+    return {
+        props: {
+            data: res?.data ?? [],
+        },
+    };
+}

@@ -4,6 +4,7 @@ import React from 'react'
 import API from '../../components/API';
 import axios from 'axios';
 import Create from '../../components/Create';
+import { parseCookies } from 'nookies';
 
 
 const ApplicationDetail = ({ application }) => {
@@ -19,6 +20,26 @@ const ApplicationDetail = ({ application }) => {
 }
 
 export default ApplicationDetail
+
+export async function getServerSideProps(context) {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
+    const res = await axios.get(`http://localhost:8000/applications/${context.params.applicationId}/`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+        },
+        withCredentials: true
+    }).catch(err => {
+        // console.log(err);
+    });
+
+    return {
+        props: {
+            data: res?.data ?? [],
+        },
+    };
+}
 
 export async function getStaticProps({ params }) {
     const appRes = await API.get(`/${params.applicationId}/`)

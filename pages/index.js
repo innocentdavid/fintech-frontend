@@ -5,6 +5,8 @@ import Table from '../components/table'
 import API from '../components/API';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getCookie } from '../utils/helpers';
+import { parseCookies } from 'nookies';
 
 export default function Home({ data }) {
   const [applications, setApplications] = useState(data)
@@ -37,17 +39,22 @@ export default function Home({ data }) {
 
 
 export async function getServerSideProps(context) {
+  const cookies = parseCookies(context)
+  console.log("cookies: ");
+  console.log(cookies);
   const res = await axios.get('http://localhost:8000/applications/', {
     headers: {
-      "Content-Type": 'application/json'
-    }
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+    },
+    // withCredentials: true
   }).catch(err => {
-    console.log(err);
+    // console.log(err);
   });
 
   return {
     props: {
-      data: res?.data,
+      data: res?.data ?? [],
     },
   };
 }

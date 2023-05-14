@@ -35,19 +35,14 @@ export function scrollToInput(name) {
 }
 
 export function formatNumber(number) {
-    // Check if the number is a string.
-    if (typeof number === "string") {
-        // Convert the string to a number.
-        number = Number(number);
-    }
-
-    // Check if the number is a valid number.
-    if (!isNaN(number)) {
-        // Convert the number to a string with commas.
-        return number.toString().replace(/(\d{3})(?=\d)/g, "$1,");
+    const million = 1000000;
+    const billion = 1000000000;
+    if (number >= billion) {
+        return (number / billion).toFixed(1) + 'B';
+    } else if (number >= million) {
+        return (number / million).toFixed(1) + 'M';
     } else {
-        // Return the original number.
-        return number;
+        return number?.toLocaleString() ?? 0;
     }
 }
 

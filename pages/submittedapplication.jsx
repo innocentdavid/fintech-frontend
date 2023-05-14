@@ -6,6 +6,7 @@ import Table from '../components/table'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal ';
+import { parseCookies } from 'nookies';
 
 const API = axios.create({
     baseURL: 'http://localhost:8000/submittedApplications/',
@@ -47,17 +48,21 @@ export default function Home({data}) {
 
 
 export async function getServerSideProps(context) {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
     const res = await axios.get('http://localhost:8000/submittedApplications/', {
         headers: {
-            "Content-Type": 'application/json'
-        }
+            "Content-Type": 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` 
+        },
+        withCredentials: true
     }).catch(err => {
-        console.log(err);
+        // console.log(err);
     });
 
     return {
         props: {
-            data: res?.data,
+            data: res?.data ?? [],
         },
     };
 }

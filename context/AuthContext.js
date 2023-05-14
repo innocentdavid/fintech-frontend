@@ -4,6 +4,7 @@ import { handleLogout } from '../utils/helpers';
 import LoadingModal from '../components/LoadingModal ';
 import { useRouter } from 'next/router';
 import API from '../components/API';
+import { destroyCookie, setCookie } from 'nookies';
 
 const APIN = axios.create({
     baseURL: 'http://localhost:8000/',
@@ -80,7 +81,13 @@ export const AuthProvider = ({ children }) => {
         if (res.message) {
             setUser(null)
             router.push('/login')
+            // setCookie({}, 'jwt', '', { expires: new Date(0) })
             document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            // To delete a cookie on the client side
+            destroyCookie(null, 'jwt');
+
+            // To delete a cookie on the server side
+            destroyCookie({ res }, 'jwt');
 
         } else {
             alert('Something went wrong')

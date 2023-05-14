@@ -126,50 +126,33 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     const [fundersArrayO, setFundersArrayO] = useState([])
 
     function mergeArrays(A, B) {
-        let result = [...B];
-
-        for (let i = 0; i < A.length; i++) {
-            const index = result.findIndex((item) => item.name === A[i].name);
-            if (index >= 0) {
-                result.splice(index, 1);
-            }
-        }
-
-        return [...A, ...result];
+        return A.concat(B.filter(obj => !A.find(o => o.id === obj.id)));
     }
+    function removeDuplicates(A, B) {
+        // A is the total list // B is the list that contain unwanted ones
+        return A.filter(a => !B.find(b => a.id === b.id));
+    }
+
+
 
     // get Funders
     useEffect(() => {
-        const fetch = () => {
-            setLoading(true)
+        if (fundersResponse){
             var funders = []
-            // console.log({ submittedApplications });
-            if (submittedApplications.length > 0) {
-                var fundersNotSentToList = []
-                var newItems = [];
+            if (submittedApplications.length > 0) {                
+                let submittedApplicationFunders = []
                 submittedApplications.forEach(application => {
-                    const fundersNotSentTo = fundersResponse?.filter(funder => funder?.name !== application?.funder?.name)
-                    const mergeArraysRes = mergeArrays(fundersNotSentToList, fundersNotSentTo);
-                    fundersNotSentToList = mergeArraysRes
-
-
-                    const fundersSentTo = fundersResponse?.find(funder => funder?.name === application?.funder?.name)
-                    newItems.push({ ...fundersSentTo, submited: true })
+                    submittedApplicationFunders.push({...application?.funder, submitted: true })
                 });
-                const d = [...fundersNotSentToList, ...newItems]
-                funders = d
+                
+                funders = mergeArrays(submittedApplicationFunders, removeDuplicates(fundersResponse, submittedApplicationFunders))
             } else {
                 funders = fundersResponse
             }
             // console.log({funders});
             setFundersArray(funders)
             setFundersArrayO(funders)
-            setSelectedFundersArray([])
-            setLoading(false)
-        }
-        if (application?.application_id) {
-            // console.log(application?.application_id);
-            fetch()
+            setSelectedFundersArray([])            
         }
     }, [application, fundersResponse, refreshFunders, submittedApplications])
 
@@ -181,18 +164,24 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             ...application,
             date_submitted: today,
             status: 'Submitted',
+            status_date: today,
             status_description: 'Submitted',
             funder_names: selectedFundersArray
         }
         const res = await axios.post("http://localhost:8000/submittedApplications/", formData).catch(err => {
             console.log(err);
         })
-        setFundersArray(fundersArrayO)
-        setSelectedFundersArray([])
-        console.log(res);
-        setShowFunders(false)
-        setRefreshFunders(!refreshFunders)
-        // window.location.reload()
+        if(res?.statusText){
+            setShowFunders(false)
+            const list = []
+            selectedFundersArray.forEach(funder => {
+                list.push({ ...funder, submitted: true })
+            })
+            const concat = [...fundersArray, ...list]
+            setFundersArray(concat)
+            setFundersArrayO(concat)
+            setSelectedFundersArray([])
+        }
         setLoading(false)
     }
 
@@ -203,25 +192,28 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
                 setShowFunders(false)
                 setFundersArray(fundersArrayO)
+                setSelectedFundersArray([])
             }}></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px]">
                 <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => {
                     setShowFunders(false)
                     setFundersArray(fundersArrayO)
+                    setSelectedFundersArray([])
                 }} />
-                
+
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
-                        {fundersArray.map((funder, index) => {
+                        {!!!fundersArray && fundersArray?.map((funder, index) => {
                             return (
-                                <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submited ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} onClick={() => {
-                                    if (funder?.submited) return;
+                                <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} 
+                                onClick={() => {
+                                    if (funder?.submitted) return;
                                     const selected = fundersArray.find(item => item.name === funder?.name)
                                     const newSelectedFundersArray = [...selectedFundersArray, selected]
                                     setSelectedFundersArray(newSelectedFundersArray)
                                     const newFundersArray = fundersArray.filter(item => item.name !== funder?.name)
                                     setFundersArray(newFundersArray)
-                                }}>{funder?.name} {funder?.submited && <FaCheck />}</div>
+                                }}>{funder?.name} {funder?.submitted && <FaCheck />}</div>
                             )
                         })}
                     </div>
@@ -275,10 +267,21 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                             disabled={true}
                         />
 
-                        <SelectMenuNew
+                        {/* <SelectMenuNew
                             onChange={handleInputChange}
                             formData={formData}
                             name='status'
+                            // disabled={!isEditable}
+                            disabled={true}
+                        /> */}
+                        <Inputfeild
+                            formData={formData}
+                            label='Status'
+                            name='status'
+                            type='text'
+                            application={application}
+                            // value={formData.name}
+                            onChange={handleInputChange}
                             // disabled={!isEditable}
                             disabled={true}
                         />
@@ -292,7 +295,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                             onChange={handleInputChange}
                             // disabled={!isEditable}
                             disabled={true}
-
                         />
                     </div>
 
@@ -902,7 +904,7 @@ const Inputfeild2 = ({ type, application, label, read, name, disabled, onChange,
 
 function FileUpload(props) {
     return (
-        <label htmlFor="bankstatement1" title={`${props.disabled && 'cannot edit'}`} className={`${props.disabled ? 'cursor-not-allowed': 'cursor-pointer'} bg-gray-300 rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]`} onClick={() => {
+        <label htmlFor="bankstatement1" title={`${props.disabled && 'cannot edit'}`} className={`${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'} bg-gray-300 rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]`} onClick={() => {
             if (!props.disabled) {
                 props.setPdfToAdd({ ...props.pdfToAdd, pdf_type: props.type })
                 props.setShowAddPdf(true)

@@ -21,16 +21,16 @@ export default function Nav() {
                 <div className="flex flex-col md:flex-row md:items-center gap-3 md:mr-4">
                     <Link onClick={() => {
                         // setLoading(true)
-                    }} href="/" className='font-bold hover:underline'>Applications</Link>
+                    }} href="/" className='font-bold hover:underline border py-1 px-2'>Applications</Link>
                     <Link onClick={() => {
                         // setLoading(true)
-                    }} href="/submittedapplication" className='font-bold hover:underline'>Submitted Application</Link>
+                    }} href="/submittedapplication" className='font-bold hover:underline border py-1 px-2'>Submitted Application</Link>
                     <Link onClick={() => {
                         // setLoading(true)
-                    }} href="/starts" className='font-bold hover:underline'>Starts</Link>
+                    }} href="/stats" className='font-bold hover:underline border py-1 px-2'>Stats</Link>
                     <Link onClick={() => {
                         // setLoading(true)
-                    }} href="/funders" className='font-bold hover:underline'>Funders</Link>
+                    }} href="/funders" className='font-bold hover:underline border py-1 px-2'>Funders</Link>
                 </div>
                 {isAuthenticated ? <> 
                  <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={logout}>

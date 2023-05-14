@@ -18,12 +18,14 @@ import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import LoadingModal from './LoadingModal ';
 // import { data, states } from './makeData';
 
 const Table = ({ data, page }) => {
     const router = useRouter()
     const [tableData, setTableData] = useState(() => data);
     const [validationErrors, setValidationErrors] = useState({});
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (!data.length > 0) return;
@@ -53,6 +55,7 @@ const Table = ({ data, page }) => {
     const handleDeleteRow = useCallback(
         async (row) => {
             if (!confirm(`Are you sure you want to delete this data?`)) return;
+            setLoading(true)
             //send api delete request here, then refetch or update local table data for re-render
             var url = page ? `http://localhost:8000/submittedApplications/${row.original.submittedApplication_id}/` : `http://localhost:8000/applications/${row.original.application_id}/`;
             var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json' } }).catch(err => console.log(err))
@@ -60,6 +63,7 @@ const Table = ({ data, page }) => {
             if (res.status === 204) {
                 tableData.splice(row.index, 1);
                 setTableData([...tableData]);
+                setLoading(false)
             }
         },
         [page, tableData],
@@ -141,6 +145,7 @@ const Table = ({ data, page }) => {
 
     return (
         <>
+            <LoadingModal loading={loading} />
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {

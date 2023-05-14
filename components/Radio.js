@@ -3,6 +3,7 @@
 import React from 'react'
 
 const RadioFeild = (props) => {
+    const checkedOption = props.formData[props.name]
     return (<>
 
         <div className="flex items-center">
@@ -17,6 +18,7 @@ const RadioFeild = (props) => {
                             disabled={props.disabled}
                             onChange={props.onChange}
                             value={option}
+                            checked={option === checkedOption}
                             className='cursor-pointer px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' />
                     </div>
                 )
