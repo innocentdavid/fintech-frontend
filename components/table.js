@@ -57,7 +57,7 @@ const Table = ({ data, page }) => {
             if (!confirm(`Are you sure you want to delete this data?`)) return;
             setLoading(true)
             //send api delete request here, then refetch or update local table data for re-render
-            var url = page ? `${process.env.BACKEND_BASE_URL}/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.BACKEND_BASE_URL}/applications/${row.original.application_id}/`;
+            var url = page ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${row.original.application_id}/`;
             var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }).catch(err => console.log(err))
             // console.log(res);
             if (res.status === 204) {

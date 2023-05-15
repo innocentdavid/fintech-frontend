@@ -166,7 +166,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             status_description: 'Submitted',
             funder_names: selectedFundersArray
         }
-        const res = await axios.post(`${process.env.BACKEND_BASE_URL}/submittedApplications/`, formData, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -630,7 +630,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
         setLoading(true)
         console.log({ pdfToAdd });
         // return;
-        const baseUrl = `${process.env.BACKEND_BASE_URL}/pdfs/`
+        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
         const config = {
             headers: {
                 // 'Content-Type': 'application/json',
@@ -764,7 +764,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
 }
 
 const Viewer = ({ pdfObj, setShowPdfModal }) => {
-    const baseUrl = `${process.env.BACKEND_BASE_URL}${pdfObj?.pdf_urls}`
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${pdfObj?.pdf_urls}`
 
     return (<>
         <div className="fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">

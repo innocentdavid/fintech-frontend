@@ -40,7 +40,7 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(context) {
   const cookies = parseCookies(context)
-  const res = await axios.get(`${process.env.BACKEND_BASE_URL}/applications/`, {
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

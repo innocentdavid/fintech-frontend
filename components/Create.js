@@ -144,7 +144,7 @@ const Create = ({ application }) => {
         try {
             var res;
             if (application){
-                res = await axios.put(`${process.env.BACKEND_BASE_URL}/applications/${application?.application_id}/`, formData, {
+                res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${application?.application_id}/`, formData, {
                     headers:{
                         'Content-Type': 'application/json'
                     },
@@ -812,7 +812,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
         setLoading(true)
         // console.log({ formData2 });
         // return;
-        const baseUrl = `${process.env.BACKEND_BASE_URL}/pdfs/`
+        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
         const config = {
             headers: {
                 // 'Content-Type': 'application/json',
