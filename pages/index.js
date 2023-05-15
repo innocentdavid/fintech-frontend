@@ -8,7 +8,9 @@ import axios from 'axios';
 import { getCookie } from '../utils/helpers';
 import { parseCookies } from 'nookies';
 
-export default function Home({ data }) {
+// export default function Home({ data }) {
+export default function Home() {
+  const data = []
   const [applications, setApplications] = useState(data)
 
   // get applications
@@ -38,21 +40,21 @@ export default function Home({ data }) {
 
 
 
-export async function getServerSideProps(context) {
-  const cookies = parseCookies(context)
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-    },
-    // withCredentials: true
-  }).catch(err => {
-    // console.log(err);
-  });
+// export async function getServerSideProps(context) {
+//   const cookies = parseCookies(context)
+//   const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+//     },
+//     // withCredentials: true
+//   }).catch(err => {
+//     // console.log(err);
+//   });
 
-  return {
-    props: {
-      data: res?.data ?? [],
-    },
-  };
-}
+//   return {
+//     props: {
+//       data: res?.data ?? [],
+//     },
+//   };
+// }

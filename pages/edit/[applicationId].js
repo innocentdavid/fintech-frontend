@@ -8,6 +8,8 @@ import { parseCookies } from 'nookies';
 
 
 const ApplicationDetail = ({ application }) => {
+// const ApplicationDetail = () => {
+    // const application = {}
 
     return (
 
@@ -33,6 +35,8 @@ export async function getServerSideProps(context) {
     }).catch(err => {
         // console.log(err);
     });
+    
+    console.log(res);
 
     return {
         props: {

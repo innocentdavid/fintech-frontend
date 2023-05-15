@@ -13,7 +13,12 @@ const API = axios.create({
     }
 })
 
-const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplications }) => {
+// const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplications }) => {
+const ApplicationDetail = () => {
+    const application = {}
+    const pdfs = []
+    const fundersResponse = []
+    const submittedApplications = []
 
     return (
 
@@ -34,37 +39,37 @@ const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplic
 export default ApplicationDetail
 
 
-export async function getServerSideProps(context) {
-    // const cookies = context.req.cookies; 
-    const cookies = parseCookies(context)
-    const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${context.params.applicationId}/`, {
-        headers: {
-            //  'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${cookies['jwt']}`
-        },
-        withCredentials: true,
-    }).catch(err => { console.log(err) });
+// export async function getServerSideProps(context) {
+//     // const cookies = context.req.cookies; 
+//     const cookies = parseCookies(context)
+//     const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${context.params.applicationId}/`, {
+//         headers: {
+//             //  'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${cookies['jwt']}`
+//         },
+//         withCredentials: true,
+//     }).catch(err => { console.log(err) });
 
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
-    const response = await axios.get(baseUrl, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${cookies['jwt']}`
-        },
-        withCredentials: true,
-    }).catch(err => { console.log(err) });
+//     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
+//     const response = await axios.get(baseUrl, {
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${cookies['jwt']}`
+//         },
+//         withCredentials: true,
+//     }).catch(err => { console.log(err) });
 
-    return {
-        props: {
-            application: appRes.data ?? {},
-            pdfs: response?.data ?? [],
-            fundersResponse: [],
-            submittedApplications: [],
-        }
-    };
-}
+//     return {
+//         props: {
+//             application: appRes.data ?? {},
+//             pdfs: response?.data ?? [],
+//             fundersResponse: [],
+//             submittedApplications: [],
+//         }
+//     };
+// }
 
 // export async function getStaticProps({ params }) {
 //     const appRes = await API.get(`/${params.applicationId}/`)
