@@ -7,7 +7,7 @@ import { minMaxValidator, scrollToInput } from "../utils/helpers";
 import { parseCookies } from "nookies";
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/funders/',
+    baseURL: `${process.env.BACKEND_BASE_URL}/funders/`,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ export default Funders;
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
-    const res = await axios.get('http://localhost:8000/funders/', {
+    const res = await axios.get(`${process.env.BACKEND_BASE_URL}/funders/`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

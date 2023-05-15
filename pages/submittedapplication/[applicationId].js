@@ -6,7 +6,7 @@ import Application from '../../components/application'
 import { parseCookies } from 'nookies'
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/submittedApplications/',
+    baseURL: `${process.env.BACKEND_BASE_URL}/submittedApplications/`,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export default ApplicationDetail
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies; 
     const cookies = parseCookies(context)
-    const appRes = await axios.get(`http://localhost:8000/submittedApplications/${context.params.applicationId}/`, {
+    const appRes = await axios.get(`${process.env.BACKEND_BASE_URL}/submittedApplications/${context.params.applicationId}/`, {
         headers: {
             //  'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export async function getServerSideProps(context) {
         withCredentials: true,
     }).catch(err => { console.log(err) });
 
-    const baseUrl = `http://localhost:8000/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
+    const baseUrl = `${process.env.BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
     const response = await axios.get(baseUrl, {
         headers: {
             'Accept': 'application/json',
@@ -69,7 +69,7 @@ export async function getServerSideProps(context) {
 // export async function getStaticProps({ params }) {
 //     const appRes = await API.get(`/${params.applicationId}/`)
     
-//     const baseUrl = `http://localhost:8000/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
+//     const baseUrl = `${process.env.BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
 //     const config = {
 //         headers: {
 //             'Accept': 'application/json',
@@ -91,7 +91,7 @@ export async function getServerSideProps(context) {
 // }
 
 // export async function getStaticPaths() {
-//     const apps = await axios.get('http://localhost:8000/submittedApplications/', {
+//     const apps = await axios.get(`${process.env.BACKEND_BASE_URL}/submittedApplications/`, {
 //         headers: {
 //             "Content-Type": 'application/json'
 //         }

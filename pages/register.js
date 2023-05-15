@@ -25,7 +25,7 @@ export default function Register() {
   };
 
   const API = axios.create({
-    baseURL: 'http://localhost:8000/',
+    baseURL: `${process.env.BACKEND_BASE_URL}/`,
     headers: {
       'Content-Type': 'application/json',
     },

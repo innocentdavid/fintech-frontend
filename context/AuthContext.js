@@ -7,7 +7,7 @@ import API from '../components/API';
 import { destroyCookie, setCookie } from 'nookies';
 
 const APIN = axios.create({
-    baseURL: 'http://localhost:8000/',
+    baseURL: `${process.env.BACKEND_BASE_URL}/`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (formData) => {
         setLoading(true)
-        const response = await axios.post('http://localhost:8000/api/login/', formData, {
+        const response = await axios.post(`${process.env.BACKEND_BASE_URL}/api/login/`, formData, {
             headers: {
                 'Content-Type': 'application/json',
             },

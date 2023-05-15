@@ -24,7 +24,7 @@ export default ApplicationDetail
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
-    const res = await axios.get(`http://localhost:8000/applications/${context.params.applicationId}/`, {
+    const res = await axios.get(`${process.env.BACKEND_BASE_URL}/applications/${context.params.applicationId}/`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
@@ -52,7 +52,7 @@ export async function getServerSideProps(context) {
 // }
 
 // export async function getStaticPaths() {
-//     const apps = await axios.get('http://localhost:8000/applications/', {
+//     const apps = await axios.get('${process.env.BACKEND_BASE_URL}/applications/', {
 //         headers: {
 //             "Content-Type": 'application/json'
 //         }
