@@ -51,7 +51,6 @@ export const AuthProvider = ({ children }) => {
     }, [refreshUser])
 
     const login = async (formData) => {
-        console.log(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`);
         setLoading(true)
         const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, formData, {
             headers: {
