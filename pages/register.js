@@ -37,18 +37,23 @@ export default function Register() {
     e.preventDefault();
     if(formData.password !== formData.cpassword) return alert("Your password must be the same!")
     setLoading(true)
-    const response = await API.post('api/register/', formData).catch(err => {
-      
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/register/`, formData, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      withCredentials: true
+    }).catch(err => {
+      console.log(err);
+      setLoading(false)
     })
-    // console.log(response);
+    console.log(response);
     if (response?.data?.message && response?.data?.message === 'success' ) {
       router.push('/')
     }else{
-      alert(response.data.message)
+      alert(response?.data?.message)
       setLoading(false)
-      return;
     }
-    // setLoading(false)
+    setLoading(false)
   };
 
   return (<>

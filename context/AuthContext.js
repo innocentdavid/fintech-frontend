@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (formData) => {
         setLoading(true)
+        console.log(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`);
         const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -61,7 +62,12 @@ export const AuthProvider = ({ children }) => {
             console.log(err);
             setLoading(false)
         }))
-        if (response?.data?.message && response?.data?.message !== "success") {
+        
+        // console.log(response);
+        // setLoading(false)
+        // return;
+        
+        if (response?.data?.message && response?.data?.message !== "Login successful.") {
             alert(response.data.message)
             setLoading(false)
             return;
