@@ -5,9 +5,7 @@ import Table from '../components/table'
 import API from '../components/API';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getCookie } from '../utils/helpers';
 import { parseCookies } from 'nookies';
-import { cookies } from "next/headers";
 
 export default function Home({ data }) {
 // export default function Home() {
@@ -43,32 +41,29 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(context) {
   const Ncookies = parseCookies(context);
-  console.log("Ncookies: ");
-  console.log(Ncookies);
-  // const c = cookies().get('jwt')
-  // console.log("c: ");
-  // console.log(c);
+  // console.log("Ncookies: ");
+  // console.log(Ncookies);
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+    var data = []
+    if (Ncookies){
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Ncookies['jwt']}` // get JWT token from cookie
+        Authorization: `Bearer ${Ncookies['jwt']}`, // get JWT token from cookie
       },
-      credentials: 'include'
-    });
-    console.log(res);
-
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
+      // withCredentials: true
+      }).catch(err => {
+        console.log(err);
+      });
+      
+      if(res?.data){
+        data = res.data
+      }
     }
-
-    const data = await res.json();
-    // console.log(data);
-
     return {
       props: {
-        data: data ?? [],
+        data
       },
     };
   } catch (error) {
@@ -80,26 +75,3 @@ export async function getServerSideProps(context) {
     };
   }
 }
-
-
-// export async function getServerSideProps(context) {
-//   const cookies = parseCookies(context)
-//   console.log(cookies)
-//   const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-//     },
-//     withCredentials: true
-//   }).catch(err => {
-//     console.log(err);
-//   });
-  
-//   console.log(res);
-
-//   return {
-//     props: {
-//       data: res?.data ?? [],
-//     },
-//   };
-// }

@@ -3,9 +3,9 @@ import axios from "axios";
 const API = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/`,
     headers: {
-        // 'Content-Type': 'application/json',
-        // withCredentials: true
+        'Content-Type': 'application/json',
     },
+    withCredentials: true
 })
 
 export const handleLogout = async () => {

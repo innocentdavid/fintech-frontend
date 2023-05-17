@@ -60,18 +60,21 @@ export const AuthProvider = ({ children }) => {
             withCredentials: true
         }).catch((err => {
             console.log(err);
+            alert(err?.response?.data?.message)
+            console.log(err?.response?.data?.message)
             setLoading(false)
         }))
-        
-        // console.log(response);
-        // setLoading(false)
-        // return;
         
         if (response?.data?.message && response?.data?.message !== "Login successful.") {
             alert(response.data.message)
             setLoading(false)
             return;
         }
+        
+        // console.log(response);
+        // setLoading(false)
+        // return;
+        
         setRefreshUser(!refreshUser)
         response?.data && router.push('/')
         setLoading(false)
@@ -88,12 +91,12 @@ export const AuthProvider = ({ children }) => {
             setUser(null)
             router.push('/login')
             // setCookie({}, 'jwt', '', { expires: new Date(0) })
-            document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            // document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             // To delete a cookie on the client side
-            destroyCookie(null, 'jwt');
+            // destroyCookie(null, 'jwt');
 
             // To delete a cookie on the server side
-            destroyCookie({ res }, 'jwt');
+            // destroyCookie({ res }, 'jwt');
 
         } else {
             alert('Something went wrong')
