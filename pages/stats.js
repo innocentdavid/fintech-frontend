@@ -7,9 +7,9 @@ import Extrabox from '../components/extrabox';
 import { formatNumber } from '../utils/helpers';
 import { parseCookies } from 'nookies';
 
-export default function Stats({ data }) {
-// export default function Stats() {
-//   const data = []
+// export default function Stats({ data }) {
+export default function Stats() {
+  const data = []
 
   return (<>
     <div className=' flex md:flex-row flex-col my-[40px] md:my-[70px] w-full '>
@@ -64,21 +64,21 @@ export default function Stats({ data }) {
   </>)
 }
 
-export async function getServerSideProps(context) {
-  const cookies = parseCookies(context)
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_starts/`, {
-    headers: {
-      "Content-Type": 'application/json',
-      'Authorization': `Bearer ${cookies['jwt']}`
-    },
-    withCredentials: true
-  }).catch(err => {
-    console.log(err);
-  });
+// export async function getServerSideProps(context) {
+//   const cookies = parseCookies(context)
+//   const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_starts/`, {
+//     headers: {
+//       "Content-Type": 'application/json',
+//       'Authorization': `Bearer ${cookies['jwt']}`
+//     },
+//     withCredentials: true
+//   }).catch(err => {
+//     console.log(err);
+//   });
 
-  return {
-    props: {
-      data: res?.data ?? {},
-    },
-  };
-}
+//   return {
+//     props: {
+//       data: res?.data ?? {},
+//     },
+//   };
+// }

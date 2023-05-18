@@ -7,9 +7,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { parseCookies } from 'nookies';
 
-export default function Home({ data }) {
-// export default function Home() {
-//   const data = []
+// export default function Home({ data }) {
+export default function Home() {
+  const data = []
   const [applications, setApplications] = useState(data)
 
   // get applications
@@ -37,41 +37,39 @@ export default function Home({ data }) {
   )
 }
 
+// export async function getServerSideProps(context) {
+//   const Ncookies = parseCookies(context);
+//   // console.log("Ncookies: ");
+//   // console.log(Ncookies);
 
-
-export async function getServerSideProps(context) {
-  const Ncookies = parseCookies(context);
-  // console.log("Ncookies: ");
-  // console.log(Ncookies);
-
-  try {
-    var data = []
-    if (Ncookies){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Ncookies['jwt']}`, // get JWT token from cookie
-      },
-      // withCredentials: true
-      }).catch(err => {
-        console.log(err);
-      });
+//   try {
+//     var data = []
+//     if (Ncookies){
+//       const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${Ncookies['jwt']}`, // get JWT token from cookie
+//       },
+//       // withCredentials: true
+//       }).catch(err => {
+//         console.log(err);
+//       });
       
-      if(res?.data){
-        data = res.data
-      }
-    }
-    return {
-      props: {
-        data
-      },
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      props: {
-        data: [],
-      },
-    };
-  }
-}
+//       if(res?.data){
+//         data = res.data
+//       }
+//     }
+//     return {
+//       props: {
+//         data
+//       },
+//     };
+//   } catch (error) {
+//     console.log(error);
+//     return {
+//       props: {
+//         data: [],
+//       },
+//     };
+//   }
+// }
