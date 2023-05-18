@@ -42,9 +42,9 @@ export const AuthProvider = ({ children }) => {
             if (response?.data.message === 'success') {
                 setUser(response?.data);
                 setIsAuthenticated(true)
-            }else{
+            } else {
                 setUser(null);
-                setIsAuthenticated(false)                
+                setIsAuthenticated(false)
             }
         };
         fetch()
@@ -64,21 +64,25 @@ export const AuthProvider = ({ children }) => {
             console.log(err?.response?.data?.message)
             setLoading(false)
         }))
-        
-        if (response?.data?.message && response?.data?.message !== "Login successful.") {
-            alert(response.data.message)
+
+        if (response) {
+            if (response?.data?.message && response?.data?.message !== "Login successful.") {
+                alert(response.data.message)
+                setLoading(false)
+                return;
+            }
+
+            console.log(response);
             setLoading(false)
             return;
+
+            setRefreshUser(!refreshUser)
+            response?.data && router.push('/')
+            setLoading(false)
+            return response
+        }else{
+            console.log(response)
         }
-        
-        // console.log(response);
-        // setLoading(false)
-        // return;
-        
-        setRefreshUser(!refreshUser)
-        response?.data && router.push('/')
-        setLoading(false)
-        return response
     };
 
     const logout = async () => {
