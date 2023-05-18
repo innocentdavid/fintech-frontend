@@ -52,59 +52,110 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (formData) => {
         setLoading(true)
-        console.log(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`);
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, formData, {
+        // const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, formData, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     withCredentials: true
+        // }).catch((err => {
+        //     console.log(err);
+        //     alert(err?.response?.data?.message)
+        //     console.log(err?.response?.data?.message)
+        //     setLoading(false)
+        // }))
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            withCredentials: true
-        }).catch((err => {
-            console.log(err);
-            alert(err?.response?.data?.message)
-            console.log(err?.response?.data?.message)
-            setLoading(false)
-        }))
+            body: JSON.stringify(formData),
+            credentials: "include",
+        });
 
-        if (response) {
-            if (response?.data?.message && response?.data?.message !== "Login successful.") {
-                alert(response.data.message)
+        console.log(response);
+        if (response.status === 200) {
+            const data = await response.json();
+            console.log(data);
+            if (data?.message && data?.message !== "Login successful.") {
+                alert(data?.message)
                 setLoading(false)
                 return;
             }
 
-            console.log(response);
-            setLoading(false)
-            return;
+            // console.log(response);
+            // setLoading(false)
+            // return;
 
             setRefreshUser(!refreshUser)
-            response?.data && router.push('/')
+            data?.message === 'Login successful.' && router.push('/')
             setLoading(false)
             return response
-        }else{
-            console.log(response)
+        } else {
+            const error = await response.json();
+            console.log(error);
+            alert(error.message);
+            return error;
         }
+
+        // if (response) {
+        //     if (response?.data?.message && response?.data?.message !== "Login successful.") {
+        //         alert(response.data.message)
+        //         setLoading(false)
+        //         return;
+        //     }
+
+        //     // console.log(response);
+        //     // setLoading(false)
+        //     // return;
+
+        //     setRefreshUser(!refreshUser)
+        //     response?.data && router.push('/')
+        //     setLoading(false)
+        //     return response
+        // }else{
+        //     console.log(response)
+        // }
     };
 
     const logout = async () => {
         setLoading(true)
-        const res = await handleLogout().catch(err => {
-            console.log(err);
-            setLoading(false)
-        })
-        if (res.message) {
+        // const res = await handleLogout().catch(err => {
+        //     console.log(err);
+        //     setLoading(false)
+        // })
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/logout/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+            credentials: "include",
+        });
+        if (response.status === 200) {
+            const data = await response.json();
+            console.log(data);
             setUser(null)
             router.push('/login')
-            // setCookie({}, 'jwt', '', { expires: new Date(0) })
-            // document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            // To delete a cookie on the client side
-            // destroyCookie(null, 'jwt');
-
-            // To delete a cookie on the server side
-            // destroyCookie({ res }, 'jwt');
-
         } else {
-            alert('Something went wrong')
+            const error = await response.json();
+            console.log(error);
+            alert(error.message);
         }
+        // if (res.message) {
+        //     setUser(null)
+        //     router.push('/login')
+        //     // setCookie({}, 'jwt', '', { expires: new Date(0) })
+        //     // document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        //     // To delete a cookie on the client side
+        //     // destroyCookie(null, 'jwt');
+
+        //     // To delete a cookie on the server side
+        //     // destroyCookie({ res }, 'jwt');
+
+        // } else {
+        //     alert('Something went wrong')
+        // }
         setLoading(false)
     };
 
