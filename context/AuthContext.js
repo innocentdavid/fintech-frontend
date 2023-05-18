@@ -95,8 +95,10 @@ export const AuthProvider = ({ children }) => {
             const error = await response.json();
             console.log(error);
             alert(error.message);
+            setLoading(false)
             return error;
         }
+        setLoading(false)
 
         // if (response) {
         //     if (response?.data?.message && response?.data?.message !== "Login successful.") {
@@ -135,12 +137,14 @@ export const AuthProvider = ({ children }) => {
         if (response.status === 200) {
             const data = await response.json();
             console.log(data);
+            setLoading(false)
             setUser(null)
             router.push('/login')
         } else {
             const error = await response.json();
             console.log(error);
             alert(error.message);
+            setLoading(false)
         }
         // if (res.message) {
         //     setUser(null)
