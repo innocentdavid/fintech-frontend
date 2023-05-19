@@ -94,31 +94,32 @@ export default function Home({ data }) {
 
 
 export async function getServerSideProps(context) {
+  const c = context.req.cookies
+  console.log(c['jwt']);
   // const cookies = new Cookies(context.req);
   // const cookieValue = cookies.get('jwt');
-  const Ncookies = parseCookies(context);
-  console.log("Ncookies: ");
-  console.log(Ncookies);
+  // const Ncookies = parseCookies(context);
+  // console.log("Ncookies: ");
+  // console.log(Ncookies);
 
   try {
     var data = []
-    if (Ncookies['jwt']){
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${Ncookies['jwt']}`, // get JWT token from cookie
-          Cookie: `jwt=${Ncookies['jwt']}`,
-        },
-        credentials: 'include',
-      }).catch(err => console.log(err));
-      console.log(res);
-      if(res.status === 200){
-        data = await res?.json();     
-      }
+    if (c['jwt']){
+      // const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${c['jwt']}`, // get JWT token from cookie
+      //     Cookie: `jwt=${c['jwt']}`,
+      //   },
+      //   credentials: 'include',
+      // }).catch(err => console.log(err));
+      // // console.log(res);
+      // if(res.status === 200){
+      //   data = await res?.json();     
+      // }
     }
     
-
     return {
       props: {
         data,

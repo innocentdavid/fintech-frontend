@@ -48,6 +48,9 @@ export default function Register() {
     })
     console.log(response);
     if (response?.data?.message && response?.data?.message === 'success' ) {
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 1);
+      document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
       alert(response?.data?.message)
