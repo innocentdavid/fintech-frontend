@@ -9,8 +9,8 @@ import { parseCookies } from 'nookies';
 // import Cookies from 'cookies';
 
 export default function Home({ data }) {
-// export default function Home() {
-//   const data = []
+  // export default function Home() {
+  //   const data = []
   const [applications, setApplications] = useState(data)
 
   // get applications
@@ -95,10 +95,27 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(context) {
   const c = context.req.cookies
-  console.log(c['jwt']);
+  // console.log(c['jwt']);
+  var data = []
+  if (c['jwt']) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${c['jwt']}`, // get JWT token from cookie
+      },
+      credentials: 'include',
+    }).catch(err => {
+      console.log(err)
+    });
+    // console.log(res);
+    if (res.status === 200) {
+      data = await res?.json();
+    }
+  }
   return {
     props: {
-      data: [],
+      data: data,
     },
   };
   // const cookies = new Cookies(context.req);
@@ -124,7 +141,7 @@ export async function getServerSideProps(context) {
   //     //   data = await res?.json();     
   //     // }
   //   }
-    
+
   //   return {
   //     props: {
   //       data,
