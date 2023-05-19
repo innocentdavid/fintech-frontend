@@ -5,12 +5,12 @@ import Table from '../components/table'
 import API from '../components/API';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-// import { parseCookies } from 'nookies';
-import Cookies from 'cookies';
+import { parseCookies } from 'nookies';
+// import Cookies from 'cookies';
 
-// export default function Home({ data }) {
-export default function Home() {
-  const data = []
+export default function Home({ data }) {
+// export default function Home() {
+//   const data = []
   const [applications, setApplications] = useState(data)
 
   // get applications
@@ -45,12 +45,12 @@ export default function Home() {
 //   const cookieValue = Ncookies.get('jwt');
 //   console.log("cookieValue: ");
 //   console.log(cookieValue);
-  
+
 //   const cookies = context?.req?.cookies;
 //   console.log("cookies: ");
 //   console.log(cookies);
 //   // console.log(cookies['jwt']);
-  
+
 //   // const jwtCookie = cookies.get('jwt');
 //   // console.log(jwtCookie);
 //   // const Ncookies = parseCookies(context);
@@ -70,7 +70,7 @@ export default function Home() {
 //       }).catch(err => {
 //         console.log(err);
 //       });
-      
+
 //       if(res?.data){
 //         data = res.data
 //       }
@@ -93,33 +93,43 @@ export default function Home() {
 
 
 
-// export async function getServerSideProps(context) {
-//   const cookies = new Cookies(context.req);
-//   const cookieValue = cookies.get('jwt');
+export async function getServerSideProps(context) {
+  // const cookies = new Cookies(context.req);
+  // const cookieValue = cookies.get('jwt');
+  const Ncookies = parseCookies(context);
+  console.log("Ncookies: ");
+  console.log(Ncookies);
 
-//   try {
-//     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-//       method: 'GET',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${cookieValue}`, // get JWT token from cookie
-//       },
-//       credentials: 'include',
-//     });
+  try {
+    var data = []
+    if (Ncookies['jwt']){
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Ncookies['jwt']}`, // get JWT token from cookie
+          Cookie: `jwt=${Ncookies['jwt']}`,
+        },
+        credentials: 'include',
+      }).catch(err => console.log(err));
+      console.log(res);
+      if(res.status === 200){
+        data = await res?.json();     
+      }
+    }
+    
 
-//     const data = await res.json();
-
-//     return {
-//       props: {
-//         data,
-//       },
-//     };
-//   } catch (error) {
-//     // console.log(error);
-//     return {
-//       props: {
-//         data: [],
-//       },
-//     };
-//   }
-// }
+    return {
+      props: {
+        data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      props: {
+        data: [],
+      },
+    };
+  }
+}

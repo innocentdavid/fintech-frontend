@@ -1,11 +1,17 @@
 import Link from 'next/link'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FaBars, FaTimes, FaUserCircle } from 'react-icons/fa'
 import { AuthContext } from '../context/AuthContext'
 
 export default function Nav() {
-    const { isAuthenticated, user, logout } = useContext(AuthContext);
+    const { isAuthenticated, user, logout, refreshUser, setRefreshUser } = useContext(AuthContext);
     const [showMobileMenu, setShowMobileMenu] = useState(false)
+    
+    useEffect(() => {
+        setRefreshUser(refreshUser)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshUser])
+    
 
     return (<>
         <header className="flex gap-10 items-center justify-between p-5 bg-black text-white relative">

@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
         //     console.log(err?.response?.data?.message)
         //     setLoading(false)
         // }))
-        
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, {
             method: "POST",
             headers: {
@@ -73,13 +73,17 @@ export const AuthProvider = ({ children }) => {
             credentials: "include",
         });
 
-        console.log(response);
+        // console.log(response);
+        // setLoading(false)
+        // router.push('/')
+        // return;
         if (response.status === 200) {
             const data = await response.json();
             console.log(data);
             if (data?.message && data?.message !== "Login successful.") {
                 alert(data?.message)
                 setLoading(false)
+                setRefreshUser(!refreshUser)
                 return;
             }
 
@@ -88,17 +92,24 @@ export const AuthProvider = ({ children }) => {
             // return;
 
             setRefreshUser(!refreshUser)
-            data?.message === 'Login successful.' && router.push('/')
-            setLoading(false)
-            return response
+            if (data?.message === 'Login successful.') {
+                const expirationDate = new Date();
+                expirationDate.setDate(expirationDate.getDate() + 1);
+                document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
+                // setCookie('fjwt', data.token, { expires: expirationDate.toUTCString() })
+                router.push('/')
+                setLoading(false)
+                return response
+            }
         } else {
             const error = await response.json();
             console.log(error);
             alert(error.message);
             setLoading(false)
+            setRefreshUser(!refreshUser)
             return error;
         }
-        setLoading(false)
+        // setLoading(false)
 
         // if (response) {
         //     if (response?.data?.message && response?.data?.message !== "Login successful.") {
@@ -131,14 +142,21 @@ export const AuthProvider = ({ children }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({}),
+            body: JSON.stringify({ message: "logout" }),
             credentials: "include",
         });
+        console.log(response);
         if (response.status === 200) {
             const data = await response.json();
             console.log(data);
             setLoading(false)
             setUser(null)
+            setCookie({}, 'jwt', '', { expires: new Date(0) })
+            document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            // To delete a cookie on the client side
+            destroyCookie(null, 'jwt');
+            // To delete a cookie on the server side
+            destroyCookie({ response }, 'jwt');
             router.push('/login')
         } else {
             const error = await response.json();
@@ -165,7 +183,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider
-            value={{ isAuthenticated, user, login, logout }}
+            value={{ isAuthenticated, user, login, logout, refreshUser, setRefreshUser }}
         >
             {loading && < LoadingModal loading={loading} />}
             {children}
