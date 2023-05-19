@@ -15,9 +15,10 @@ const API = axios.create({
     withCredentials: true
 })
 
-// const Funders = ({ data }) => {
-const Funders = () => {
-    const data = []
+const Funders = ({ data }) => {
+// const Funders = () => {
+//     const data = []
+    
     const [fundersList, setFundersList] = useState(data)
     const [showAddModal, setShowAddModal] = useState(false)
     const [loading, setLoading] = useState(false);
@@ -174,22 +175,22 @@ const Funders = () => {
 
 export default Funders;
 
-// export async function getServerSideProps(context) {
-//     // const cookies = context.req.cookies;
-//     const cookies = parseCookies(context)
-//     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`, {
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-//         },
-//         withCredentials: true
-//     }).catch(err => {
-//         // console.log(err);
-//     });
+export async function getServerSideProps(context) {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+        },
+        withCredentials: true
+    }).catch(err => {
+        // console.log(err);
+    });
 
-//     return {
-//         props: {
-//             data: res?.data ?? [],
-//         },
-//     };
-// }
+    return {
+        props: {
+            data: res?.data ?? [],
+        },
+    };
+}
