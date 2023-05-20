@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false)
     const [refreshUser, setRefreshUser] = useState(false)
+    const checkAuth = router.route !== "/login" || router.route === "/register";
 
     useEffect(() => {
         const fetch = async () => {
@@ -45,25 +46,16 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setUser(null);
                 setIsAuthenticated(false)
+                if (checkAuth && !response?.data){
+                    router.push('/login')
+                }
             }
         };
         fetch()
-    }, [refreshUser])
+    }, [checkAuth, refreshUser, router])
 
     const login = async (formData) => {
         setLoading(true)
-        // const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, formData, {
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     withCredentials: true
-        // }).catch((err => {
-        //     console.log(err);
-        //     alert(err?.response?.data?.message)
-        //     console.log(err?.response?.data?.message)
-        //     setLoading(false)
-        // }))
-
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login/`, {
             method: "POST",
             headers: {
@@ -77,6 +69,7 @@ export const AuthProvider = ({ children }) => {
         // setLoading(false)
         // router.push('/')
         // return;
+        
         if (response.status === 200) {
             const data = await response.json();
             console.log(data);
@@ -96,7 +89,6 @@ export const AuthProvider = ({ children }) => {
                 const expirationDate = new Date();
                 expirationDate.setDate(expirationDate.getDate() + 1);
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
-                // setCookie('fjwt', data.token, { expires: expirationDate.toUTCString() })
                 router.push('/')
                 setLoading(false)
                 return response
@@ -109,34 +101,10 @@ export const AuthProvider = ({ children }) => {
             setRefreshUser(!refreshUser)
             return error;
         }
-        // setLoading(false)
-
-        // if (response) {
-        //     if (response?.data?.message && response?.data?.message !== "Login successful.") {
-        //         alert(response.data.message)
-        //         setLoading(false)
-        //         return;
-        //     }
-
-        //     // console.log(response);
-        //     // setLoading(false)
-        //     // return;
-
-        //     setRefreshUser(!refreshUser)
-        //     response?.data && router.push('/')
-        //     setLoading(false)
-        //     return response
-        // }else{
-        //     console.log(response)
-        // }
     };
 
     const logout = async () => {
         setLoading(true)
-        // const res = await handleLogout().catch(err => {
-        //     console.log(err);
-        //     setLoading(false)
-        // })
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/logout/`, {
             method: "POST",
             headers: {

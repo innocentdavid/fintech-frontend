@@ -38,61 +38,6 @@ export default function Home({ data }) {
   )
 }
 
-
-
-// export async function getServerSideProps(context) {
-//   const Ncookies = new Cookies(context.req);
-//   const cookieValue = Ncookies.get('jwt');
-//   console.log("cookieValue: ");
-//   console.log(cookieValue);
-
-//   const cookies = context?.req?.cookies;
-//   console.log("cookies: ");
-//   console.log(cookies);
-//   // console.log(cookies['jwt']);
-
-//   // const jwtCookie = cookies.get('jwt');
-//   // console.log(jwtCookie);
-//   // const Ncookies = parseCookies(context);
-//   // console.log("Ncookies: ");
-//   // console.log(Ncookies);
-
-//   try {
-//     var data = []
-//     // if (cookies['jwt']){
-//       console.log('eysdkl');
-//       const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//           Authorization: `Bearer ${cookieValue}`, // get JWT token from cookie
-//       },
-//       withCredentials: true
-//       }).catch(err => {
-//         console.log(err);
-//       });
-
-//       if(res?.data){
-//         data = res.data
-//       }
-//     // }
-//     return {
-//       props: {
-//         data
-//       },
-//     };
-//   } catch (error) {
-//     console.log(error);
-//     return {
-//       props: {
-//         data: [],
-//       },
-//     };
-//   }
-// }
-
-
-
-
 export async function getServerSideProps(context) {
   // const cookies = context.req.cookies;
   const cookies = parseCookies(context)

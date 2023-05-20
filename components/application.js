@@ -7,8 +7,9 @@ import axios from 'axios';
 import { useState } from 'react'
 import { useRouter } from 'next/router';
 import { AiFillFilePdf } from 'react-icons/ai';
-import API from './API';
+// import API from './API';
 import LoadingModal from './LoadingModal ';
+import { getCookie } from '../utils/helpers';
 
 const date = new Date();
 const year = date.getFullYear(); // e.g. 2022
@@ -99,15 +100,24 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         setLoading(true)
         // console.log({ formData });
 
-        try {
-            const res = await API.put(`/${application?.application_id}/`, formData)
-            // console.log(res);
-            if (res.statusText === "Created") {
-                setIsEditable(false)
-            }
-        } catch (error) {
-            console.log(error);
+        const res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${application?.application_id}/`, formData, {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getCookie('jwt')}`,
+            },
+            withCredentials: true,
+        }).catch(err => {
+            console.log(err);
+        })
+        // console.log(res);
+        if (res.statusText === "Created") {
+            setIsEditable(false)
         }
+        // try {
+        // } catch (error) {
+        //     console.log(error);
+        // }
         setLoading(false)
     };
 
@@ -135,14 +145,14 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
     // get Funders
     useEffect(() => {
-        if (fundersResponse){
+        if (fundersResponse) {
             var funders = []
-            if (submittedApplications.length > 0) {                
+            if (submittedApplications.length > 0) {
                 let submittedApplicationFunders = []
                 submittedApplications.forEach(application => {
-                    submittedApplicationFunders.push({...application?.funder, submitted: true })
+                    submittedApplicationFunders.push({ ...application?.funder, submitted: true })
                 });
-                
+
                 funders = mergeArrays(submittedApplicationFunders, removeDuplicates(fundersResponse, submittedApplicationFunders))
             } else {
                 funders = fundersResponse
@@ -150,7 +160,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             // console.log({funders});
             setFundersArray(funders)
             setFundersArrayO(funders)
-            setSelectedFundersArray([])            
+            setSelectedFundersArray([])
         }
     }, [application, fundersResponse, refreshFunders, submittedApplications])
 
@@ -169,12 +179,13 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${getCookie('jwt')}`,
             },
             withCredentials: true
         }).catch(err => {
             console.log(err);
         })
-        if(res?.statusText){
+        if (res?.statusText) {
             setShowFunders(false)
             const list = []
             selectedFundersArray.forEach(funder => {
@@ -208,15 +219,15 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
                         {!!fundersArray && fundersArray?.map((funder, index) => {
                             return (
-                                <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`} 
-                                onClick={() => {
-                                    if (funder?.submitted) return;
-                                    const selected = fundersArray.find(item => item.name === funder?.name)
-                                    const newSelectedFundersArray = [...selectedFundersArray, selected]
-                                    setSelectedFundersArray(newSelectedFundersArray)
-                                    const newFundersArray = fundersArray.filter(item => item.name !== funder?.name)
-                                    setFundersArray(newFundersArray)
-                                }}>{funder?.name} {funder?.submitted && <FaCheck />}</div>
+                                <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`}
+                                    onClick={() => {
+                                        if (funder?.submitted) return;
+                                        const selected = fundersArray.find(item => item.name === funder?.name)
+                                        const newSelectedFundersArray = [...selectedFundersArray, selected]
+                                        setSelectedFundersArray(newSelectedFundersArray)
+                                        const newFundersArray = fundersArray.filter(item => item.name !== funder?.name)
+                                        setFundersArray(newFundersArray)
+                                    }}>{funder?.name} {funder?.submitted && <FaCheck />}</div>
                             )
                         })}
                     </div>

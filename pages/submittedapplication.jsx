@@ -16,9 +16,9 @@ const API = axios.create({
     withCredentials: true
 })
 
-// export default function Home({data}) {
-export default function Home() {
-    const data = []
+export default function Home({data}) {
+// export default function Home() {
+//     const data = []
     const [applications, setApplications] = useState(data)
     const [applicationsLoading, setApplicationsLoading] = useState(false)
 
@@ -49,22 +49,22 @@ export default function Home() {
 }
 
 
-// export async function getServerSideProps(context) {
-//     // const cookies = context.req.cookies;
-//     const cookies = parseCookies(context)
-//     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, {
-//         headers: {
-//             "Content-Type": 'application/json',
-//             'Authorization': `Bearer ${cookies['jwt']}`
-//         },
-//         withCredentials: true
-//     }).catch(err => {
-//         // console.log(err);
-//     });
+export async function getServerSideProps(context) {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, {
+        headers: {
+            "Content-Type": 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}`
+        },
+        withCredentials: true
+    }).catch(err => {
+        // console.log(err);
+    });
 
-//     return {
-//         props: {
-//             data: res?.data ?? [],
-//         },
-//     };
-// }
+    return {
+        props: {
+            data: res?.data ?? [],
+        },
+    };
+}

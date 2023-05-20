@@ -6,12 +6,15 @@ import { AuthContext } from '../context/AuthContext'
 export default function Nav() {
     const { isAuthenticated, user, logout, refreshUser, setRefreshUser } = useContext(AuthContext);
     const [showMobileMenu, setShowMobileMenu] = useState(false)
-    
+
     useEffect(() => {
-        setRefreshUser(refreshUser)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refreshUser])
-    
+        if (!user) {
+            setRefreshUser(refreshUser)
+        }
+        console.log(user);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshUser, user])
+
 
     return (<>
         <header className="flex gap-10 items-center justify-between p-5 bg-black text-white relative">
@@ -38,15 +41,15 @@ export default function Nav() {
                         // setLoading(true)
                     }} href="/funders" className='font-bold hover:underline border py-1 px-2'>Funders</Link>
                 </div>
-                {isAuthenticated ? <> 
-                 <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={logout}>
-                    Log out
-                </div> 
-                <div className="mt-2 md:mt-0 flex flex-row-reverse items-center justify-end gap-3">
+                {isAuthenticated ? <>
+                    <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={logout}>
+                        Log out
+                    </div>
+                    <div className="mt-2 md:mt-0 flex flex-row-reverse items-center justify-end gap-3">
                         <div className="md:hidden lg:block">{user?.email}</div>
                         <div className="lg:hidden cursor-pointer" title={user?.email}><FaUserCircle /></div>
                     </div>
-                    </>:
+                </> :
                     <Link href={'/login'} className='mt-6 md:mt-0 text-sm font-bold cursor-pointer'>Login</Link>
                 }
             </div>

@@ -2,15 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
 import {
     Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     IconButton,
-    MenuItem,
-    Stack,
-    TextField,
     Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
@@ -19,6 +11,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import LoadingModal from './LoadingModal ';
+import { getCookie } from '../utils/helpers';
 // import { data, states } from './makeData';
 
 const Table = ({ data, page }) => {
@@ -58,7 +51,7 @@ const Table = ({ data, page }) => {
             setLoading(true)
             //send api delete request here, then refetch or update local table data for re-render
             var url = page ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${row.original.application_id}/`;
-            var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json' }, withCredentials: true }).catch(err => console.log(err))
+            var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getCookie('jwt')}`, }, withCredentials: true }).catch(err => console.log(err))
             // console.log(res);
             if (res.status === 204) {
                 tableData.splice(row.index, 1);

@@ -85,6 +85,7 @@ const Funders = ({ data }) => {
             setEmailError('')
             setPhoneError('')
             setShowAddModal(false)
+            seteditMode(false)
         }
         setLoading(false)
     }
@@ -96,7 +97,7 @@ const Funders = ({ data }) => {
 
             <div className="text-center text-3xl font-bold mt-20">Funders</div>
             <div className="relative w-fit mt-[40px]">
-                <button className="py-2 px-6 bg-black text-white font-semibold" onClick={() => setShowAddModal(!showAddModal)}>Add New</button>
+                <button className="py-2 px-6 bg-black text-white font-semibold" onClick={() => {seteditMode(false); setShowAddModal(!showAddModal)}}>Add New</button>
                 <form onSubmit={handleAdd}
                     className={`${showAddModal ? "opacity-100 z-10" : 'opacity-0 pointer-events-none'} absolute right-0 shadow-[0_0_3px_#00000040] bg-white to-black translate-x-[100%] translate-y-[-25%] px-4 py-2`}
                     style={{ transition: 'opacity 0.15s ease-in' }}>

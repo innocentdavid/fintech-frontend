@@ -155,10 +155,10 @@ const Create = ({ application }) => {
                 console.log(res);
                 if (res.statusText === "Created"){
                     setLoading(false)
-                    router.back()                    
+                    router.back()       
                 }
             }else{
-                res = await API.post("/", formData)                
+                res = await API.post("/", formData)  
                 setApplication_id(res?.data?.application_id)
                 setStep(1)
                 document.getElementById('step2').scrollIntoView()
