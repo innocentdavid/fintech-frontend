@@ -46,9 +46,9 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setUser(null);
                 setIsAuthenticated(false)
-                if (checkAuth && !response?.data){
-                    router.push('/login')
-                }
+                // if (checkAuth && !response?.data){
+                //     router.push('/login')
+                // }
             }
         };
         fetch()
