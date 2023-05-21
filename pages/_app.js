@@ -4,12 +4,13 @@ import Nav from '../components/Nav'
 import { AuthProvider } from '../context/AuthContext'
 import '../styles/globals.css'
 import LoadingModal from '../components/LoadingModal ';
+import { getCookie } from '../utils/helpers';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
   const isLoginOrRegister = router.route === "/login" || router.route === "/register";
-  
+
   useEffect(() => {
     const handleStart = () => setLoading(true);
     const handleComplete = () => setLoading(false);
@@ -23,7 +24,7 @@ function MyApp({ Component, pageProps }) {
       router.events.off('routeChangeComplete', handleComplete);
       router.events.off('routeChangeError', handleComplete);
     };
-  }, [router]);
+  }, [router])
   
   return (
     <AuthProvider>

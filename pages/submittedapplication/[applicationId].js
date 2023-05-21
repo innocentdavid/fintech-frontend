@@ -1,9 +1,12 @@
 
 
 import axios from 'axios'
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import Application from '../../components/application'
 import { parseCookies } from 'nookies'
+import { useRouter } from 'next/router'
+import { AuthContext } from '../../context/AuthContext'
+import { getCookie } from '../../utils/helpers'
 
 const API = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
@@ -19,6 +22,21 @@ const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplic
 //     const pdfs = []
 //     const fundersResponse = []
 //     const submittedApplications = []
+
+    const router = useRouter()
+    const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    useEffect(() => {
+        if (!user) {
+            setRefreshUser(refreshUser)
+            const token = getCookie('jwt')
+            // console.log(token);
+            if (!token) {
+                router.push('/login')
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshUser, user])
+  if (!user) { return(<></>) }
 
     return (
 

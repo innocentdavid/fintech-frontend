@@ -2,22 +2,31 @@ import Link from 'next/link'
 import React, { useContext, useEffect, useState } from 'react'
 import { FaBars, FaTimes, FaUserCircle } from 'react-icons/fa'
 import { AuthContext } from '../context/AuthContext'
+import { useRouter } from 'next/router';
+import { getCookie } from '../utils/helpers';
 
 export default function Nav() {
     const { isAuthenticated, user, logout, refreshUser, setRefreshUser } = useContext(AuthContext);
     const [showMobileMenu, setShowMobileMenu] = useState(false)
+    const router = useRouter()
 
     useEffect(() => {
         if (!user) {
             setRefreshUser(refreshUser)
+            const token = getCookie('jwt')
+            // console.log(token);
+            if (!token) {
+                router.push('/login')
+            }
         }
-        console.log(user);
+        // console.log(user);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshUser, user])
+  if (!user) { return(<></>) }
 
 
     return (<>
-        <header className="flex gap-10 items-center justify-between p-5 bg-black text-white relative">
+        {isAuthenticated && <header className="flex gap-10 items-center justify-between p-5 bg-black text-white relative">
             <Link onClick={() => {
                 // setLoading(true)
             }} href="/" className="text-lg font-bold">Fintech</Link>
@@ -53,6 +62,6 @@ export default function Nav() {
                     <Link href={'/login'} className='mt-6 md:mt-0 text-sm font-bold cursor-pointer'>Login</Link>
                 }
             </div>
-        </header>
+        </header>}
     </>)
 }

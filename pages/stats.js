@@ -4,12 +4,30 @@
 import axios from 'axios';
 import Boxfield from '../components/boxfield';
 import Extrabox from '../components/extrabox';
-import { formatNumber } from '../utils/helpers';
+import { formatNumber, getCookie } from '../utils/helpers';
 import { parseCookies } from 'nookies';
+import { useRouter } from 'next/router';
+import { AuthContext } from '../context/AuthContext';
+import { useContext, useEffect } from 'react';
 
 export default function Stats({ data }) {
 // export default function Stats() {
 //   const data = []
+
+  const router = useRouter()
+  const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+  useEffect(() => {
+    if (!user) {
+      setRefreshUser(refreshUser)
+      const token = getCookie('jwt')
+      // console.log(token);
+      if (!token) {
+        router.push('/login')
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshUser, user])
+  if (!user) { return(<></>) }
 
   return (<>
     <div className=' flex md:flex-row flex-col my-[40px] md:my-[70px] w-full '>

@@ -1,10 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaTimes } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import LoadingModal from "../components/LoadingModal ";
-import { minMaxValidator, scrollToInput } from "../utils/helpers";
+import { getCookie, minMaxValidator, scrollToInput } from "../utils/helpers";
 import { parseCookies } from "nookies";
+import { useRouter } from "next/router";
+import { AuthContext } from "../context/AuthContext";
 
 const API = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`,
@@ -31,6 +33,20 @@ const Funders = ({ data }) => {
     const [editMode, seteditMode] = useState(false)
     const [itemToEdit, setItemToEdit] = useState()
 
+    const router = useRouter()
+    const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    useEffect(() => {
+        if (!user) {
+            setRefreshUser(refreshUser)
+            const token = getCookie('jwt')
+            // console.log(token);
+            if (!token) {
+                router.push('/login')
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshUser, user])
+      
     // set edit
     useEffect(() => {
         if (editMode) {
@@ -90,6 +106,8 @@ const Funders = ({ data }) => {
         setLoading(false)
     }
 
+    if (!user) { return (<></>) }
+    
     return (<>
         <div className="container mx-auto px-2 md:px-10 lg:px-32 pb-20">
             <LoadingModal loading={loading} />

@@ -38,17 +38,16 @@ export const AuthProvider = ({ children }) => {
                     alert("Network Error, please check if the backend is running...")
                 }
             })
-            // if (response?.data?.message !== "success") { return; }
-            // console.log(response?.data);
+            
             if (response?.data.message === 'success') {
                 setUser(response?.data);
                 setIsAuthenticated(true)
             } else {
                 setUser(null);
                 setIsAuthenticated(false)
-                // if (checkAuth && !response?.data){
-                //     router.push('/login')
-                // }
+                if (checkAuth && !response?.data){
+                    router.push('/login')
+                }
             }
         };
         fetch()
@@ -64,11 +63,6 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify(formData),
             credentials: "include",
         });
-
-        // console.log(response);
-        // setLoading(false)
-        // router.push('/')
-        // return;
         
         if (response.status === 200) {
             const data = await response.json();
@@ -76,21 +70,20 @@ export const AuthProvider = ({ children }) => {
             if (data?.message && data?.message !== "Login successful.") {
                 alert(data?.message)
                 setLoading(false)
+                setIsAuthenticated(false)
                 setRefreshUser(!refreshUser)
                 return;
             }
 
-            // console.log(response);
-            // setLoading(false)
-            // return;
-
-            setRefreshUser(!refreshUser)
             if (data?.message === 'Login successful.') {
                 const expirationDate = new Date();
-                expirationDate.setDate(expirationDate.getDate() + 1);
+                expirationDate.setHours(expirationDate.getHours() + 23);
+                expirationDate.setMinutes(expirationDate.getMinutes() + 50);
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
-                router.push('/')
                 setLoading(false)
+                setIsAuthenticated(true)
+                setRefreshUser(!refreshUser)
+                router.push('/')
                 return response
             }
         } else {
@@ -98,6 +91,7 @@ export const AuthProvider = ({ children }) => {
             console.log(error);
             alert(error.message);
             setLoading(false)
+            setIsAuthenticated(false)
             setRefreshUser(!refreshUser)
             return error;
         }
@@ -113,7 +107,7 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify({ message: "logout" }),
             credentials: "include",
         });
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
             const data = await response.json();
             console.log(data);
@@ -125,6 +119,7 @@ export const AuthProvider = ({ children }) => {
             destroyCookie(null, 'jwt');
             // To delete a cookie on the server side
             destroyCookie({ response }, 'jwt');
+            setIsAuthenticated(false)
             router.push('/login')
         } else {
             const error = await response.json();
@@ -132,20 +127,6 @@ export const AuthProvider = ({ children }) => {
             alert(error.message);
             setLoading(false)
         }
-        // if (res.message) {
-        //     setUser(null)
-        //     router.push('/login')
-        //     // setCookie({}, 'jwt', '', { expires: new Date(0) })
-        //     // document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        //     // To delete a cookie on the client side
-        //     // destroyCookie(null, 'jwt');
-
-        //     // To delete a cookie on the server side
-        //     // destroyCookie({ res }, 'jwt');
-
-        // } else {
-        //     alert('Something went wrong')
-        // }
         setLoading(false)
     };
 

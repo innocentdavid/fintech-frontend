@@ -1,16 +1,33 @@
 
 
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import API from '../../components/API';
 import axios from 'axios';
 import Create from '../../components/Create';
 import { parseCookies } from 'nookies';
+import { useRouter } from 'next/router';
+import { AuthContext } from '../../context/AuthContext';
+import { getCookie } from '../../utils/helpers';
 
 
 const ApplicationDetail = ({ application }) => {
 // const ApplicationDetail = () => {
     // const application = {}
-
+    const router = useRouter()
+    const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    useEffect(() => {
+        if (!user) {
+            setRefreshUser(refreshUser)
+            const token = getCookie('jwt')
+            // console.log(token);
+            if (!token) {
+                router.push('/login')
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshUser, user])
+  if (!user) { return(<></>) }
+    
     return (
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
