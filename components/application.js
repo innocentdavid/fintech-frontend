@@ -202,7 +202,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     return (<>
         <LoadingModal loading={loading} />
 
-        <div className={`${showFunders ? "opacity-100 z-10" : "opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen grid place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
+        <div className={`${showFunders ? "opacity-100 z-10 grid" : "hidden opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
                 setShowFunders(false)
                 setFundersArray(fundersArrayO)
@@ -927,24 +927,4 @@ function FileUpload(props) {
             <FaCloudUploadAlt size={20} />
         </label>
     )
-}
-
-
-const SelectMenuNew = (props) => {
-    return (<>
-        <div className='flex gap-1 flex-col mx-3 my-2'>
-
-            <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg'
-                disabled={props.disabled} name={props.name} onChange={props.onChange}>
-                <option value="Created">Created</option>
-                <option value="Submitted">Submitted</option>
-                <option value="Error Submitting">Error Submitting</option>
-                <option value="Scraping Data">Scraping Data</option>
-                <option value="Needs Manual Entry">Needs Manual Entry</option>
-                <option value="Ready for Review">Ready for Review</option>
-                <option value="Error Scraping">Error Scraping</option>
-            </select>
-
-        </div>
-    </>)
 }

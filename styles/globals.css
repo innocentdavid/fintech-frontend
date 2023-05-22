@@ -24,6 +24,10 @@ a {
   box-sizing: border-box;
 }
 
+.MuiTooltip-popper {
+  pointer-events: none;
+}
+
 /* Ripple effect */
 .ripple {
   background-position: center;

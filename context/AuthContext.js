@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
                 }
             });
             
-            console.log(response);
+            // console.log(response);
             
             if (response?.data.message === 'success') {
                 setUser(response?.data);
@@ -115,6 +115,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
+        if(!window.confirm('Are you sure you want to log out')) return;
         setLoading(true)
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/logout/`, {
             method: "POST",

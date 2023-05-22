@@ -68,7 +68,6 @@ const SelectMenuNew = (props)=>{
                     return (<option key={state.id} value={state.id} selected={selectedState === state.id ? true : false}>{state.name}</option>)
                 })}
                 </select>
-
         </div>
     </>)
 }

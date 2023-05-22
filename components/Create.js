@@ -94,13 +94,21 @@ const Create = ({ application }) => {
         ending_bal_date: '',
         total_deposit: '',
     });
-    
+    const statusOptions = [
+        { id: 1, status: 'Created', status_description: 'Created' },
+        { id: 2, status: 'Scraping Data', status_description: 'Scraping Data' },
+        { id: 3, status: 'Needs Manual Entry', status_description: 'Needs Manual Entry' },
+        { id: 4, status: 'Ready for Review', status_description: 'Ready for Review' },
+        { id: 5, status: 'Error Scraping', status_description: 'Error Scraping' },
+        { id: 6, status: 'Error Submitting', status_description: 'Error Submitting' },
+    ]
+
     useEffect(() => {
-        if (application){
-            setFormData({...application})
+        if (application) {
+            setFormData({ ...application })
         }
     }, [application])
-    
+
 
     function validateZipCode(zipCode) {
         const zipCodeRegex = /^(\d{5}|\d{8}|\d{9})$/;
@@ -137,15 +145,15 @@ const Create = ({ application }) => {
             scrollToInput('owner_phone')
             return
         } else { setOwnerPhoneError('') }
-        
+
         setZipError(''); setOwnerZipError('');
 
         setLoading(true)
         try {
             var res;
-            if (application){
+            if (application) {
                 res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${application?.application_id}/`, formData, {
-                    headers:{
+                    headers: {
                         'Content-Type': 'application/json'
                     },
                     withCredentials: true
@@ -153,17 +161,17 @@ const Create = ({ application }) => {
                     console.log(err);
                 })
                 console.log(res);
-                if (res.statusText === "Created"){
+                if (res.statusText === "Created") {
                     setLoading(false)
-                    router.back()       
+                    router.back()
                 }
-            }else{
-                res = await API.post("/", formData)  
+            } else {
+                res = await API.post("/", formData)
                 setApplication_id(res?.data?.application_id)
                 setStep(1)
                 document.getElementById('step2').scrollIntoView()
             }
-            
+
         } catch (error) {
             console.log(error);
         }
@@ -173,6 +181,9 @@ const Create = ({ application }) => {
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
+        if (name === 'status') {
+            setFormData((prevData) => ({ ...prevData, status_description: statusOptions.find(i => i.status === value).status_description }));
+        }
     };
 
     return (<>
@@ -190,6 +201,31 @@ const Create = ({ application }) => {
 
                 <form method='POST' action='' onSubmit={handleSubmit} >
                     <div className='md:max-w-[700px] w-full mx-auto'>
+
+                        {application && <div className="flex justify-between items-center">
+                            <div className=' w-[70%] mx-2 mt-2 mb-5'>
+                                <span className='mt-4 mx-3'>Status</span>
+                                <div className='flex gap-1 flex-col mx-3 my-2'>
+                                    <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg'
+                                        name='status' onChange={handleChange}>
+                                        <option value="">SELECT</option>
+                                        {statusOptions.map(item => {
+                                            return (<option key={item.id} value={item.status} selected={formData['status'] === item.status ? true : false}>{item.status}</option>)
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className=' w-[70%] mx-2 my-5'>
+                                <span className='mt-4 mx-3'>Status Description</span>
+                                <Inputfeild
+                                    name='status_description'
+                                    onChange={handleChange}
+                                    formData={formData}
+                                    type='text'
+                                    plholder='Status Description'
+                                />
+                            </div>
+                        </div>}
 
                         <h2 className='text-[19px] m-2 p-2 bg-slate-400'>Company Information</h2>
 
@@ -723,7 +759,7 @@ const Create = ({ application }) => {
                     </div>
 
                     <div className='mt-[40px] flex justify-center gap-4 items-center w-full mx-auto'>
-                        <button type='submit' className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 ' >{application ? 'Update' :'Save and Continue' }</button>
+                        <button type='submit' className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 ' >{application ? 'Update' : 'Save and Continue'}</button>
                     </div>
                 </form>
             </div>

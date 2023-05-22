@@ -17,8 +17,8 @@ export default function Home({ data }) {
   const [applications, setApplications] = useState(data)
   const router = useRouter()
   const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
-  
-  console.log(user);
+
+  // console.log(user);
   
   useEffect(() => {
     if (!user) {
