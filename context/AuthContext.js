@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
-import { handleLogout } from '../utils/helpers';
+import { getCookie, handleLogout } from '../utils/helpers';
 import LoadingModal from '../components/LoadingModal ';
 import { useRouter } from 'next/router';
 import API from '../components/API';
@@ -32,12 +32,22 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const fetch = async () => {
-            const response = await APIN.get('api/getcurrentuser/').catch(error => {
+            // console.log("getCookie('jwt'):  ");
+            // console.log(getCookie('jwt'));
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/getcurrentuser/`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${getCookie('jwt')}`,
+                },
+                withCredentials: true
+            }).catch(error => {
                 console.log(error);
                 if (error?.message === "Network Error") {
                     alert("Network Error, please check if the backend is running...")
                 }
-            })
+            });
+            
+            console.log(response);
             
             if (response?.data.message === 'success') {
                 setUser(response?.data);
@@ -62,6 +72,9 @@ export const AuthProvider = ({ children }) => {
             },
             body: JSON.stringify(formData),
             credentials: "include",
+        }).catch(err => {
+            alert('something went wrong')
+            setLoading(false)
         });
         
         if (response.status === 200) {
@@ -74,6 +87,8 @@ export const AuthProvider = ({ children }) => {
                 setRefreshUser(!refreshUser)
                 return;
             }
+            
+            console.log(data);
 
             if (data?.message === 'Login successful.') {
                 const expirationDate = new Date();
@@ -81,8 +96,9 @@ export const AuthProvider = ({ children }) => {
                 expirationDate.setMinutes(expirationDate.getMinutes() + 50);
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
                 setLoading(false)
+                // setRefreshUser(!refreshUser)
+                setUser(data?.user)
                 setIsAuthenticated(true)
-                setRefreshUser(!refreshUser)
                 router.push('/')
                 return response
             }
@@ -95,6 +111,7 @@ export const AuthProvider = ({ children }) => {
             setRefreshUser(!refreshUser)
             return error;
         }
+        setLoading(false)
     };
 
     const logout = async () => {

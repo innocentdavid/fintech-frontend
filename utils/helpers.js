@@ -8,6 +8,28 @@ const API = axios.create({
     withCredentials: true
 })
 
+// export const getAuthenticatedUser = async () => {
+//     const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/getcurrentuser/`, {
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         withCredentials: true
+//     }).catch(error => {
+//         console.log(error);
+//         if (error?.message === "Network Error") {
+//             alert("Network Error, please check if the backend is running...")
+//         }
+//         return error
+//     });
+
+//     console.log(response);
+
+//     if (response?.data.message === 'success') {
+//         const user =  response?.data;
+//         return user
+//     }
+// }
+
 export const handleLogout = async () => {
     try {
         const response = await API.post('api/logout/',{})
