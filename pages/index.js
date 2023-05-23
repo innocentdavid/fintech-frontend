@@ -63,15 +63,21 @@ export default function Home({ data }) {
 export async function getServerSideProps(context) {
   // const cookies = context.req.cookies;
   const cookies = parseCookies(context)
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-    },
-    withCredentials: true
-  }).catch(err => {
-    console.log(err);
-  });
+  var res;
+  try {
+    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+      },
+      withCredentials: true
+    }).catch(err => {
+      // console.log(err);
+    });
+    
+  } catch (error) {
+    // console.log(error);    
+  }
 
   return {
     props: {
