@@ -204,7 +204,7 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true
     }).catch(err => {
-        // console.log(err);
+        console.log(err);
     });
 
     return {

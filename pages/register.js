@@ -46,7 +46,7 @@ export default function Register() {
       console.log(err);
       setLoading(false)
     })
-    console.log(response);
+    // console.log(response);
     if (response?.data?.message && response?.data?.message === 'success' ) {
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + 1);

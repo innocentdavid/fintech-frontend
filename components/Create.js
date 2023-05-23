@@ -160,7 +160,7 @@ const Create = ({ application }) => {
                 }).catch(err => {
                     console.log(err);
                 })
-                console.log(res);
+                // console.log(res);
                 if (res.statusText === "Created") {
                     setLoading(false)
                     router.back()
@@ -173,7 +173,7 @@ const Create = ({ application }) => {
             }
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
         setLoading(false)
     };
@@ -838,7 +838,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
             // });
         } else {
             // Handle invalid file type here
-            console.log('Invalid file type');
+            // console.log('Invalid file type');
         }
     };
 
@@ -878,7 +878,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                 setHasUploaded(true)
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
         setLoading(false)
     };

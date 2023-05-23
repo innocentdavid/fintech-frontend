@@ -40,7 +40,7 @@ export default function Home({ data }) {
         .then((res) => {
           setApplications(res?.data)
         }).catch(error => {
-          console.log(error);
+          // console.log(error);
         })
     };
     const intervalId = setInterval(fetch, 60000);
@@ -70,7 +70,7 @@ export async function getServerSideProps(context) {
     },
     withCredentials: true
   }).catch(err => {
-    // console.log(err);
+    console.log(err);
   });
 
   return {

@@ -15,6 +15,7 @@ const ApplicationDetail = ({ application }) => {
     // const application = {}
     const router = useRouter()
     const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    
     useEffect(() => {
         if (!user) {
             setRefreshUser(refreshUser)
@@ -26,6 +27,7 @@ const ApplicationDetail = ({ application }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshUser, user])
+    
   if (!user) { return(<></>) }
     
     return (
@@ -50,7 +52,7 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true
     }).catch(err => {
-        // console.log(err);
+        console.log(err);
     });
     
     // console.log(res);

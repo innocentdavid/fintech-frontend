@@ -80,7 +80,7 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true
     }).catch(() => {
-        // console.log(err);
+        console.log(err);
     })
 
     const submittedApplications = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${context.params.applicationId}/`, {

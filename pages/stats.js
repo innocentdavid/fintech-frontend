@@ -11,6 +11,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useContext, useEffect } from 'react';
 
 export default function Stats({ data }) {
+  
+  // console.log();
 // export default function Stats() {
 //   const data = []
 

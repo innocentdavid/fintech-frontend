@@ -15,14 +15,14 @@ const API = axios.create({
 //         },
 //         withCredentials: true
 //     }).catch(error => {
-//         console.log(error);
+//         // console.log(error);
 //         if (error?.message === "Network Error") {
 //             alert("Network Error, please check if the backend is running...")
 //         }
 //         return error
 //     });
 
-//     console.log(response);
+//     // console.log(response);
 
 //     if (response?.data.message === 'success') {
 //         const user =  response?.data;
@@ -36,7 +36,7 @@ export const handleLogout = async () => {
         // console.log(response);
         return {message: 'success', response}
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return error
     }
 }

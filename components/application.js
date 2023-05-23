@@ -82,7 +82,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             var statementPdfs = []
             defaultPdfs?.pdfs?.forEach(item => {
                 const type = item?.pdf_type?.toString()
-                // console.log(type);
+                // console.logplication_id_cplication_id_cplication_id_c(type);
                 if (type.includes('Application')) {
                     applicaitonPdfs.push(item)
                 } else {
@@ -110,14 +110,9 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         }).catch(err => {
             console.log(err);
         })
-        // console.log(res);
         if (res.statusText === "Created") {
             setIsEditable(false)
         }
-        // try {
-        // } catch (error) {
-        //     console.log(error);
-        // }
         setLoading(false)
     };
 
@@ -617,13 +612,13 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
     const [file, setFile] = useState()
 
     const handleFileChange = (e) => {
-        console.log('Valid PDF');
+        // console.log('Valid PDF');
         const file = e.target.files[0];
         if (file && file.type === 'application/pdf') {
             setFile(file)
         } else {
             // Handle invalid file type here
-            console.log('Invalid file type');
+            // console.log('Invalid file type');
         }
     };
 
@@ -639,7 +634,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
         if (!pdfToAdd.application_id) return alert('Application not found!');
         if (!file?.name) return alert('You have not selected any file!')
         setLoading(true)
-        console.log({ pdfToAdd });
+        // console.log({ pdfToAdd });
         // return;
         const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
         const config = {
@@ -672,7 +667,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
                 setShowAddPdf(false)
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
         setLoading(false)
     };

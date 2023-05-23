@@ -25,12 +25,12 @@ const Table = ({ data, page }) => {
         const list = []
         data.forEach(item => {
             const funder = item.funder
-            const id = item.count
+            const id = page ? item?.application?.count : item.count
             const d = { ...item, id, funder_name: funder?.name }
             list.push(d)
         });
         setTableData(list)
-    }, [data])
+    }, [data, page])
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
@@ -160,7 +160,8 @@ const Table = ({ data, page }) => {
                     <Box sx={{ display: 'flex', gap: '1rem' }}>
                         {!page && <Tooltip arrow placement="left" title="Edit">
                             <IconButton onClick={() => {
-                                router.push(`/edit/${row.original.application_id}`)
+                                // console.log(row.original.application_id);
+                                // router.push(`/edit/${row.original.application_id}`)
                             }}>
                                 <Edit />
                             </IconButton>

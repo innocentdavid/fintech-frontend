@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
                 },
                 withCredentials: true
             }).catch(error => {
-                console.log(error);
+                // console.log(error);
                 if (error?.message === "Network Error") {
                     alert("Network Error, please check if the backend is running...")
                 }
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
         
         if (response.status === 200) {
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             if (data?.message && data?.message !== "Login successful.") {
                 alert(data?.message)
                 setLoading(false)
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
             
-            console.log(data);
+            // console.log(data);
 
             if (data?.message === 'Login successful.') {
                 const expirationDate = new Date();
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
             }
         } else {
             const error = await response.json();
-            console.log(error);
+            // console.log(error);
             alert(error.message);
             setLoading(false)
             setIsAuthenticated(false)
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
         // console.log(response);
         if (response.status === 200) {
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             setLoading(false)
             setUser(null)
             setCookie({}, 'jwt', '', { expires: new Date(0) })
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }) => {
             router.push('/login')
         } else {
             const error = await response.json();
-            console.log(error);
+            // console.log(error);
             alert(error.message);
             setLoading(false)
         }

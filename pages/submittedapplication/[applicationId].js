@@ -17,11 +17,11 @@ const API = axios.create({
 })
 
 const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplications }) => {
-// const ApplicationDetail = () => {
-//     const application = {}
-//     const pdfs = []
-//     const fundersResponse = []
-//     const submittedApplications = []
+    // const ApplicationDetail = () => {
+    //     const application = {}
+    //     const pdfs = []
+    //     const fundersResponse = []
+    //     const submittedApplications = []
 
     const router = useRouter()
     const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
@@ -36,19 +36,21 @@ const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplic
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshUser, user])
-  if (!user) { return(<></>) }
+    if (!user) { return (<></>) }
+
+    // console.log(application);
 
     return (
 
         <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
-            
-            {application && <Application
+
+            {application?.application?.application_id ? <Application
                 application={application}
                 defaultPdfs={pdfs}
                 fundersResponse={fundersResponse}
                 submittedApplications={submittedApplications}
                 page={true}
-            />}
+            /> : <div className='flex items-center gap-10'>No data found! <button className='py-1 px-6 rounded-lg bg-black text-white' onClick={() => { router.back() }}>Go back</button></div>}
 
         </div>
     )
@@ -62,12 +64,14 @@ export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
     const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${context.params.applicationId}/`, {
         headers: {
-            //  'Accept': 'application/json',
+            // 'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookies['jwt']}`
         },
         withCredentials: true,
-    }).catch(err => { console.log(err) });
+    }).catch(err => {
+        console.log(err) 
+    });
 
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
     const response = await axios.get(baseUrl, {
@@ -77,11 +81,13 @@ export async function getServerSideProps(context) {
             'Authorization': `Bearer ${cookies['jwt']}`
         },
         withCredentials: true,
-    }).catch(err => { console.log(err) });
+    }).catch(err => {
+        console.log(err) 
+    });
 
     return {
         props: {
-            application: appRes.data ?? {},
+            application: appRes?.data ?? {},
             pdfs: response?.data ?? [],
             fundersResponse: [],
             submittedApplications: [],
