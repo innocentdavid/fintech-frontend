@@ -60,6 +60,12 @@ a {
   outline: none;
 }
 
+@media (max-width: 768px) {
+  .MuiToolbar-root > .MuiBox-root{
+    flex-direction: column;
+  }
+}
+
 
 @media (prefers-color-scheme: light) {
   html {
