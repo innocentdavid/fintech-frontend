@@ -10,13 +10,8 @@ import { FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import RadioFeild from '../components/Radio';
 import LoadingModal from '../components/LoadingModal ';
-import { minMaxValidator, scrollToInput } from '../utils/helpers';
+import { getToday, minMaxValidator, scrollToInput } from '../utils/helpers';
 
-const date = new Date();
-const year = date.getFullYear(); // e.g. 2022
-const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get the actual month number (e.g. 5 for May)
-const day = date.getDate(); // e.g. 28
-const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
 const Create = ({ application }) => {
     const router = useRouter()
@@ -24,8 +19,8 @@ const Create = ({ application }) => {
     const [application_id, setApplication_id] = useState('')
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        date_submitted: today,
-        status_date: today,
+        date_submitted: getToday(new Date()),
+        status_date: getToday(new Date()),
         status: 'Created',
         status_description: 'Created',
         name_of_business: '',
@@ -173,7 +168,7 @@ const Create = ({ application }) => {
             }
 
         } catch (error) {
-            // console.log(error);
+            console.log(error);
         }
         setLoading(false)
     };
@@ -188,23 +183,23 @@ const Create = ({ application }) => {
 
     return (<>
         <LoadingModal loading={loading} />
-        <div className={`${step === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto flex justify-center rounded-lg mt-[60px] mb-10`} style={{
+        <div className={`${step === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 !hidden pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto flex justify-center rounded-lg mt-[60px] mb-10 relative`} style={{
             transition: 'all .15s ease-in'
         }}>
             {/* <Creates/> */}
             <div className='md:w-[80%] w-full mx-auto p-2 border flex flex-col justify-center'>
-                <FaTimes size={20} className='absolute top-5 right-7 cursor-pointer' onClick={() => {
+                <FaTimes size={20} className='absolute -top-1 right-0 cursor-pointer' onClick={() => {
                     setLoading(true)
                     router.back()
                 }} />
                 <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >{application ? "Update Application" : 'Create New Application'}</h1>
 
                 <form method='POST' action='' onSubmit={handleSubmit} >
-                    <div className='md:max-w-[700px] w-full mx-auto'>
+                    <div className='md:max-w-[700px] w-full mx-auto flex flex-col gap-5'>
 
-                        {application && <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 mt-2 mb-5'>
-                                <span className='mt-4 mx-3'>Status</span>
+                        {application && <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full mt-2 mb-5'>
+                                <span className='mx-3'>Status</span>
                                 <div className='flex gap-1 flex-col mx-3 my-2'>
                                     <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg'
                                         name='status' onChange={handleChange}>
@@ -215,8 +210,8 @@ const Create = ({ application }) => {
                                     </select>
                                 </div>
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Status Description</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Status Description</span>
                                 <Inputfeild
                                     name='status_description'
                                     onChange={handleChange}
@@ -229,9 +224,9 @@ const Create = ({ application }) => {
 
                         <h2 className='text-[19px] m-2 p-2 bg-slate-400'>Company Information</h2>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Legal Business Name</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Legal Business Name</span>
                                 <Inputfeild
                                     name='legal_business_name'
                                     onChange={handleChange}
@@ -240,8 +235,8 @@ const Create = ({ application }) => {
                                     plholder='Legal Business Name'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>DBA</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>DBA</span>
                                 <Inputfeild
                                     name='dba'
                                     onChange={handleChange}
@@ -252,9 +247,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Address</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Address</span>
                                 <Inputfeild
                                     type='text'
                                     onChange={handleChange}
@@ -263,8 +258,8 @@ const Create = ({ application }) => {
                                     plholder='Address'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Suite</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Suite</span>
                                 <Inputfeild
                                     name='suite'
                                     onChange={handleChange}
@@ -275,9 +270,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>City</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>City</span>
                                 <Inputfeild
                                     name='city'
                                     onChange={handleChange}
@@ -286,7 +281,7 @@ const Create = ({ application }) => {
                                     plholder='City'
                                 />
                             </div>
-                            <div className='w-[70%] mx-2 my-5'>
+                            <div className='w-full'>
                                 <span className='mt-1 mx-3'>State</span>
                                 <SelectMenuNew
                                     onChange={handleChange}
@@ -296,9 +291,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>ZIP</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>ZIP</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -310,8 +305,8 @@ const Create = ({ application }) => {
                                 />
                                 <p className="-mt-3 ml-3 text-red-500">{zipError}</p>
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Phone</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Phone</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -325,9 +320,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Mobile</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Mobile</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -339,8 +334,8 @@ const Create = ({ application }) => {
                                 />
                                 <p className="-mt-3 ml-3 text-red-500">{mobileError}</p>
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>E-mail</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>E-mail</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -351,9 +346,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Federal Tax ID</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Federal Tax ID</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -362,8 +357,8 @@ const Create = ({ application }) => {
                                     plholder='Federal Tax ID'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>State of Inc</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>State of Inc</span>
                                 <SelectMenuNew
                                     onChange={handleChange}
                                     formData={formData}
@@ -372,9 +367,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Legal Entry</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Legal Entry</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -383,8 +378,8 @@ const Create = ({ application }) => {
                                     plholder='Legal Entry'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Date Business Started</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Date Business Started</span>
                                 <Inputfeild
                                     onChange={handleChange}
                                     formData={formData}
@@ -395,9 +390,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Length of Owernship</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Length of Owernship</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -406,8 +401,8 @@ const Create = ({ application }) => {
                                     plholder='Length of Owernship'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Years at Location</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Years at Location</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -416,8 +411,8 @@ const Create = ({ application }) => {
                                     plholder='Years at Location'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Number Of Locations</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Number Of Locations</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -434,9 +429,9 @@ const Create = ({ application }) => {
 
                         <h2 className='md:text-[19px] text-[15px] m-2 p-2 bg-slate-400'>Ownership Information</h2>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>First Name</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>First Name</span>
                                 <Inputfeild
                                     name='owner_first_name'
                                     onChange={handleChange}
@@ -445,8 +440,8 @@ const Create = ({ application }) => {
                                     plholder='First Name'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Last Name</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Last Name</span>
                                 <Inputfeild
                                     name='owner_last_name'
                                     onChange={handleChange}
@@ -457,9 +452,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Home Address</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Home Address</span>
                                 <Inputfeild
                                     type='text'
                                     onChange={handleChange}
@@ -468,8 +463,8 @@ const Create = ({ application }) => {
                                     plholder='Home Address'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>City</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>City</span>
                                 <Inputfeild
                                     name='owner_city'
                                     type='text'
@@ -480,8 +475,8 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className='w-[70%] mx-2 my-5'>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
                                 <span className='mt-1 mx-3'>State</span>
                                 <SelectMenuNew
                                     onChange={handleChange}
@@ -489,8 +484,8 @@ const Create = ({ application }) => {
                                     name="owner_state"
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>ZIP</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>ZIP</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -504,9 +499,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>SSN (999-99-9999)</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>SSN (999-99-9999)</span>
                                 <Inputfeild
                                     type='text'
                                     onChange={handleChange}
@@ -516,8 +511,8 @@ const Create = ({ application }) => {
                                     plholder='999-99-9999'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Percentage of Ownership</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Percentage of Ownership</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -528,9 +523,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>DOB</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>DOB</span>
                                 <Inputfeild
                                     type='date'
                                     onChange={handleChange}
@@ -539,8 +534,8 @@ const Create = ({ application }) => {
                                     plholder='DOB'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Phone</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Phone</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -560,9 +555,9 @@ const Create = ({ application }) => {
 
                         <h2 className='text-[19px] m-2 p-2 bg-slate-400'>Company Details</h2>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Name Of Business</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Name Of Business</span>
                                 <Inputfeild
                                     name='name_of_business'
                                     onChange={handleChange}
@@ -571,8 +566,8 @@ const Create = ({ application }) => {
                                     plholder='Name Of Business'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Gross Monthly Sale</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Gross Monthly Sale</span>
                                 <Inputfeild
                                     name='gross_monthly_sales'
                                     onChange={handleChange}
@@ -581,8 +576,8 @@ const Create = ({ application }) => {
                                     plholder='Gross Monthly Sale'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Type of Product Sold</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Type of Product Sold</span>
                                 <Inputfeild
                                     name='type_of_product_sold'
                                     onChange={handleChange}
@@ -593,9 +588,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Do you have any open Cash Advances [Y/N]</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Do you have any open Cash Advances [Y/N]</span>
                                 <RadioFeild
                                     type='radio'
                                     onChange={handleChange}
@@ -604,8 +599,8 @@ const Create = ({ application }) => {
                                     name='has_open_cash_advances'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'> Have you used a Cash Advance plan before [Y/N]</span>
+                            <div className='w-full'>
+                                <span className='mx-3'> Have you used a Cash Advance plan before [Y/N]</span>
                                 <RadioFeild
                                     type='radio'
                                     onChange={handleChange}
@@ -616,9 +611,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'> Using the Money For</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'> Using the Money For</span>
                                 <Inputfeild
                                     name='using_money_for'
                                     onChange={handleChange}
@@ -627,8 +622,8 @@ const Create = ({ application }) => {
                                     plholder='Using the Money For'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'> Description of Business: Retail</span>
+                            <div className='w-full'>
+                                <span className='mx-3'> Description of Business: Retail</span>
                                 <Inputfeild
                                     name='description_of_business'
                                     onChange={handleChange}
@@ -645,9 +640,9 @@ const Create = ({ application }) => {
 
                         <h2 className='text-[19px] m-2 p-2 bg-slate-400'>Advance Information</h2>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Advanced Amount</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Advanced Amount</span>
                                 <Inputfeild
                                     name='advanced_price'
                                     onChange={handleChange}
@@ -656,8 +651,8 @@ const Create = ({ application }) => {
                                     plholder='Advanced Amount'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Commission Amount</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Commission Amount</span>
                                 <Inputfeild
                                     name='commission_price'
                                     onChange={handleChange}
@@ -666,8 +661,8 @@ const Create = ({ application }) => {
                                     plholder='Commission Amount'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>%</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>%</span>
                                 <Inputfeild
                                     name='percentage'
                                     onChange={handleChange}
@@ -678,9 +673,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Factor</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Factor</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -689,8 +684,8 @@ const Create = ({ application }) => {
                                     plholder='Factor'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Total Fee</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Total Fee</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -699,8 +694,8 @@ const Create = ({ application }) => {
                                     plholder='Total Fee'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Payment</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Payment</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -711,9 +706,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Payback</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'>Payback</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -722,8 +717,8 @@ const Create = ({ application }) => {
                                     plholder='Payback'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Term</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Term</span>
                                 <Inputfeild
                                     type='text'
                                     onChange={handleChange}
@@ -732,8 +727,8 @@ const Create = ({ application }) => {
                                     plholder='Term'
                                 />
                             </div>
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'>Frequency</span>
+                            <div className='w-full'>
+                                <span className='mx-3'>Frequency</span>
                                 <Inputfeild
                                     type='number'
                                     onChange={handleChange}
@@ -744,9 +739,9 @@ const Create = ({ application }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                            <div className=' w-[70%] mx-2 my-5'>
-                                <span className='mt-4 mx-3'> Net Funding Amount</span>
+                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                            <div className='w-full'>
+                                <span className='mx-3'> Net Funding Amount</span>
                                 <Inputfeild
                                     name='net_funding_amount'
                                     onChange={handleChange}
@@ -828,17 +823,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
         const file = e.target.files[0];
         if (file && file.type === 'application/pdf') {
             setFile(file)
-            // Handle the valid PDF file here
-            // console.log('Valid PDF file:', file);
-            // const list = formData2?.pdf_files ? formData2?.pdf_files : []
-            // list.push(file)
-            // setFormData2({
-            //   ...formData2,
-            //   pdf_file: file,
-            // });
         } else {
-            // Handle invalid file type here
-            // console.log('Invalid file type');
         }
     };
 
@@ -853,7 +838,8 @@ const UploadFiles = ({ title, application_id, formData }) => {
             headers: {
                 // 'Content-Type': 'application/json',
                 'content-type': 'multipart/form-data',
-            }
+            },
+            withCredentials: true,
         };
 
         try {
@@ -872,7 +858,9 @@ const UploadFiles = ({ title, application_id, formData }) => {
             );
 
             // console.log({ formDataWithFiles });
-            const response = await axios.post(baseUrl, formDataWithFiles, config);
+            const response = await axios.post(baseUrl, formDataWithFiles, config).catch(error => {
+                console.log(error);
+            });
             // console.log({ response });
             if (response.statusText === "Created") {
                 setHasUploaded(true)
@@ -901,7 +889,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
 
                 <div className="flex items-center justify-around mx-5">
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Business Name</span>
+                        <span className='mx-3'>Business Name</span>
                         <Inputfeild
                             name='business_name'
                             onChange={handleChange}
@@ -911,7 +899,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                         />
                     </div>
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Bank Name</span>
+                        <span className='mx-3'>Bank Name</span>
                         <Inputfeild
                             name='bank_name'
                             onChange={handleChange}
@@ -921,7 +909,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                         />
                     </div>
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Beginning Balance Date</span>
+                        <span className='mx-3'>Beginning Balance Date</span>
                         <Inputfeild
                             onChange={handleChange}
                             formData={formData2}
@@ -934,7 +922,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
 
                 <div className="flex items-center justify-around mx-5">
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Total Deposit</span>
+                        <span className='mx-3'>Total Deposit</span>
                         <Inputfeild
                             name='total_deposit'
                             onChange={handleChange}
@@ -944,7 +932,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                         />
                     </div>
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Ending Balance Date</span>
+                        <span className='mx-3'>Ending Balance Date</span>
                         <Inputfeild
                             name='ending_bal_date'
                             onChange={handleChange}
@@ -954,7 +942,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                         />
                     </div>
                     <div className=' w-[33%] mx-2 my-5'>
-                        <span className='mt-4 mx-3'>Ending Balance Amount</span>
+                        <span className='mx-3'>Ending Balance Amount</span>
                         <Inputfeild
                             name='ending_bal_amount'
                             onChange={handleChange}
@@ -965,8 +953,8 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     </div>
                 </div>
 
-                <div className=' w-[70%] mx-2 my-5'>
-                    <span className='mt-4 mx-3'> Beginning Balance Amount</span>
+                <div className='w-full'>
+                    <span className='mx-3'> Beginning Balance Amount</span>
                     <Inputfeild
                         name='begin_bal_amount'
                         onChange={handleChange}

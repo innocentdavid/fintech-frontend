@@ -75,3 +75,17 @@ export function getCookie(name) {
         return parts.pop().split(";").shift();
     }
 }
+
+export function getToday(date) {
+    // const date = new Date();
+    const year = date.getFullYear(); // e.g. 2022
+    const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get the actual month number (e.g. 5 for May)
+    const day = date.getDate(); // e.g. 28
+    const hours = date.getHours(); // e.g. 13
+    const minutes = date.getMinutes(); // e.g. 45
+    const seconds = date.getSeconds(); // e.g. 20
+
+    const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    return today
+}

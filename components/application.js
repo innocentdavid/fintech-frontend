@@ -9,13 +9,8 @@ import { useRouter } from 'next/router';
 import { AiFillFilePdf } from 'react-icons/ai';
 // import API from './API';
 import LoadingModal from './LoadingModal ';
-import { getCookie } from '../utils/helpers';
+import { getCookie, getToday } from '../utils/helpers';
 
-const date = new Date();
-const year = date.getFullYear(); // e.g. 2022
-const month = date.getMonth() + 1; // months are zero-indexed, so add 1 to get the actual month number (e.g. 5 for May)
-const day = date.getDate(); // e.g. 28
-const today = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
 const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
     const router = useRouter()
@@ -28,7 +23,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         name_of_business: '',
         status: "",
         status_description: "",
-        status_date: today,
+        status_date: getToday(new Date()),
         advanced_price: '',
         commission_price: '',
         percentage: '',
@@ -64,7 +59,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             name_of_business: application?.name_of_business,
             status: application?.status || 'Created',
             status_description: application?.status_description,
-            status_date: today,
+            status_date: getToday(new Date()),
             advanced_price: application?.advanced_price,
             commission_price: application?.commission_price,
             percentage: application?.percentage,
@@ -167,12 +162,14 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         setLoading(true)
         const formData = {
             ...application,
-            date_submitted: today,
+            date_submitted: getToday(new Date()),
             status: 'Submitted',
-            status_date: today,
+            status_date: getToday(new Date()),
             status_description: 'Submitted',
             funder_names: selectedFundersArray
         }
+        // console.log(formData);
+        // return;
         const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -260,7 +257,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
             <form action="" method="post" className='flex flex-col-reverse lg:flex-row' onSubmit={handleSubmit} >
                 <div className='w-full lg:w-[45%] mb-[160px] '>
-                    <div className='flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
+                    <div className='hidden lg:flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
                         <h3>APPLICATION DATA</h3>
                     </div>
                     <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
@@ -442,7 +439,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                     <div className=' gap-1 w-full flex-1 '>
                         <div className='flex flex-col md:flex-row'>
-                            <div className='w-full md:w-[40%]'>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Advanced Amount'
@@ -455,7 +452,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     disabled={true}
                                 />
                             </div>
-                            <div className='flex gap-3 w-full md:w-[60%] '>
+                            <div className='flex flex-col md:flex-row gap-3 w-full md:w-[60%] '>
                                 <Inputfeild
                                     formData={formData}
                                     label='Commisson'
@@ -483,7 +480,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         </div>
 
                         <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
-                            <div className='w-full md:w-[40%]'>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Factor'
@@ -497,7 +494,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                                 />
                             </div>
-                            <div className='flex gap-3 w-full md:w-[60%] '>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Total fee'
@@ -515,7 +512,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         </div>
 
                         <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
-                            <div className='w-full md:w-[40%]'>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Payback'
@@ -558,8 +555,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                         </div>
 
-                        <div className='flex gap-1 w-full flex-1 '>
-                            <div className='w-full md:w-[40%]'>
+                        <div className='flex flex-col md:flex-row items-center justify-between'>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Payment'
@@ -573,7 +570,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                                 />
                             </div>
-                            <div className='flex gap-3 w-full md:w-[60%] '>
+                            <div className='w-full'>
                                 <Inputfeild
                                     formData={formData}
                                     label='Net Funding Amount'
@@ -639,7 +636,8 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
             headers: {
                 // 'Content-Type': 'application/json',
                 'content-type': 'multipart/form-data',
-            }
+            },
+            withCredentials: true
         };
 
         try {
@@ -661,8 +659,10 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
             const response = await axios.post(baseUrl, formDataWithFiles, config);
             // console.log({ response });
             if (response.statusText === "Created") {
-                setReFreshPdf(!reFreshPdf)
-                setShowAddPdf(false)
+                // setReFreshPdf(!reFreshPdf)
+                // setShowAddPdf(false)
+                window.location.reload();
+                return
             }
         } catch (error) {
             // console.log(error);

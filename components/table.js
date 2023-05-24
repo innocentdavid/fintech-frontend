@@ -149,6 +149,13 @@ const Table = ({ data, page }) => {
                     },
                 }}
                 columns={columns}
+                options={{
+                    sorting: true,
+                    defaultSort: 'desc', // 'asc' for ascending, 'desc' for descending
+                    defaultSortField: page ? 'date_submitted' :'id',
+                    sortingOrder: ['desc', 'asc'],
+                    // ... other options
+                }}
                 data={tableData}
                 initialState={{ columnVisibility: { funder_name: page ? true : false } }}
                 editingMode="modal" //default

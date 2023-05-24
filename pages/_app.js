@@ -5,6 +5,7 @@ import { AuthProvider } from '../context/AuthContext'
 import '../styles/globals.css'
 import LoadingModal from '../components/LoadingModal ';
 import { getCookie } from '../utils/helpers';
+import Head from 'next/head';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -25,14 +26,17 @@ function MyApp({ Component, pageProps }) {
       router.events.off('routeChangeError', handleComplete);
     };
   }, [router])
-  
-  return (
+
+  return (<>
+    <Head>
+      <title>Fintech</title>
+    </Head>
     <AuthProvider>
       <LoadingModal loading={isLoading} />
       {!isLoginOrRegister && <Nav />}
       <Component {...pageProps} />
     </AuthProvider>
-  )
+  </>)
 }
 
 export default MyApp
