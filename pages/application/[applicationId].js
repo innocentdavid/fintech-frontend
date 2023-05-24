@@ -79,7 +79,7 @@ export async function getServerSideProps(context) {
             'Authorization': `Bearer ${cookies['jwt']}`
         },
         withCredentials: true
-    }).catch(() => {
+    }).catch((err) => {
         console.log(err);
     })
 

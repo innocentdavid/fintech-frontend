@@ -160,8 +160,7 @@ const Table = ({ data, page }) => {
                     <Box sx={{ display: 'flex', gap: '1rem' }}>
                         {!page && <Tooltip arrow placement="left" title="Edit">
                             <IconButton onClick={() => {
-                                // console.log(row.original.application_id);
-                                // router.push(`/edit/${row.original.application_id}`)
+                                router.push(`/edit/${row.original.application_id}`)
                             }}>
                                 <Edit />
                             </IconButton>
@@ -187,7 +186,7 @@ const Table = ({ data, page }) => {
                 )}
                 renderTopToolbarCustomActions={() => (
                     <div className="flex items-center gap-3">
-                        {!page && <div className='rippleButton ripple cursor-pointer'><Link href="/createnew" className="">Add New Application</Link></div>}
+                        {!page && <Link href="/createnew" className="rippleButton ripple cursor-pointer">Add New Application</Link>}
                     </div>
                 )}
             />

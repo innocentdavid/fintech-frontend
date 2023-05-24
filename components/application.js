@@ -83,10 +83,12 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             defaultPdfs?.pdfs?.forEach(item => {
                 const type = item?.pdf_type?.toString()
                 // console.logplication_id_cplication_id_cplication_id_c(type);
-                if (type.includes('Application')) {
-                    applicaitonPdfs.push(item)
-                } else {
-                    statementPdfs.push(item)
+                if (type) {
+                    if (type.includes('Application')) {
+                        applicaitonPdfs.push(item)
+                    } else {
+                        statementPdfs.push(item)
+                    }
                 }
             });
             setApplicaitonPdfs(applicaitonPdfs)
@@ -425,10 +427,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         >
                             {isEditable ? 'Done' : 'Edit'}
                         </button>}
-
-                        {/* {isEditable && <div className='flex justify-center gap-4 items-center'>
-                            <button type='submit' className='px-4 py-2  rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 '>{loading ? "processsing..." : "Submit"}</button>
-                        </div>} */}
                     </div>
 
                     {!page && <div className="ml-2 w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
@@ -597,7 +595,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
         </div>
 
-        {showPdfModal && <Viewer pdfObj={pdf} setShowPdfModal={setShowPdfModal} />}
+        {showPdfModal && <Viewer pdfObj={pdf} setPdfObj={setPdf} setShowPdfModal={setShowPdfModal} isEditable={isEditable} setLoading={setLoading} />}
         {showAddPdf && <AddPdf pdfToAdd={pdfToAdd} setPdfToAdd={setPdfToAdd} setShowAddPdf={setShowAddPdf} reFreshPdf={reFreshPdf} setReFreshPdf={setReFreshPdf} />}
     </>)
 
@@ -769,14 +767,55 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
     </>)
 }
 
-const Viewer = ({ pdfObj, setShowPdfModal }) => {
+const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) => {
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${pdfObj?.pdf_urls}`
 
+    const handleInputChange = (e) => {
+        setPdfObj({
+            ...pdfObj,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleUpdateButton = async (event) => {
+        event.preventDefault();
+        // console.log(pdfObj);
+        setLoading(true)
+        const data = {
+            bank_name: pdfObj?.bank_name,
+            begin_bal_amount: pdfObj?.begin_bal_amount,
+            begin_bal_date: pdfObj?.begin_bal_date,
+            business_name: pdfObj?.business_name,
+            ending_bal_amount: pdfObj?.ending_bal_amount,
+            ending_bal_date: pdfObj?.ending_bal_date,
+            pdf_type: pdfObj?.pdf_type,
+            total_deposit: pdfObj?.total_deposit,
+        }
+
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdf/${pdfObj?.id}/`
+        // const res = await axios.put(url, pdfObj, {
+        const res = await axios.put(url, data, {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getCookie('jwt')}`,
+            },
+            withCredentials: true,
+        }).catch(err => {
+            console.log(err);
+        })
+        if (res?.status === 200) {
+            res?.data && setPdfObj(res?.data)
+            setShowPdfModal(false)
+        }
+        setLoading(false)
+    }
+
     return (<>
-        <div className="fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
+        <div className="pt-16 fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
             <FaTimesCircle className='absolute right-5 top-5 cursor-pointer' onClick={() => setShowPdfModal(false)} />
-            <div className='w-[90%] m-auto flex flex-col-reverse md:flex-row justify-between'>
-                <div className="flex-[2]">
+            <div className='w-[90%] m-auto flex flex-col-reverse lg:flex-row justify-between'>
+                <form className="flex-1 lg:flex-[2]" onSubmit={handleUpdateButton}>
                     <div className="mt-1 mb-3 text-center font-bold text-lg">
                         {pdfObj.pdf_type}
                     </div>
@@ -786,18 +825,18 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 type='text'
                                 label='Business Name'
                                 name="business_name"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Business Name"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
                                 type='text'
                                 label='Bank Name'
                                 name="bank_name"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Bank Name"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                         </div>
@@ -806,18 +845,18 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 type='number'
                                 label='Begin Balance Amount'
                                 name="begin_bal_amount"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Begin Balance Amount"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
                                 type='date'
                                 label='Begin Balance Date'
                                 name="begin_bal_date"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Begin Balance Date"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                         </div>
@@ -826,18 +865,18 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 type='number'
                                 label='Ending Balance Amount'
                                 name="ending_bal_amount"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Ending Balance Amount"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                             <Inputfeild2
                                 type='date'
                                 label='Ending Balance Date'
                                 name="ending_bal_date"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Ending Balance Date"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                         </div>
@@ -846,16 +885,23 @@ const Viewer = ({ pdfObj, setShowPdfModal }) => {
                                 type='number'
                                 label='Total Deposit'
                                 name="total_deposit"
-                                plholder=""
-                                disabled={true}
-                                onChange={() => { }}
+                                plholder="Total Deposit"
+                                disabled={!isEditable}
+                                onChange={handleInputChange}
                                 formData={pdfObj}
                             />
                         </div>
                     </div>
-                </div>
 
-                <div className="flex-[3]">
+                    <div className="flex items-center justify-center gap-4 mb-7">
+                        {isEditable && <button type="submit" className='px-4 py-2 w-full rounded-lg bg-blue-600 text-white hover:bg-blue-400 focus:bg-blue-400 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
+                        >
+                            Update
+                        </button>}
+                    </div>
+                </form>
+
+                <div className="flex-1 lg:flex-[3]">
                     <iframe src={baseUrl} width="100%" height="600" frameBorder="0" />
                 </div>
             </div>
@@ -905,7 +951,7 @@ const Inputfeild2 = ({ type, application, label, read, name, disabled, onChange,
                 onChange={onChange}
                 value={formData?.[name] ? purifyData(formData?.[name]) : application?.[name]}
                 placeholder={plholder}
-                className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-full mb-4' id="" />
+                className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none w-[200px] mb-4' id="" />
         </div>
     )
 };
