@@ -10,7 +10,7 @@ import { FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import RadioFeild from '../components/Radio';
 import LoadingModal from '../components/LoadingModal ';
-import { getToday, minMaxValidator, scrollToInput } from '../utils/helpers';
+import { getCookie, getToday, minMaxValidator, scrollToInput } from '../utils/helpers';
 
 
 const Create = ({ application }) => {
@@ -110,6 +110,14 @@ const Create = ({ application }) => {
         return zipCodeRegex.test(zipCode);
     }
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+        if (name === 'status') {
+            setFormData((prevData) => ({ ...prevData, status_description: statusOptions.find(i => i.status === value).status_description }));
+        }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         var zipError, ownerZipError, phoneError, mobileError, ownerPhoneError;
@@ -149,7 +157,8 @@ const Create = ({ application }) => {
             if (application) {
                 res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${application?.application_id}/`, formData, {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('jwt')}`,
                     },
                     withCredentials: true
                 }).catch(err => {
@@ -172,15 +181,7 @@ const Create = ({ application }) => {
         }
         setLoading(false)
     };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-        if (name === 'status') {
-            setFormData((prevData) => ({ ...prevData, status_description: statusOptions.find(i => i.status === value).status_description }));
-        }
-    };
-
+    
     return (<>
         <LoadingModal loading={loading} />
         <div className={`${step === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 !hidden pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto flex justify-center rounded-lg mt-[60px] mb-10 relative`} style={{

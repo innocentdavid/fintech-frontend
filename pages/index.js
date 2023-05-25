@@ -19,7 +19,7 @@ export default function Home({ data }) {
   const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
 
   // console.log(user);
-  
+
   useEffect(() => {
     if (!user) {
       setRefreshUser(refreshUser)
@@ -31,26 +31,30 @@ export default function Home({ data }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUser, user])
-  
-  
+
+
   // get applications
   useEffect(() => {
     const fetch = async () => {
-      await API.get("/")
-        .then((res) => {
-          setApplications(res?.data)
-        }).catch(error => {
-          // console.log(error);
-        })
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getCookie('jwt')}`,
+        },
+        withCredentials: true,
+      }).catch(error => console.error(error))
+      if(res.status === 200){
+        setApplications(res?.data)        
+      }
     };
     const intervalId = setInterval(fetch, 60000);
 
     // Clean up interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [])
-  
+
   if (!user) { return (<></>) }
-  
+
   return (<>
     <div className="w-full my-[10px]">
       <h1 className="text-center font-bold text-2xl my-10">All Applications</h1>
@@ -74,7 +78,7 @@ export async function getServerSideProps(context) {
     }).catch(err => {
       // console.log(err);
     });
-    
+
   } catch (error) {
     // console.log(error);    
   }
