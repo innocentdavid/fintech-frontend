@@ -850,6 +850,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
             headers: {
                 // 'Content-Type': 'application/json',
                 'content-type': 'multipart/form-data',
+                'Authorization': `Bearer ${getCookie('jwt')}`,
             },
             withCredentials: true,
         };
