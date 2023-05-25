@@ -863,7 +863,6 @@ const UploadFiles = ({ title, application_id, formData }) => {
             );
 
             // console.log({ formDataWithFiles });
-            console.log(getCookie('jwt'));
             const response = await axios.post(baseUrl, formDataWithFiles, {
                 headers: {
                     // 'Content-Type': 'application/json',
