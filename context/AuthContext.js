@@ -73,11 +73,13 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify(formData),
             credentials: "include",
         }).catch(err => {
+            console.log(err);
             alert('something went wrong')
             setLoading(false)
+            return;
         });
         
-        if (response.status === 200) {
+        if (response?.status === 200) {
             const data = await response.json();
             // console.log(data);
             if (data?.message && data?.message !== "Login successful.") {
@@ -103,9 +105,9 @@ export const AuthProvider = ({ children }) => {
                 return response
             }
         } else {
-            const error = await response.json();
-            // console.log(error);
-            alert(error.message);
+            const error = await response?.json();
+            console.log(error);
+            alert(error?.message);
             setLoading(false)
             setIsAuthenticated(false)
             setRefreshUser(!refreshUser)

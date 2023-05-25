@@ -160,7 +160,7 @@ const Create = ({ application }) => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${getCookie('jwt')}`,
                     },
-                    withCredentials: true
+                    withCredentials: true,
                 }).catch(err => {
                     console.log(err);
                 })
@@ -170,10 +170,21 @@ const Create = ({ application }) => {
                     router.back()
                 }
             } else {
-                res = await API.post("/", formData)
-                setApplication_id(res?.data?.application_id)
-                setStep(1)
-                document.getElementById('step2').scrollIntoView()
+                res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, formData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('jwt')}`,
+                    },
+                    withCredentials: true,
+                }).catch(err => {
+                    console.log(err);
+                })
+                // res = await API.post("/", formData)
+                if (res?.data?.application_id) {
+                    res?.data?.application_id && setApplication_id(res?.data?.application_id)
+                    setStep(1)
+                    document.getElementById('step2').scrollIntoView()
+                }
             }
 
         } catch (error) {
@@ -181,7 +192,7 @@ const Create = ({ application }) => {
         }
         setLoading(false)
     };
-    
+
     return (<>
         <LoadingModal loading={loading} />
         <div className={`${step === 0 ? "opacity-100 pointer-events-auto" : "opacity-0 !hidden pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto flex justify-center rounded-lg mt-[60px] mb-10 relative`} style={{
