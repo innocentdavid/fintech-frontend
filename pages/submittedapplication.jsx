@@ -11,17 +11,18 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../context/AuthContext';
 import { getCookie } from '../utils/helpers';
 
-const API = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    withCredentials: true
-})
 
-export default function Home({data}) {
-// export default function Home() {
-//     const data = []
+export default function Home({ data }) {
+    // export default function Home() {
+    //     const data = []
+    const API = axios.create({
+        baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getCookie('jwt')}`,
+        },
+        withCredentials: true
+    })
     const [applications, setApplications] = useState(data)
     const [applicationsLoading, setApplicationsLoading] = useState(false)
     const router = useRouter()
@@ -36,7 +37,7 @@ export default function Home({data}) {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refreshUser, user])  
+    }, [refreshUser, user])
 
     useEffect(() => {
         const fetch = async () => {
@@ -55,7 +56,7 @@ export default function Home({data}) {
     }, [])
 
     if (!user) { return (<></>) }
-    
+
     return (<>
         <div className="w-full my-[10px] px-5">
             <h1 className="text-center font-bold text-2xl my-10">All Submitted Applications</h1>

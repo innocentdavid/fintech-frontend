@@ -35,6 +35,7 @@ const Funders = ({ data }) => {
 
     const router = useRouter()
     const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    
     useEffect(() => {
         if (!user) {
             setRefreshUser(refreshUser)
