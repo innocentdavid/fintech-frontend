@@ -15,14 +15,6 @@ import { getCookie } from '../utils/helpers';
 export default function Home({ data }) {
     // export default function Home() {
     //     const data = []
-    const API = axios.create({
-        baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getCookie('jwt')}`,
-        },
-        withCredentials: true
-    })
     const [applications, setApplications] = useState(data)
     const [applicationsLoading, setApplicationsLoading] = useState(false)
     const router = useRouter()
@@ -41,6 +33,14 @@ export default function Home({ data }) {
 
     useEffect(() => {
         const fetch = async () => {
+            const API = axios.create({
+                baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getCookie('jwt')}`,
+                },
+                withCredentials: true
+            })
             await API.get("/")
                 .then((res) => {
                     setApplications(res?.data)

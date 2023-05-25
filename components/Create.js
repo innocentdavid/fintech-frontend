@@ -846,14 +846,6 @@ const UploadFiles = ({ title, application_id, formData }) => {
         // console.log({ formData2 });
         // return;
         const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
-        const config = {
-            headers: {
-                // 'Content-Type': 'application/json',
-                'content-type': 'multipart/form-data',
-                'Authorization': `Bearer ${getCookie('jwt')}`,
-            },
-            withCredentials: true,
-        };
 
         try {
             const formDataWithFiles = new FormData();
@@ -871,7 +863,15 @@ const UploadFiles = ({ title, application_id, formData }) => {
             );
 
             // console.log({ formDataWithFiles });
-            const response = await axios.post(baseUrl, formDataWithFiles, config).catch(error => {
+            console.log(getCookie('jwt'));
+            const response = await axios.post(baseUrl, formDataWithFiles, {
+                headers: {
+                    // 'Content-Type': 'application/json',
+                    'content-type': 'multipart/form-data',
+                    'Authorization': `Bearer ${getCookie('jwt')}`,
+                },
+                withCredentials: true,
+            }).catch(error => {
                 console.log(error);
             });
             // console.log({ response });
