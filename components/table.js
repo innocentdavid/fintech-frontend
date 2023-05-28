@@ -23,6 +23,7 @@ const Table = ({ data, page, setRefreshData }) => {
     const [loading, setLoading] = useState(false)
     const [showCreditScoreModal, setShowCreditScoreModal] = useState(false)
     const [appIdToCalcScore, setAppIdToCalcScore] = useState(false)
+    const [getScoreRes, setGetScoreRes] = useState()
 
     useEffect(() => {
         if (!data.length > 0) return;
@@ -156,6 +157,9 @@ const Table = ({ data, page, setRefreshData }) => {
                     <div className="p-10 rounded-xl bg-white text-black">
                         <p className="">Do you want to calculate the Score?</p>
 
+                        {!getScoreRes?.error && <p className="mt-5">SCORE: {getScoreRes?.credit_score}</p>}
+                        {getScoreRes?.error && <p className="mt-5">ERROR: {getScoreRes?.error}</p>}
+                        
                         <div className="flex items-center justify-between mt-5">
                             <div className="rippleButton ripple cursor-pointer !bg-red-600"
                                 onClick={() => setShowCreditScoreModal(false)}
@@ -173,11 +177,12 @@ const Table = ({ data, page, setRefreshData }) => {
                                     .catch((error) => {
                                         console.log(error);
                                         alert(error?.response?.statusText)
+                                        setGetScoreRes({ error: error?.response?.statusText })
                                     })
                                     if (res && res?.status === 200) {
                                         // console.log(res);
+                                        setGetScoreRes(res?.data)
                                         setRefreshData(true)
-                                        setShowCreditScoreModal(false)
                                     }                
                                     setLoading(false);
                                 }}

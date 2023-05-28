@@ -28,7 +28,7 @@ const EmailTable = ({ data, page }) => {
     var columns = useMemo(
         () => [
             {
-                accessorKey: 'id',
+                accessorKey: 'count',
                 header: 'ID',
                 enableColumnOrdering: false,
                 enableEditing: false, //disable editing on this column
@@ -106,7 +106,7 @@ const EmailTable = ({ data, page }) => {
                 data={tableData}
                 editingMode="modal" //default
                 enableColumnOrdering
-                enableEditing
+                enableEditing={false}
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
             />

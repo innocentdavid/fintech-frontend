@@ -13,8 +13,8 @@ import EmailTable from '../components/EmailTable';
 import LatestRecordTable from '../components/LatestRecordTable';
 // import Cookies from 'cookies';
 
-export default function Emails({ data, latestRecordsData }) {
-    // export default function Emails() {
+export default function Records({ data, latestRecordsData }) {
+    // export default function Records() {
     //   const data = []
     //   const latestRecordsData = []
     
@@ -81,6 +81,14 @@ export default function Emails({ data, latestRecordsData }) {
 }
 
 export async function getServerSideProps(context) {
+    const shouldHide = process.env.NEXT_PUBLIC_HIDE_RECORDS_PAGE === 'true';
+
+    if (shouldHide) {
+        return {
+            notFound: true, // Renders a 404 page
+        };
+    }
+    
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
     var res, latestRecordRes;
