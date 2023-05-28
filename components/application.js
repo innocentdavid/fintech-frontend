@@ -900,11 +900,8 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                 </form>
 
                 <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
-                    {/* <iframe src={`http://localhost:8001/pdfs/Free_Test_Data_10.5MB_PDF_UuhsjJN.pdf/`} className="w-full h-screen" frameBorder="0" /> */}
-                    <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" />
-                    {/* <object data={baseUrl} type="application/pdf" width="100%" height="600">
-                        <p>Unable to display PDF. Please <a href={baseUrl}>download it here</a>.</p>
-                    </object> */}
+                    {/* <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" /> */}
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />                    
                 </div>
             </div>
         </div>
