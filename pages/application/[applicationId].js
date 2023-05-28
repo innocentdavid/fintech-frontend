@@ -97,8 +97,8 @@ export async function getServerSideProps(context) {
         props: {
             application: appRes?.data ?? {},
             pdfs: response?.data ?? {},
-            fundersResponse: fundersResponse.data ?? {},
-            submittedApplications: submittedApplications.data ?? {},
+            fundersResponse: fundersResponse?.data ?? {},
+            submittedApplications: submittedApplications?.data ?? {},
         }
     };
 }

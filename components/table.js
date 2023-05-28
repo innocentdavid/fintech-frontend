@@ -22,8 +22,8 @@ const Table = ({ data, page, setRefreshData }) => {
     const [validationErrors, setValidationErrors] = useState({});
     const [loading, setLoading] = useState(false)
     const [showCreditScoreModal, setShowCreditScoreModal] = useState(false)
-    const [appIdToCalcScore, setAppIdToCalcScore] = useState(false)
-    const [getScoreRes, setGetScoreRes] = useState()
+    const [appToCalcScore, setAppToCalcScore] = useState({ application_id: '', credit_score: '' })
+    const [getScoreRes, setGetScoreRes] = useState({ error: '', credit_score: '' })
 
     useEffect(() => {
         if (!data.length > 0) return;
@@ -150,43 +150,46 @@ const Table = ({ data, page, setRefreshData }) => {
                 transition: 'opacity .15s ease-in-out'
             }}>
                 <div className="fixed top-0 left-0 w-full h-screen bg-black/20" onClick={() => {
-                    console.log('elr');
+                    setGetScoreRes({ credit_score: '', error: '' })
                     setShowCreditScoreModal(false)
                 }}></div>
                 <div className="absolute z-10">
                     <div className="p-10 rounded-xl bg-white text-black">
                         <p className="">Do you want to calculate the Score?</p>
 
-                        {!getScoreRes?.error && <p className="mt-5">SCORE: {getScoreRes?.credit_score}</p>}
+                        {!getScoreRes?.error && <p className="mt-5">SCORE: {getScoreRes?.credit_score ? getScoreRes?.credit_score : appToCalcScore.credit_score}</p>}
                         {getScoreRes?.error && <p className="mt-5">ERROR: {getScoreRes?.error}</p>}
-                        
+
                         <div className="flex items-center justify-between mt-5">
                             <div className="rippleButton ripple cursor-pointer !bg-red-600"
-                                onClick={() => setShowCreditScoreModal(false)}
-                            >Cancel</div>
-                            <div className="rippleButton ripple cursor-pointer !bg-blue-600"
+                                onClick={() => {
+                                    setGetScoreRes({ credit_score: '', error: ''})
+                                    setShowCreditScoreModal(false)
+                                }}
+                            >Close</div>
+                            {!getScoreRes?.credit_score && <div className="rippleButton ripple cursor-pointer !bg-blue-600"
                                 onClick={async () => {
                                     setLoading(true);
-                                    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_score/${appIdToCalcScore}/`, {
+                                    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_score/${appToCalcScore.application_id}/`, {
                                         headers: {
                                             'Content-Type': 'application/json',
                                             'Authorization': `Bearer ${getCookie('jwt')}`
                                         },
                                         withCredentials: true,
                                     })
-                                    .catch((error) => {
-                                        console.log(error);
-                                        alert(error?.response?.statusText)
-                                        setGetScoreRes({ error: error?.response?.statusText })
-                                    })
+                                        .catch((error) => {
+                                            console.log(error);
+                                            alert(error?.response?.statusText)
+                                            setGetScoreRes({ error: error?.response?.statusText })
+                                        })
                                     if (res && res?.status === 200) {
                                         // console.log(res);
                                         setGetScoreRes(res?.data)
                                         setRefreshData(true)
-                                    }                
+                                    }
                                     setLoading(false);
                                 }}
-                            >Ok</div>
+                            >Ok</div>}
                         </div>
                     </div>
                 </div>
@@ -228,7 +231,7 @@ const Table = ({ data, page, setRefreshData }) => {
                         {!page && <Tooltip arrow placement="left" title="score">
                             <IconButton onClick={() => {
                                 setShowCreditScoreModal(true);
-                                setAppIdToCalcScore(row.original.application_id);
+                                setAppToCalcScore({ application_id: row.original.application_id, credit_score: row.original.credit_score });
                             }}>
                                 <BsSpeedometer2 />
                             </IconButton>
@@ -238,7 +241,7 @@ const Table = ({ data, page, setRefreshData }) => {
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip arrow placement="left" title="View">
+                        <Tooltip arrow placement="right" title="View">
                             <IconButton onClick={() => {
                                 var p = page || 'application'
                                 if (page) {
