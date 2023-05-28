@@ -68,6 +68,10 @@ export default function Nav() {
                         setShowMobileMenu(false)
                         // setLoading(true)
                     }} href="/funders" className='font-bold hover:underline border py-1 px-2'>Funders</Link>
+                    <Link onClick={() => {
+                        setShowMobileMenu(false)
+                        // setLoading(true)
+                    }} href="/emails" className='font-bold hover:underline border py-1 px-2'>Emails</Link>
                 </div>
                 {isAuthenticated ? <>
                     <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={() => { setShowMobileMenu(false); logout()}}>

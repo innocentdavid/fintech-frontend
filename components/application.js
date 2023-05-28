@@ -595,11 +595,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         {showPdfModal && <Viewer pdfObj={pdf} setPdfObj={setPdf} setShowPdfModal={setShowPdfModal} isEditable={isEditable} setLoading={setLoading} />}
         {showAddPdf && <AddPdf pdfToAdd={pdfToAdd} setPdfToAdd={setPdfToAdd} setShowAddPdf={setShowAddPdf} reFreshPdf={reFreshPdf} setReFreshPdf={setReFreshPdf} />}
     </>)
-
 }
 
-
-export default Application
 
 
 const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPdf }) => {
@@ -636,8 +633,9 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
             headers: {
                 // 'Content-Type': 'application/json',
                 'content-type': 'multipart/form-data',
+                'Authorization': `Bearer ${getCookie('jwt')}`
             },
-            withCredentials: true
+            withCredentials: true,
         };
 
         try {
@@ -768,8 +766,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
 }
 
 const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) => {
-    // console.log(pdfObj);
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${pdfObj?.file}/`
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`
 
     const handleInputChange = (e) => {
         setPdfObj({
@@ -904,7 +901,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
 
                 <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
                     {/* <iframe src={`http://localhost:8001/pdfs/Free_Test_Data_10.5MB_PDF_UuhsjJN.pdf/`} className="w-full h-screen" frameBorder="0" /> */}
-                    <iframe src={`https://fad24eba3e1c.mylabserver.com/api/pdfs/${pdfObj?.file}/`} className="w-full h-screen" frameBorder="0" />
+                    <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" />
                     {/* <object data={baseUrl} type="application/pdf" width="100%" height="600">
                         <p>Unable to display PDF. Please <a href={baseUrl}>download it here</a>.</p>
                     </object> */}
@@ -974,3 +971,6 @@ function FileUpload(props) {
         </label>
     )
 }
+
+
+export default Application

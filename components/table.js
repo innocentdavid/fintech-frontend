@@ -2,23 +2,27 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import MaterialReactTable from 'material-react-table';
 import {
     Box,
+    Button,
     IconButton,
     Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
+import { BsSpeedometer2 } from 'react-icons/bs';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import LoadingModal from './LoadingModal ';
 import { getCookie } from '../utils/helpers';
 // import { data, states } from './makeData';
 
-const Table = ({ data, page }) => {
+const Table = ({ data, page, setRefreshData }) => {
     const router = useRouter()
     const [tableData, setTableData] = useState(() => data);
     const [validationErrors, setValidationErrors] = useState({});
     const [loading, setLoading] = useState(false)
+    const [showCreditScoreModal, setShowCreditScoreModal] = useState(false)
+    const [appIdToCalcScore, setAppIdToCalcScore] = useState(false)
 
     useEffect(() => {
         if (!data.length > 0) return;
@@ -53,11 +57,12 @@ const Table = ({ data, page }) => {
             var url = page ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${row.original.application_id}/`;
             var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getCookie('jwt')}`, }, withCredentials: true }).catch(err => console.log(err))
             // console.log(res);
-            if (res.status === 204) {
+            if (res?.status === 204) {
                 tableData.splice(row.index, 1);
                 setTableData([...tableData]);
                 setLoading(false)
             }
+            setLoading(false)
         },
         [page, tableData],
     );
@@ -139,6 +144,49 @@ const Table = ({ data, page }) => {
     return (
         <>
             <LoadingModal loading={loading} />
+
+            <div className={`${!showCreditScoreModal ? "opacity-0" : "fixed top-0 left-0 w-full h-screen z-10 grid place-items-center"}`} style={{
+                transition: 'opacity .15s ease-in-out'
+            }}>
+                <div className="fixed top-0 left-0 w-full h-screen bg-black/20" onClick={() => {
+                    console.log('elr');
+                    setShowCreditScoreModal(false)
+                }}></div>
+                <div className="absolute z-10">
+                    <div className="p-10 rounded-xl bg-white text-black">
+                        <p className="">Do you want to calculate the Score?</p>
+
+                        <div className="flex items-center justify-between mt-5">
+                            <div className="rippleButton ripple cursor-pointer !bg-red-600"
+                                onClick={() => setShowCreditScoreModal(false)}
+                            >Cancel</div>
+                            <div className="rippleButton ripple cursor-pointer !bg-blue-600"
+                                onClick={async () => {
+                                    setLoading(true);
+                                    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_score/${appIdToCalcScore}/`, {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `Bearer ${getCookie('jwt')}`
+                                        },
+                                        withCredentials: true,
+                                    })
+                                    .catch((error) => {
+                                        console.log(error);
+                                        alert(error?.response?.statusText)
+                                    })
+                                    if (res && res?.status === 200) {
+                                        // console.log(res);
+                                        setRefreshData(true)
+                                        setShowCreditScoreModal(false)
+                                    }                
+                                    setLoading(false);
+                                }}
+                            >Ok</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <MaterialReactTable
                 displayColumnDefOptions={{
                     'mrt-row-actions': {
@@ -152,7 +200,7 @@ const Table = ({ data, page }) => {
                 options={{
                     sorting: true,
                     defaultSort: 'desc', // 'asc' for ascending, 'desc' for descending
-                    defaultSortField: page ? 'date_submitted' :'id',
+                    defaultSortField: page ? 'date_submitted' : 'id',
                     sortingOrder: ['desc', 'asc'],
                     // ... other options
                 }}
@@ -172,7 +220,15 @@ const Table = ({ data, page }) => {
                                 <Edit />
                             </IconButton>
                         </Tooltip>}
-                        <Tooltip arrow placement="right" title="Delete">
+                        {!page && <Tooltip arrow placement="left" title="score">
+                            <IconButton onClick={() => {
+                                setShowCreditScoreModal(true);
+                                setAppIdToCalcScore(row.original.application_id);
+                            }}>
+                                <BsSpeedometer2 />
+                            </IconButton>
+                        </Tooltip>}
+                        <Tooltip arrow placement="left" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />
                             </IconButton>
