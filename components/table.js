@@ -146,7 +146,7 @@ const Table = ({ data, page, setRefreshData }) => {
         <>
             <LoadingModal loading={loading} />
 
-            <div className={`${!showCreditScoreModal ? "opacity-0" : "fixed top-0 left-0 w-full h-screen z-10 grid place-items-center"}`} style={{
+            <div className={`${!showCreditScoreModal ? "opacity-0 pointer-events-none" : "fixed top-0 left-0 w-full h-screen z-10 grid place-items-center"}`} style={{
                 transition: 'opacity .15s ease-in-out'
             }}>
                 <div className="fixed top-0 left-0 w-full h-screen bg-black/20" onClick={() => {
