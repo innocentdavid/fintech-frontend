@@ -8,15 +8,6 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { AuthContext } from "../context/AuthContext";
 
-const API = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`,
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-    },
-    withCredentials: true
-})
-
 const Funders = ({ data }) => {
 // const Funders = () => {
 //     const data = []
@@ -60,6 +51,16 @@ const Funders = ({ data }) => {
 
     const handleAdd = async (e) => {
         e.preventDefault();
+        const API = axios.create({
+            baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getCookie('jwt')}`
+            },
+            withCredentials: true
+        })
+        
         var phoneError;
         if (phone && !minMaxValidator(phone, 7, 10)) { phoneError = true; setPhoneError('number must be either 7 or 10 characters') }
 
