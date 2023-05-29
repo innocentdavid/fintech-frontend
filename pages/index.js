@@ -71,10 +71,10 @@ export default function Home({ data }) {
 }
 
 export async function getServerSideProps(context) {
-  // const cookies = context.req.cookies;
-  const cookies = parseCookies(context)
   var res;
   try {
+    // const cookies = context.req.cookies;
+    const cookies = parseCookies(context)
     res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
       headers: {
         'Content-Type': 'application/json',
