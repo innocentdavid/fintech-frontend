@@ -181,6 +181,8 @@ const Table = ({ data, page, setRefreshData }) => {
                                             console.log(error);
                                             alert(error?.response?.statusText)
                                             setGetScoreRes({ error: error?.response?.statusText })
+                                            setLoading(false);
+                                            return;
                                         })
                                     if (res && res?.status === 200) {
                                         // console.log(res);

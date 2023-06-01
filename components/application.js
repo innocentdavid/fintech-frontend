@@ -106,6 +106,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             withCredentials: true,
         }).catch(err => {
             console.log(err);
+            setLoading(false)
+            return;
         })
         if (res.statusText === "Created") {
             setIsEditable(false)
@@ -159,38 +161,42 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     const [selectedFundersArray, setSelectedFundersArray] = useState([])
 
     const handleSendApplication = async () => {
-        setLoading(true)
-        const formData = {
-            ...application,
-            date_submitted: getToday(new Date()),
-            status: 'Submitted',
-            status_date: getToday(new Date()),
-            status_description: 'Submitted',
-            funder_names: selectedFundersArray
-        }
-        // console.log(formData);
-        // return;
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getCookie('jwt')}`,
-            },
-            withCredentials: true
-        }).catch(err => {
-            console.log(err);
-        })
-        if (res?.statusText) {
-            setShowFunders(false)
-            const list = []
-            selectedFundersArray.forEach(funder => {
-                list.push({ ...funder, submitted: true })
+        if (selectedFundersArray.length>0){
+            setLoading(true)
+            const formData = {
+                ...application,
+                date_submitted: getToday(new Date()),
+                status: 'Submitted',
+                status_date: getToday(new Date()),
+                status_description: 'Submitted',
+                funder_names: selectedFundersArray
+            }
+            // console.log(formData);
+            // return;
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${getCookie('jwt')}`,
+                },
+                withCredentials: true
+            }).catch(err => {
+                console.log(err);
+                setLoading(false)
+                return;
             })
-            const concat = [...fundersArray, ...list]
-            setFundersArray(concat)
-            setFundersArrayO(concat)
-            setSelectedFundersArray([])
+            if (res?.statusText) {
+                setShowFunders(false)
+                const list = []
+                selectedFundersArray.forEach(funder => {
+                    list.push({ ...funder, submitted: true })
+                })
+                const concat = [...fundersArray, ...list]
+                setFundersArray(concat)
+                setFundersArrayO(concat)
+                setSelectedFundersArray([])
+            }
+            setLoading(false)            
         }
-        setLoading(false)
     }
 
     return (<>
@@ -245,7 +251,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         })}
                     </div>
                 </div>
-                <button className="mt-4 py-2 px-8 bg-black text-white" onClick={handleSendApplication}>Send</button>
+                <button className={`${selectedFundersArray.length > 0 ? 'bg-black' : 'bg-black'} mt-4 py-2 px-8 text-white`} onClick={handleSendApplication}>Send</button>
             </div>
         </div>
 
@@ -801,6 +807,8 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
             withCredentials: true,
         }).catch(err => {
             console.log(err);
+            setLoading(false)
+            return;
         })
         if (res?.status === 200) {
             res?.data && setPdfObj(res?.data)

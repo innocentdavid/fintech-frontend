@@ -36,20 +36,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login(formData)
-    // setLoading(true)
-    // const response = await API.post('api/login/', formData).catch((err => {
-    //   console.log(err);
-    // }))
-    // const response = await axios.post();
-    // console.log(response);
-    // if (response?.data?.message && response?.data?.message !== "success") {
-    //   alert(response.data.message)
-    //   setLoading(false)
-    //   return;
-    // }
-    
-    
-    // setLoading(false)
   };
 
   return (<>

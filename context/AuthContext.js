@@ -5,6 +5,7 @@ import LoadingModal from '../components/LoadingModal ';
 import { useRouter } from 'next/router';
 import API from '../components/API';
 import { destroyCookie, setCookie } from 'nookies';
+import AlertModal from '../components/AlertModal';
 
 const APIN = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/`,
@@ -29,11 +30,11 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [refreshUser, setRefreshUser] = useState(false)
     const checkAuth = router.route !== "/login" || router.route === "/register";
+    const [errorMsg, setErrorMsg] = useState({title:'Alert', message: 'something went wrong'})
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetch = async () => {
-            // console.log("getCookie('jwt'):  ");
-            // console.log(getCookie('jwt'));
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/getcurrentuser/`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,27 +42,36 @@ export const AuthProvider = ({ children }) => {
                 },
                 withCredentials: true
             }).catch(error => {
-                // console.log(error);
+                console.log(error);
                 if (error?.message === "Network Error") {
-                    alert("Network Error, please check if the backend is running...")
+                    // alert("Network Error, please check if the backend is running...")
+                    setErrorMsg({ title: 'Alert', message: "Network Error, please check if the backend is running..." })
+                    handleOpenModal()
+                    return;
                 }
             });
-            
-            // console.log(response);
-            
+
             if (response?.data.message === 'success') {
                 setUser(response?.data);
                 setIsAuthenticated(true)
             } else {
                 setUser(null);
                 setIsAuthenticated(false)
-                if (checkAuth && !response?.data){
+                if (checkAuth && !response?.data) {
                     router.push('/login')
                 }
             }
         };
         fetch()
     }, [checkAuth, refreshUser, router])
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
 
     const login = async (formData) => {
         setLoading(true)
@@ -74,11 +84,13 @@ export const AuthProvider = ({ children }) => {
             credentials: "include",
         }).catch(err => {
             console.log(err);
-            alert('something went wrong')
+            // alert('something went wrong')
+            setErrorMsg({ title: 'Alert', message: "something went wrong: "+err?.message})
+            handleOpenModal()
             setLoading(false)
             return;
         });
-        
+
         if (response?.status === 200) {
             const data = await response.json();
             // console.log(data);
@@ -89,13 +101,11 @@ export const AuthProvider = ({ children }) => {
                 setRefreshUser(!refreshUser)
                 return;
             }
-            
+
             // console.log(data);
 
             if (data?.message === 'Login successful.') {
-                const expirationDate = new Date();
-                expirationDate.setHours(expirationDate.getHours() + 23);
-                expirationDate.setMinutes(expirationDate.getMinutes() + 50);
+                const expirationDate = new Date(data?.expiration_time ? data?.expiration_time*1000 : '');
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
                 setLoading(false)
                 // setRefreshUser(!refreshUser)
@@ -107,7 +117,10 @@ export const AuthProvider = ({ children }) => {
         } else {
             const error = await response?.json();
             console.log(error);
-            alert(error?.message);
+            // error?.message && alert(error?.message);
+            let errMsg = error?.message
+            setErrorMsg({ title: 'Authentication Error', message: errMsg })
+            errMsg && handleOpenModal()
             setLoading(false)
             setIsAuthenticated(false)
             setRefreshUser(!refreshUser)
@@ -117,7 +130,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        if(!window.confirm('Are you sure you want to log out')) return;
+        if (!window.confirm('Are you sure you want to log out')) return;
         setLoading(true)
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/logout/`, {
             method: "POST",
@@ -146,6 +159,7 @@ export const AuthProvider = ({ children }) => {
             // console.log(error);
             alert(error.message);
             setLoading(false)
+            return;
         }
         setLoading(false)
     };
@@ -155,6 +169,12 @@ export const AuthProvider = ({ children }) => {
             value={{ isAuthenticated, user, login, logout, refreshUser, setRefreshUser }}
         >
             {loading && < LoadingModal loading={loading} />}
+            <AlertModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                title={errorMsg?.title}
+                message={errorMsg?.message}
+            />
             {children}
         </AuthContext.Provider>
     );

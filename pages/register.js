@@ -48,13 +48,16 @@ export default function Register() {
     })
     // console.log(response);
     if (response?.data?.message && response?.data?.message === 'success' ) {
-      const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + 1);
-      document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
+      // const expirationDate = new Date();
+      // expirationDate.setDate(expirationDate.getDate() + 1);
+      // document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
+      const expirationDate = new Date(response?.expiration_time ? response?.expiration_time * 1000 : '');
+      document.cookie = `jwt=${response?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
       alert(response?.data?.message)
       setLoading(false)
+      return;
     }
     setLoading(false)
   };
