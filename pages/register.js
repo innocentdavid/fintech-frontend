@@ -24,15 +24,6 @@ export default function Register() {
     // console.log(formData);
   };
 
-  const API = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/`,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    // credentials: 'include',
-    withCredentials: true
-  })
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(formData.password !== formData.cpassword) return alert("Your password must be the same!")

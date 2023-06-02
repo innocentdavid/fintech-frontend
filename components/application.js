@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { FaCheck, FaCloudUploadAlt, FaTimes, FaTimesCircle } from 'react-icons/fa'
 import { FiTriangle } from 'react-icons/fi'
 import axios from 'axios';
@@ -10,6 +10,7 @@ import { AiFillFilePdf } from 'react-icons/ai';
 // import API from './API';
 import LoadingModal from './LoadingModal ';
 import { getCookie, getToday } from '../utils/helpers';
+import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
 
 const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
@@ -161,7 +162,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     const [selectedFundersArray, setSelectedFundersArray] = useState([])
 
     const handleSendApplication = async () => {
-        if (selectedFundersArray.length>0){
+        if (selectedFundersArray.length > 0) {
             setLoading(true)
             const formData = {
                 ...application,
@@ -195,7 +196,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setFundersArrayO(concat)
                 setSelectedFundersArray([])
             }
-            setLoading(false)            
+            setLoading(false)
         }
     }
 
@@ -604,7 +605,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 }
 
 
-
 const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPdf }) => {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState()
@@ -771,8 +771,136 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
     </>)
 }
 
+const PdfPreview = ({ pdfObj }) => {
+    const router = useRouter()
+    const [fileUrl, setFileUrl] = useState()
+    const [pdfBlob, setPdfBlob] = useState(null);
+
+    useEffect(() => {
+        const fetchPDFFile = async () => {
+            if (!getCookie('jwt')) {
+                alert('Please login to continue')
+                router.push('/login')
+                return;
+            }
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
+                    responseType: 'blob', // Set the response type to blob
+                    headers: {
+                        Authorization: `Bearer ${getCookie('jwt')}`,
+                    },
+                });
+
+                if (response?.status === 200) {
+                    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+                    setPdfBlob(pdfBlob);
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    setFileUrl(pdfUrl);
+
+                    // Use the generated URL to display or download the PDF file
+                    // ...
+                } else {
+                    // Handle non-200 status code
+                    // ...
+                }
+            } catch (error) {
+                // Handle network or request error
+                // ...
+            }
+        };
+
+        fetchPDFFile();
+    }, [pdfObj, router]);
+    
+    const styles = StyleSheet.create({
+        page: {
+            flexDirection: 'row',
+            backgroundColor: '#E4E4E4'
+        },
+        section: {
+            margin: 10,
+            padding: 10,
+            flexGrow: 1
+        }
+    });
+    
+    return (
+        <div>
+            {pdfBlob && (
+                <PDFViewer>
+                    <Document file={pdfBlob}>
+                        {/* <Page pageNumber={1} /> */}
+                        {/* <Page size="A4" style={styles.page}>
+                            <View style={styles.section}>
+                                <Text>Section #1</Text>
+                            </View>
+                            <View style={styles.section}>
+                                <Text>Section #2</Text>
+                            </View>
+                        </Page> */}
+                    </Document>
+                </PDFViewer>
+            )}
+        </div>
+    );
+};
+
 const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) => {
+    // console.log("pdfObj: ");
+    // console.log(pdfObj);
+    const containerRef = useRef(null);
+    const router = useRouter()
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`
+    const [fileUrl, setFileUrl] = useState()
+    const [pdfBlob, setPdfBlob] = useState(null);
+
+    useEffect(() => {
+        const fetchPDFFile = async () => {
+            if (!getCookie('jwt')) {
+                alert('Please login to continue')
+                router.push('/login')
+                return;
+            }
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
+                    responseType: 'blob', // Set the response type to blob
+                    headers: {
+                        Authorization: `Bearer ${getCookie('jwt')}`,
+                    },
+                });
+
+                if (response?.status === 200) {
+                    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+                    setPdfBlob(pdfBlob);
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    setFileUrl(pdfUrl);
+
+                    // Use the generated URL to display or download the PDF file
+                    // ...
+                } else {
+                    // Handle non-200 status code
+                    // ...
+                }
+            } catch (error) {
+                // Handle network or request error
+                // ...
+            }
+        };
+
+        fetchPDFFile();
+    }, [pdfObj, router]);
+    
+    // useEffect(() => {
+    //     const renderPDF = async () => {
+    //         const pdf = await Document.load(fileUrl);
+    //         const viewer = new Viewer({
+    //             container: containerRef.current,
+    //         });
+    //         viewer.setDocument(pdf);
+    //     };
+
+    //     renderPDF();
+    // }, [fileUrl]);
 
     const handleInputChange = (e) => {
         setPdfObj({
@@ -815,7 +943,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
             setShowPdfModal(false)
         }
         setLoading(false)
-    }
+    };
 
     return (<>
         <div className="pt-16 fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
@@ -908,8 +1036,20 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                 </form>
 
                 <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
-                    {/* <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" /> */}
-                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />                    
+                    {/* <PdfPreview pdfObj={pdfObj} /> */}
+                    {/* {fileUrl ? (
+                        // <div ref={containerRef} className="pdf-viewer-container" />
+                        <Document file={pdfBlob}>
+                            <Page pageNumber={1} />
+                        </Document>
+                        // <Document file={fileUrl}>
+                        //     <Page pageNumber={1} />
+                        // </Document>
+                    ) : (
+                        <div>Loading...</div>
+                    )} */}
+                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />                     */}
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />                    
                 </div>
             </div>
         </div>
