@@ -52,7 +52,7 @@ const Funders = ({ data }) => {
     const handleAdd = async (e) => {
         e.preventDefault();
         const API = axios.create({
-            baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`,
+            baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/funders/`,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -199,7 +199,7 @@ export default Funders;
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`, {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/funders/`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

@@ -55,7 +55,7 @@ const Table = ({ data, page, setRefreshData }) => {
             if (!confirm(`Are you sure you want to delete this data?`)) return;
             setLoading(true)
             //send api delete request here, then refetch or update local table data for re-render
-            var url = page ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${row.original.application_id}/`;
+            var url = page ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${row.original.submittedApplication_id}/` : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${row.original.application_id}/`;
             var res = await axios.delete(url, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getCookie('jwt')}`, }, withCredentials: true }).catch(err => console.log(err))
             // console.log(res);
             if (res?.status === 204) {
@@ -170,7 +170,7 @@ const Table = ({ data, page, setRefreshData }) => {
                             {!getScoreRes?.credit_score && <div className="rippleButton ripple cursor-pointer !bg-blue-600"
                                 onClick={async () => {
                                     setLoading(true);
-                                    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_score/${appToCalcScore.application_id}/`, {
+                                    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_score/${appToCalcScore.application_id}/`, {
                                         headers: {
                                             'Content-Type': 'application/json',
                                             'Authorization': `Bearer ${getCookie('jwt')}`

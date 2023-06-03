@@ -10,7 +10,9 @@ import { AiFillFilePdf } from 'react-icons/ai';
 // import API from './API';
 import LoadingModal from './LoadingModal ';
 import { getCookie, getToday } from '../utils/helpers';
-import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import PdfViewer from './PdfViewer'
+// import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+// import Document from "react-pdf";
 
 
 const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
@@ -98,7 +100,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         setLoading(true)
         // console.log({ formData });
 
-        const res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${application?.application_id}/`, formData, {
+        const res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/${application?.application_id}/`, formData, {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
@@ -174,7 +176,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             }
             // console.log(formData);
             // return;
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`, formData, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${getCookie('jwt')}`,
@@ -634,7 +636,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
         setLoading(true)
         // console.log({ pdfToAdd });
         // return;
-        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
+        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/`
         const config = {
             headers: {
                 // 'Content-Type': 'application/json',
@@ -771,79 +773,79 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
     </>)
 }
 
-const PdfPreview = ({ pdfObj }) => {
-    const router = useRouter()
-    const [fileUrl, setFileUrl] = useState()
-    const [pdfBlob, setPdfBlob] = useState(null);
+// const PdfPreview = ({ pdfObj }) => {
+//     const router = useRouter()
+//     const [fileUrl, setFileUrl] = useState()
+//     const [pdfBlob, setPdfBlob] = useState(null);
 
-    useEffect(() => {
-        const fetchPDFFile = async () => {
-            if (!getCookie('jwt')) {
-                alert('Please login to continue')
-                router.push('/login')
-                return;
-            }
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
-                    responseType: 'blob', // Set the response type to blob
-                    headers: {
-                        Authorization: `Bearer ${getCookie('jwt')}`,
-                    },
-                });
+//     useEffect(() => {
+//         const fetchPDFFile = async () => {
+//             if (!getCookie('jwt')) {
+//                 alert('Please login to continue')
+//                 router.push('/login')
+//                 return;
+//             }
+//             try {
+//                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
+//                     responseType: 'blob', // Set the response type to blob
+//                     headers: {
+//                         Authorization: `Bearer ${getCookie('jwt')}`,
+//                     },
+//                 });
 
-                if (response?.status === 200) {
-                    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-                    setPdfBlob(pdfBlob);
-                    const pdfUrl = URL.createObjectURL(pdfBlob);
-                    setFileUrl(pdfUrl);
+//                 if (response?.status === 200) {
+//                     const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+//                     setPdfBlob(pdfBlob);
+//                     const pdfUrl = URL.createObjectURL(pdfBlob);
+//                     setFileUrl(pdfUrl);
 
-                    // Use the generated URL to display or download the PDF file
-                    // ...
-                } else {
-                    // Handle non-200 status code
-                    // ...
-                }
-            } catch (error) {
-                // Handle network or request error
-                // ...
-            }
-        };
+//                     // Use the generated URL to display or download the PDF file
+//                     // ...
+//                 } else {
+//                     // Handle non-200 status code
+//                     // ...
+//                 }
+//             } catch (error) {
+//                 // Handle network or request error
+//                 // ...
+//             }
+//         };
 
-        fetchPDFFile();
-    }, [pdfObj, router]);
+//         fetchPDFFile();
+//     }, [pdfObj, router]);
     
-    const styles = StyleSheet.create({
-        page: {
-            flexDirection: 'row',
-            backgroundColor: '#E4E4E4'
-        },
-        section: {
-            margin: 10,
-            padding: 10,
-            flexGrow: 1
-        }
-    });
+//     const styles = StyleSheet.create({
+//         page: {
+//             flexDirection: 'row',
+//             backgroundColor: '#E4E4E4'
+//         },
+//         section: {
+//             margin: 10,
+//             padding: 10,
+//             flexGrow: 1
+//         }
+//     });
     
-    return (
-        <div>
-            {pdfBlob && (
-                <PDFViewer>
-                    <Document file={pdfBlob}>
-                        {/* <Page pageNumber={1} /> */}
-                        {/* <Page size="A4" style={styles.page}>
-                            <View style={styles.section}>
-                                <Text>Section #1</Text>
-                            </View>
-                            <View style={styles.section}>
-                                <Text>Section #2</Text>
-                            </View>
-                        </Page> */}
-                    </Document>
-                </PDFViewer>
-            )}
-        </div>
-    );
-};
+//     return (
+//         <div>
+//             {pdfBlob && (
+//                 <PDFViewer>
+//                     <Document file={pdfBlob}>
+//                         {/* <Page pageNumber={1} /> */}
+//                         {/* <Page size="A4" style={styles.page}>
+//                             <View style={styles.section}>
+//                                 <Text>Section #1</Text>
+//                             </View>
+//                             <View style={styles.section}>
+//                                 <Text>Section #2</Text>
+//                             </View>
+//                         </Page> */}
+//                     </Document>
+//                 </PDFViewer>
+//             )}
+//         </div>
+//     );
+// };
 
 const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) => {
     // console.log("pdfObj: ");
@@ -862,7 +864,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                 return;
             }
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
                     responseType: 'blob', // Set the response type to blob
                     headers: {
                         Authorization: `Bearer ${getCookie('jwt')}`,
@@ -943,6 +945,14 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
             setShowPdfModal(false)
         }
         setLoading(false)
+    };
+                                       
+    const renderPDF = () => {
+        if (pdfBlob) {
+            const dataUrl = URL.createObjectURL(pdfBlob);
+            return <iframe src={dataUrl} width="100%" height="600px" />;
+        }
+        return null;
     };
 
     return (<>
@@ -1036,6 +1046,9 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                 </form>
 
                 <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
+                    {/* <Document data={pdfBlob} /> */}
+                    {/* <PdfViewer pdfData={pdfBlob} /> */}
+                    {/* {renderPDF()} */}
                     {/* <PdfPreview pdfObj={pdfObj} /> */}
                     {/* {fileUrl ? (
                         // <div ref={containerRef} className="pdf-viewer-container" />
@@ -1048,8 +1061,8 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                     ) : (
                         <div>Loading...</div>
                     )} */}
-                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />                     */}
-                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />                    
+                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />                     */}
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />
                 </div>
             </div>
         </div>

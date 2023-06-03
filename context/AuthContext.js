@@ -8,7 +8,7 @@ import { destroyCookie, setCookie } from 'nookies';
 import AlertModal from '../components/AlertModal';
 
 const APIN = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/`,
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -105,6 +105,11 @@ export const AuthProvider = ({ children }) => {
             // console.log(data);
 
             if (data?.message === 'Login successful.') {
+                // const currentTime = new Date();
+                // Add 1 hour to the current time
+                // const expiryTime = new Date(currentTime.getTime() + (1 * 60 * 60 * 1000));
+                // document.cookie = `jwt=${data.token}; expires=${expiryTime.toUTCString()}; path=/;`;
+
                 const expirationDate = new Date(data?.expiration_time ? data?.expiration_time*1000 : '');
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
                 setLoading(false)

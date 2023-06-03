@@ -42,7 +42,7 @@ export default function Records({ data, latestRecordsData }) {
     // get applications
     useEffect(() => {
         const fetch = async () => {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/emails/`, {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/emails/`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${getCookie('jwt')}`,
@@ -93,7 +93,7 @@ export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
     var res, latestRecordRes;
     try {
-        res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/emails/`, {
+        res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/emails/`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
@@ -102,7 +102,7 @@ export async function getServerSideProps(context) {
         }).catch(err => {
             // console.log(err);
         });
-        latestRecordRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/latestRecords/`, {
+        latestRecordRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/latestRecords/`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

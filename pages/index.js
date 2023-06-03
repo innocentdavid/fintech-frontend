@@ -37,7 +37,7 @@ export default function Home({ data }) {
   // get applications
   useEffect(() => {
     const fetch = async () => {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getCookie('jwt')}`,
@@ -75,7 +75,7 @@ export async function getServerSideProps(context) {
   try {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
-    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, {
+    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

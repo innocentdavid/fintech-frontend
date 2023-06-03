@@ -155,7 +155,7 @@ const Create = ({ application }) => {
         try {
             var res;
             if (application) {
-                res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${application?.application_id}/`, formData, {
+                res = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${application?.application_id}/`, formData, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${getCookie('jwt')}`,
@@ -170,7 +170,7 @@ const Create = ({ application }) => {
                     router.back()
                 }
             } else {
-                res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/`, formData, {
+                res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, formData, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${getCookie('jwt')}`,
@@ -845,7 +845,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
         setLoading(true)
         // console.log({ formData2 });
         // return;
-        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/pdfs/`
+        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/`
 
         try {
             const formDataWithFiles = new FormData();

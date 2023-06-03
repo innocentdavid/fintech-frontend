@@ -53,7 +53,7 @@ export default ApplicationDetail
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
-    const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/applications/${context.params.applicationId}/`, {
+    const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${context.params.applicationId}/`, {
         headers: {
             //  'Accept': 'application/json',
              'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export async function getServerSideProps(context) {
         withCredentials: true,
     }).catch(err => { console.log(err) });
 
-    const fundersResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/funders/`, {
+    const fundersResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/funders/`, {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

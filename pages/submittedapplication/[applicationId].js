@@ -9,7 +9,7 @@ import { AuthContext } from '../../context/AuthContext'
 import { getCookie } from '../../utils/helpers'
 
 const API = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/`,
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/`,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export default ApplicationDetail
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies; 
     const cookies = parseCookies(context)
-    const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/submittedApplications/${context.params.applicationId}/`, {
+    const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${context.params.applicationId}/`, {
         headers: {
             // 'Accept': 'application/json',
             'Content-Type': 'application/json',
