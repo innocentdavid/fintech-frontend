@@ -10,7 +10,7 @@ import { AiFillFilePdf } from 'react-icons/ai';
 // import API from './API';
 import LoadingModal from './LoadingModal ';
 import { getCookie, getToday } from '../utils/helpers';
-import PdfViewer from './PdfViewer'
+// import PdfViewer from './PdfViewer'
 // import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 // import Document from "react-pdf";
 
@@ -1062,8 +1062,12 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                     ) : (
                         <div>Loading...</div>
                     )} */}
-                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />                     */}
-                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />  
+                    
+                    
+                    
+                    {/* working version */}
+                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" /> */}
                 </div>
             </div>
         </div>
