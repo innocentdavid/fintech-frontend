@@ -853,6 +853,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     const containerRef = useRef(null);
     const router = useRouter()
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`
+    // console.log(baseUrl);
     const [fileUrl, setFileUrl] = useState()
     const [pdfBlob, setPdfBlob] = useState(null);
 
