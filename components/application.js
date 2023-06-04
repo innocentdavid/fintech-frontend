@@ -857,6 +857,14 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     console.log(baseUrl);
     const [fileUrl, setFileUrl] = useState()
     const [pdfBlob, setPdfBlob] = useState(null);
+    
+    useEffect(() => {
+        // var iframe = document.querySelector('#iframe');
+        // if(iframe) {
+        //     iframe.src=fileUrl
+        // }
+    }, [fileUrl])
+    
 
     useEffect(() => {
         const fetchPDFFile = async () => {
@@ -875,8 +883,13 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
 
                 if (response?.status === 200) {
                     const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-                    setPdfBlob(pdfBlob);
+                    // setPdfBlob(pdfBlob);
                     const pdfUrl = URL.createObjectURL(pdfBlob);
+                    // console.log(pdfUrl);
+                    var iframe = document.querySelector('#iframe');
+                    if (iframe) {
+                        iframe.src = pdfUrl
+                    }
                     setFileUrl(pdfUrl);
 
                     // Use the generated URL to display or download the PDF file
@@ -929,8 +942,6 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
             }
         );
     }, [fileUrl]);
-    
-    console.log(pdfRef);
 
     const handleInputChange = (e) => {
         setPdfObj({
@@ -1098,14 +1109,24 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                     ) : (
                         <div>Loading...</div>
                     )} */}
-                    {/* <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />   */}
+                    {/* <div className="">1</div>
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}`} className="w-full h-screen" frameBorder="0" />   */}
                     
                     
                     
                     {/* working version */}
-                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />
+                    {/* <div className="">2</div>
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" /> */}
 
-                    {/* <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" /> */}
+                    {/* <div className="">3</div> */}
+                    <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" />
+                    
+                    
+                    {/* <div className="">4</div>
+                    <iframe src={fileUrl} className="w-full h-screen" frameBorder="0" />
+
+                    <div className="">5</div>
+                    <iframe id='iframe' className="w-full h-screen" frameBorder="0" /> */}
                 </div>
             </div>
         </div>
