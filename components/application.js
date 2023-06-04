@@ -854,7 +854,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     const containerRef = useRef(null);
     const router = useRouter()
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`
-    // console.log(baseUrl);
+    console.log(baseUrl);
     const [fileUrl, setFileUrl] = useState()
     const [pdfBlob, setPdfBlob] = useState(null);
 
@@ -1074,6 +1074,15 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                 </form>
 
                 <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
+                    {/* <object
+                        // data="https://html.spec.whatwg.org/print.pdf"
+                        data={fileUrl}
+                        type="application/pdf"
+                        width="100%"
+                        style={{ height: 'calc(100vh - 43px)' }}
+                        aria-label="This object displays an PDF file"
+                    /> */}
+                    
                     {/* <Document data={pdfBlob} /> */}
                     {/* <PdfViewer pdfData={pdfBlob} /> */}
                     {/* {renderPDF()} */}
@@ -1095,6 +1104,8 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                     
                     {/* working version */}
                     <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />
+
+                    {/* <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" /> */}
                 </div>
             </div>
         </div>

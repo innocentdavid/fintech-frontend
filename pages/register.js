@@ -42,8 +42,8 @@ export default function Register() {
       // const expirationDate = new Date();
       // expirationDate.setDate(expirationDate.getDate() + 1);
       // document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
-      const expirationDate = new Date(response?.expiration_time ? response?.expiration_time * 1000 : '');
-      document.cookie = `jwt=${response?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
+      const expirationDate = new Date(response?.data?.expiration_time ? response?.data?.expiration_time * 1000 : '');
+      document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
       alert(response?.data?.message)
