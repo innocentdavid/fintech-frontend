@@ -221,7 +221,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
-                        {!!fundersArray && fundersArray?.map((funder, index) => {
+                        {fundersArray?.length>0 && fundersArray?.map((funder, index) => {
                             return (
                                 <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`}
                                     onClick={() => {
@@ -853,8 +853,8 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     // console.log(pdfObj);
     const containerRef = useRef(null);
     const router = useRouter()
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`
-    console.log(baseUrl);
+    // const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/?authorization=${getCookie('jwt')}`;
     const [fileUrl, setFileUrl] = useState()
     const [pdfBlob, setPdfBlob] = useState(null);
     
@@ -1115,11 +1115,11 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
                     
                     
                     {/* working version */}
-                    {/* <div className="">2</div>
-                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" /> */}
+                    {/* <div className="">2</div> */}
+                    <iframe src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${baseUrl}`} className="w-full h-screen" frameBorder="0" />
 
                     {/* <div className="">3</div> */}
-                    <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" />
+                    {/* <iframe src={baseUrl} className="w-full h-screen" frameBorder="0" /> */}
                     
                     
                     {/* <div className="">4</div>
