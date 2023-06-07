@@ -110,10 +110,16 @@ export const AuthProvider = ({ children }) => {
                 // const expiryTime = new Date(currentTime.getTime() + (1 * 60 * 60 * 1000));
                 // document.cookie = `jwt=${data.token}; expires=${expiryTime.toUTCString()}; path=/;`;
 
-                const expirationDate = new Date(data?.expiration_time ? data?.expiration_time*1000 : '');
+                if (!data?.expiration_time){
+                    console.log(data?.expiration_time);
+                    alert('Expiration time is not valid!')
+                    return;
+                }
+                const expirationDate = new Date(data?.expiration_time);
                 document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
                 setLoading(false)
                 // setRefreshUser(!refreshUser)
+
                 setUser(data?.user)
                 setIsAuthenticated(true)
                 router.push('/')

@@ -42,7 +42,13 @@ export default function Register() {
       // const expirationDate = new Date();
       // expirationDate.setDate(expirationDate.getDate() + 1);
       // document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
-      const expirationDate = new Date(response?.data?.expiration_time ? response?.data?.expiration_time * 1000 : '');
+      
+      if (!response?.data?.expiration_time) {
+        console.log(response?.data?.expiration_time);
+        alert('Expiration time is not valid!')
+        return;
+      }
+      const expirationDate = new Date(response?.data?.expiration_time);
       document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
