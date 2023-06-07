@@ -105,18 +105,13 @@ export const AuthProvider = ({ children }) => {
             // console.log(data);
 
             if (data?.message === 'Login successful.') {
-                // const currentTime = new Date();
-                // Add 1 hour to the current time
-                // const expiryTime = new Date(currentTime.getTime() + (1 * 60 * 60 * 1000));
-                // document.cookie = `jwt=${data.token}; expires=${expiryTime.toUTCString()}; path=/;`;
-
                 if (!data?.expiration_time){
                     console.log(data?.expiration_time);
                     alert('Expiration time is not valid!')
                     return;
                 }
-                const expirationDate = new Date(data?.expiration_time);
-                document.cookie = `jwt=${data.token}; expires=${expirationDate.toUTCString()}; path=/;`;
+                const expirationDate = new Date(data?.expiration_time*1000);
+                document.cookie = `jwt=${data.token}; expires=${expirationDate}; path=/;`;
                 setLoading(false)
                 // setRefreshUser(!refreshUser)
 
@@ -154,15 +149,19 @@ export const AuthProvider = ({ children }) => {
         // console.log(response);
         if (response.status === 200) {
             const data = await response.json();
-            // console.log(data);
+            console.log(data);
             setLoading(false)
             setUser(null)
-            setCookie({}, 'jwt', '', { expires: new Date(0) })
+            
+            // setCookie({}, 'jwt', '', { expires: new Date(0) })
             document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            
             // To delete a cookie on the client side
             destroyCookie(null, 'jwt');
+            
             // To delete a cookie on the server side
             destroyCookie({ response }, 'jwt');
+            
             setIsAuthenticated(false)
             router.push('/login')
         } else {

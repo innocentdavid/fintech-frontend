@@ -38,17 +38,15 @@ export default function Register() {
       setLoading(false)
     })
     // console.log(response);
-    if (response?.data?.message && response?.data?.message === 'success' ) {
-      // const expirationDate = new Date();
-      // expirationDate.setDate(expirationDate.getDate() + 1);
-      // document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
-      
+    if (response?.data?.message && response?.data?.message === 'success' ) {      
       if (!response?.data?.expiration_time) {
         console.log(response?.data?.expiration_time);
         alert('Expiration time is not valid!')
         return;
       }
-      const expirationDate = new Date(response?.data?.expiration_time);
+      const expirationDate = new Date(response?.data?.expiration_time*1000);
+      console.log(response?.data?.expiration_time * 1000);
+      console.log(expirationDate);
       document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
