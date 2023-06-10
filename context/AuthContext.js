@@ -111,13 +111,17 @@ export const AuthProvider = ({ children }) => {
                     return;
                 }
                 const expirationDate = new Date(data?.expiration_time*1000);
+
+                console.log("expirationDate: ");
+                console.log(expirationDate);
+                
                 document.cookie = `jwt=${data.token}; expires=${expirationDate}; path=/;`;
                 setLoading(false)
                 // setRefreshUser(!refreshUser)
 
                 setUser(data?.user)
                 setIsAuthenticated(true)
-                router.push('/')
+                // router.push('/')
                 return response
             }
         } else {

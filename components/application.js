@@ -185,6 +185,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 withCredentials: true
             }).catch(err => {
                 console.log(err);
+                alert('Something went wrong');
                 setLoading(false)
                 return;
             })
