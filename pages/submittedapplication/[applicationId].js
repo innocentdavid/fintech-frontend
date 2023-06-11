@@ -70,10 +70,10 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true,
     }).catch(err => {
-        console.log(err) 
+        // console.log(err)
     });
 
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/${appRes?.data?.application_id}/pdfs/`
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${appRes?.data?.application?.application_id}/pdfs/`
     const response = await axios.get(baseUrl, {
         headers: {
             'Accept': 'application/json',
@@ -82,7 +82,7 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true,
     }).catch(err => {
-        console.log(err) 
+        // console.log(err)
     });
 
     return {

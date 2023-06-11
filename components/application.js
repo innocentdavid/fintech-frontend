@@ -850,63 +850,63 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
 // };
 
 const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/?authorization=${getCookie('jwt')}`;
     // console.log("pdfObj: ");
     // console.log(pdfObj);
-    const containerRef = useRef(null);
-    const router = useRouter()
+    // const containerRef = useRef(null);
+    // const router = useRouter()
     // const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/`;
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/pdfs/${pdfObj?.file}/?authorization=${getCookie('jwt')}`;
-    const [fileUrl, setFileUrl] = useState()
-    const [pdfBlob, setPdfBlob] = useState(null);
+    // const [fileUrl, setFileUrl] = useState()
+    // const [pdfBlob, setPdfBlob] = useState(null);
     
-    useEffect(() => {
-        // var iframe = document.querySelector('#iframe');
-        // if(iframe) {
-        //     iframe.src=fileUrl
-        // }
-    }, [fileUrl])
+    // useEffect(() => {
+    //     // var iframe = document.querySelector('#iframe');
+    //     // if(iframe) {
+    //     //     iframe.src=fileUrl
+    //     // }
+    // }, [fileUrl])
     
 
-    useEffect(() => {
-        const fetchPDFFile = async () => {
-            if (!getCookie('jwt')) {
-                alert('Please login to continue')
-                router.push('/login')
-                return;
-            }
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
-                    responseType: 'blob', // Set the response type to blob
-                    headers: {
-                        Authorization: `Bearer ${getCookie('jwt')}`,
-                    },
-                });
+    // useEffect(() => {
+    //     const fetchPDFFile = async () => {
+    //         if (!getCookie('jwt')) {
+    //             alert('Please login to continue')
+    //             router.push('/login')
+    //             return;
+    //         }
+    //         try {
+    //             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_file/${pdfObj?.application_id}/${pdfObj?.pdf_type}/`, {
+    //                 responseType: 'blob', // Set the response type to blob
+    //                 headers: {
+    //                     Authorization: `Bearer ${getCookie('jwt')}`,
+    //                 },
+    //             });
 
-                if (response?.status === 200) {
-                    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-                    // setPdfBlob(pdfBlob);
-                    const pdfUrl = URL.createObjectURL(pdfBlob);
-                    // console.log(pdfUrl);
-                    var iframe = document.querySelector('#iframe');
-                    if (iframe) {
-                        iframe.src = pdfUrl
-                    }
-                    setFileUrl(pdfUrl);
+    //             if (response?.status === 200) {
+    //                 const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+    //                 // setPdfBlob(pdfBlob);
+    //                 const pdfUrl = URL.createObjectURL(pdfBlob);
+    //                 // console.log(pdfUrl);
+    //                 var iframe = document.querySelector('#iframe');
+    //                 if (iframe) {
+    //                     iframe.src = pdfUrl
+    //                 }
+    //                 setFileUrl(pdfUrl);
 
-                    // Use the generated URL to display or download the PDF file
-                    // ...
-                } else {
-                    // Handle non-200 status code
-                    // ...
-                }
-            } catch (error) {
-                // Handle network or request error
-                // ...
-            }
-        };
+    //                 // Use the generated URL to display or download the PDF file
+    //                 // ...
+    //             } else {
+    //                 // Handle non-200 status code
+    //                 // ...
+    //             }
+    //         } catch (error) {
+    //             // Handle network or request error
+    //             // ...
+    //         }
+    //     };
 
-        fetchPDFFile();
-    }, [pdfObj, router]);
+    //     fetchPDFFile();
+    // }, [pdfObj, router]);
     
     // useEffect(() => {
     //     const renderPDF = async () => {
@@ -923,26 +923,26 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     const pdfRef = useRef();
     const [itemCount, setItemCount] = useState(0);
     
-    useEffect(() => {
-        var loadingTask = pdfjs?.getDocument(fileUrl);
-        loadingTask?.promise?.then(
-            pdf => {
-                pdfRef.current = pdf;
+    // useEffect(() => {
+    //     var loadingTask = pdfjs?.getDocument(fileUrl);
+    //     loadingTask?.promise?.then(
+    //         pdf => {
+    //             pdfRef.current = pdf;
 
-                setItemCount(pdf._pdfInfo.numPages);
+    //             setItemCount(pdf._pdfInfo.numPages);
 
-                // Fetch the first page
-                var pageNumber = 1;
-                pdf.getPage(pageNumber).then(function (page) {
-                    console.log("Page loaded");
-                });
-            },
-            reason => {
-                // PDF loading error
-                console.error(reason);
-            }
-        );
-    }, [fileUrl]);
+    //             // Fetch the first page
+    //             var pageNumber = 1;
+    //             pdf.getPage(pageNumber).then(function (page) {
+    //                 console.log("Page loaded");
+    //             });
+    //         },
+    //         reason => {
+    //             // PDF loading error
+    //             console.error(reason);
+    //         }
+    //     );
+    // }, [fileUrl]);
 
     const handleInputChange = (e) => {
         setPdfObj({
@@ -987,13 +987,13 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
         setLoading(false)
     };
                                        
-    const renderPDF = () => {
-        if (pdfBlob) {
-            const dataUrl = URL.createObjectURL(pdfBlob);
-            return <iframe src={dataUrl} width="100%" height="600px" />;
-        }
-        return null;
-    };
+    // const renderPDF = () => {
+    //     if (pdfBlob) {
+    //         const dataUrl = URL.createObjectURL(pdfBlob);
+    //         return <iframe src={dataUrl} width="100%" height="600px" />;
+    //     }
+    //     return null;
+    // };
 
     return (<>
         <div className="pt-16 fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">

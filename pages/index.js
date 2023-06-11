@@ -23,7 +23,9 @@ export default function Home({ data }) {
 
   useEffect(() => {
     if (!user) {
-      setRefreshUser(refreshUser)
+      if (setRefreshUser){
+        setRefreshUser(refreshUser)        
+      }
       const token = getCookie('jwt')
       // console.log(token);
       if (!token) {

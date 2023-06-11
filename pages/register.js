@@ -45,8 +45,8 @@ export default function Register() {
         return;
       }
       const expirationDate = new Date(response?.data?.expiration_time*1000);
-      console.log(response?.data?.expiration_time * 1000);
-      console.log(expirationDate);
+      // console.log(response?.data?.expiration_time * 1000);
+      // console.log(expirationDate);
       document.cookie = `jwt=${response?.data?.token}; expires=${expirationDate.toUTCString()}; path=/;`;
       router.push('/')
     }else{
