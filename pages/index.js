@@ -9,6 +9,8 @@ import { parseCookies } from 'nookies';
 import { useRouter } from 'next/router';
 import { AuthContext } from '../context/AuthContext';
 import { getCookie } from '../utils/helpers';
+import Link from 'next/link';
+import LoadingModal from '../components/LoadingModal ';
 // import Cookies from 'cookies';
 
 export default function Home({ data }) {
@@ -17,14 +19,15 @@ export default function Home({ data }) {
   const [applications, setApplications] = useState(data)
   const [refreshData, setRefreshData] = useState(false)
   const router = useRouter()
-  const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+  const { user, loading, refreshUser, setRefreshUser } = useContext(AuthContext);
 
   // console.log(user);
 
   useEffect(() => {
     if (!user) {
-      if (setRefreshUser){
-        setRefreshUser(refreshUser)        
+      router.push('/login')
+      if (setRefreshUser) {
+        setRefreshUser(refreshUser)
       }
       const token = getCookie('jwt')
       // console.log(token);
@@ -46,12 +49,12 @@ export default function Home({ data }) {
         },
         withCredentials: true,
       }).catch(error => console.error(error))
-      if(res && res?.status === 200){
+      if (res && res?.status === 200) {
         console.log('response is good');
         setApplications(res?.data)
       }
     };
-    if(refreshData){
+    if (refreshData) {
       fetch()
       setRefreshData(false)
     }
@@ -61,7 +64,20 @@ export default function Home({ data }) {
     return () => clearInterval(intervalId);
   }, [refreshData])
 
-  if (!user) { return (<></>) }
+  if (loading) {
+    return (<>
+      <LoadingModal loading={loading} />
+    </>)
+  }
+
+  if (!user) {
+    return (
+      <></>
+      //   <div className='m-10'>
+      //     <Link href="/login" className=''><button className='py-2 px-4 bg-teal-300 text-white rounded-md'>Login</button></Link>
+      //   </div>
+    )
+  }
 
   return (<>
     <div className="w-full my-[10px]">
@@ -74,21 +90,29 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(context) {
   var res;
-  try {
-    // const cookies = context.req.cookies;
-    const cookies = parseCookies(context)
-    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-      },
-      withCredentials: true
-    }).catch(err => {
-      // console.log(err);
-    });
+  // const cookies = context.req.cookies;
+  const cookies = parseCookies(context)
+  res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+    },
+    withCredentials: true
+  }).catch(err => {
+    if (err?.response.data?.message === "Signature has expired!") {
+      return err?.response.data?.message
+    }
+    console.log("err: ");
+    console.log(err);
+  });
 
-  } catch (error) {
-    // console.log(error);    
+  if (res === "Signature has expired!") {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false, // Set to true if the redirect is permanent (HTTP 301)
+      },
+    };
   }
 
   return {

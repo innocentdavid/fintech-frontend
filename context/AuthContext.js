@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }) => {
             }
         };
         fetch()
+        setLoading(false);
     }, [checkAuth, refreshUser, router])
 
     const handleOpenModal = () => {
@@ -111,9 +112,6 @@ export const AuthProvider = ({ children }) => {
                     return;
                 }
                 const expirationDate = new Date(data?.expiration_time*1000);
-
-                // console.log("expirationDate: ");
-                // console.log(expirationDate);
                 
                 document.cookie = `jwt=${data.token}; expires=${expirationDate}; path=/;`;
                 setLoading(false)
@@ -182,7 +180,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider
             value={{ isAuthenticated, user, login, logout, refreshUser, setRefreshUser }}
         >
-            {loading && < LoadingModal loading={loading} />}
+            {loading && <LoadingModal loading={loading} />}
             <AlertModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}

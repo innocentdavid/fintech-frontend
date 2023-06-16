@@ -9,6 +9,7 @@ import { parseCookies } from 'nookies';
 import { useRouter } from 'next/router';
 import { AuthContext } from '../context/AuthContext';
 import { useContext, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Stats({ data }) {
   
@@ -17,9 +18,10 @@ export default function Stats({ data }) {
 //   const data = []
 
   const router = useRouter()
-  const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+  const { user, loading, refreshUser, setRefreshUser } = useContext(AuthContext);
   useEffect(() => {
     if (!user) {
+      router.push('/login')
       setRefreshUser(refreshUser)
       const token = getCookie('jwt')
       // console.log(token);
@@ -29,7 +31,20 @@ export default function Stats({ data }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUser, user])
-  if (!user) { return(<></>) }
+  if (loading) {
+    return (<>
+      <LoadingModal loading={loading} />
+    </>)
+  }
+
+  if (!user) {
+    return (
+        <></>
+    //   <div className='m-10'>
+    //     <Link href="/login" className=''><button className='py-2 px-4 bg-teal-300 text-white rounded-md'>Login</button></Link>
+    //   </div>
+    )
+  }
 
   return (<>
     <div className=' flex md:flex-row flex-col my-[40px] md:my-[70px] w-full '>
@@ -93,8 +108,21 @@ export async function getServerSideProps(context) {
     },
     withCredentials: true
   }).catch(err => {
+    if (err?.response.data?.message === "Signature has expired!") {
+      return err?.response.data?.message
+    }
+    console.log("err: ");
     console.log(err);
   });
+
+  if (res === "Signature has expired!") {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false, // Set to true if the redirect is permanent (HTTP 301)
+      },
+    };
+  }
 
   return {
     props: {

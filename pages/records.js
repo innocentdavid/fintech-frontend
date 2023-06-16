@@ -17,17 +17,18 @@ export default function Records({ data, latestRecordsData }) {
     // export default function Records() {
     //   const data = []
     //   const latestRecordsData = []
-    
+
     const [applications, setApplications] = useState(data)
     const [latestRecords, setLatestRecords] = useState(latestRecordsData)
     const [refreshData, setRefreshData] = useState(false)
     const router = useRouter()
-    const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    const { user, loading, refreshUser, setRefreshUser } = useContext(AuthContext);
 
     // console.log(user);
 
     useEffect(() => {
         if (!user) {
+            // router.push('/login')
             setRefreshUser(refreshUser)
             const token = getCookie('jwt')
             // console.log(token);
@@ -69,12 +70,12 @@ export default function Records({ data, latestRecordsData }) {
     return (<>
         <div className="w-full my-[10px]">
             <h1 className="text-center font-bold text-2xl my-10">All emails</h1>
-            <EmailTable data={applications}/>
+            <EmailTable data={applications} />
 
             <br /><br /><br /><br />
-            
+
             <h1 className="text-center font-bold text-2xl my-10">Latest Record</h1>
-            <LatestRecordTable data={latestRecords}/>
+            <LatestRecordTable data={latestRecords} />
         </div>
     </>
     )
@@ -88,33 +89,42 @@ export async function getServerSideProps(context) {
             notFound: true, // Renders a 404 page
         };
     }
-    
+
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
     var res, latestRecordRes;
-    try {
-        res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/emails/`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-            },
-            withCredentials: true
-        }).catch(err => {
-            // console.log(err);
-        });
-        latestRecordRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/latestRecords/`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
-            },
-            withCredentials: true
-        }).catch(err => {
-            // console.log(err);
-        });
+    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/emails/`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+        },
+        withCredentials: true
+    }).catch(err => {
+        if (err?.response.data?.message === "Signature has expired!") {
+            return err?.response.data?.message
+        }
+        console.log("err: ");
+        console.log(err);
+    });
 
-    } catch (error) {
-        // console.log(error);    
+    if (res === "Signature has expired!") {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false, // Set to true if the redirect is permanent (HTTP 301)
+            },
+        };
     }
+    
+    latestRecordRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/latestRecords/`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie
+        },
+        withCredentials: true
+    }).catch(err => {
+        // console.log(err);
+    });
 
     return {
         props: {

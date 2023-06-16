@@ -143,11 +143,12 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
     // get Funders
     useEffect(() => {
-        if (fundersResponse) {
+        if (fundersResponse.length > 0) {
             var funders = []
             if (submittedApplications.length > 0) {
                 let submittedApplicationFunders = []
-                submittedApplications.forEach(application => {
+                
+                submittedApplications?.forEach(application => {
                     submittedApplicationFunders.push({ ...application?.funder, submitted: true })
                 });
 

@@ -8,6 +8,8 @@ import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import LoadingModal from '../components/LoadingModal ';
 import { AuthContext } from '../context/AuthContext';
+import { getCookie } from '../utils/helpers';
+import { parseCookies } from 'nookies';
 
 
 export default function Login() {
@@ -75,3 +77,33 @@ export default function Login() {
   </>
   )
 } 
+
+export async function getServerSideProps(context) {
+  const cookies = parseCookies(context)
+  var res;
+  res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/getcurrentuser/`, {
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${cookies['jwt']}`,
+    },
+    withCredentials: true
+  }).catch(err => {
+    console.log("err_message: ");
+    console.log(err?.response?.data?.message);
+  });
+  
+  if (res?.data?.message === 'success'){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false, // Set to true if the redirect is permanent (HTTP 301)
+      },
+    };
+  }else{
+    return {
+      props: {
+        show: true,
+      },      
+    }; 
+  }  
+}

@@ -13,6 +13,7 @@ export default function Nav() {
 
     useEffect(() => {
         if (!user) {
+            // router.push('/login')
             setRefreshUser(refreshUser)
             const token = getCookie('jwt')
             // console.log(token);
@@ -23,7 +24,7 @@ export default function Nav() {
         // console.log(user);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshUser, user])
-    
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -37,9 +38,16 @@ export default function Nav() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-    
-    if (!user) { return(<></>) }
-    
+
+    if (!user) {
+        return (
+            <></>
+            // <div className='m-10'>
+            //     <Link href="/login" className=''><button className='py-2 px-4 bg-teal-300 text-white rounded-md'>Login</button></Link>
+            // </div>
+        )
+    }
+
     return (<>
         {isAuthenticated && <header className="flex gap-10 items-center justify-between p-5 bg-black text-white relative">
             <Link onClick={() => {
@@ -74,7 +82,7 @@ export default function Nav() {
                     }} href="/records" className='font-bold hover:underline border py-1 px-2'>Records</Link>}
                 </div>
                 {isAuthenticated ? <>
-                    <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={() => { setShowMobileMenu(false); logout()}}>
+                    <div className="mt-6 md:mt-0 text-sm font-bold cursor-pointer border border-slate-200 py-1 px-3" onClick={() => { setShowMobileMenu(false); logout() }}>
                         Log out
                     </div>
                     <div className="mt-2 md:mt-0 flex flex-row-reverse items-center justify-end gap-3">

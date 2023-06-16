@@ -24,9 +24,10 @@ const ApplicationDetail = ({ application, pdfs, fundersResponse, submittedApplic
     //     const submittedApplications = []
 
     const router = useRouter()
-    const { user, refreshUser, setRefreshUser } = useContext(AuthContext);
+    const { user, loading, refreshUser, setRefreshUser } = useContext(AuthContext);
     useEffect(() => {
         if (!user) {
+            // router.push('/login')
             setRefreshUser(refreshUser)
             const token = getCookie('jwt')
             // console.log(token);
@@ -70,8 +71,21 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true,
     }).catch(err => {
-        // console.log(err)
+        if (err?.response.data?.message === "Signature has expired!") {
+            return err?.response.data?.message
+        }
+        console.log("err: ");
+        console.log(err);
     });
+
+    if (appRes === "Signature has expired!") {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false, // Set to true if the redirect is permanent (HTTP 301)
+            },
+        };
+    }
 
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${appRes?.data?.application?.application_id}/pdfs/`
     const response = await axios.get(baseUrl, {
