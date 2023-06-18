@@ -25,40 +25,84 @@ export default function PdfViewer({ url }) {
     const [loading, setLoading] = useState(true)
     const [pdfRef, setPdfRef] = useState();
     const [currentPage, setCurrentPage] = useState(1);
-    const [scale, setScale] = useState(0.5)
+    // const [scale, setScale] = useState(0.5)
     
-    useEffect(() => {
-      if(window){
-          let scale;
-          const viewportWidth = window.innerWidth;
+    // useEffect(() => {
+    //   if(window){
+    //       let scale;
+    //       const viewportWidth = window.innerWidth;
 
-          if (viewportWidth < 768) { // Mobile devices
-              scale = 0.5;
-          } else if (viewportWidth < 1024) { // Tablet devices
-              scale = 1;
-          } else { // Desktop devices
-              scale = 1.5;
-          }
+    //       if (viewportWidth < 768) { // Mobile devices
+    //           scale = 0.5;
+    //       } else if (viewportWidth < 1024) { // Tablet devices
+    //           scale = 1;
+    //       } else { // Desktop devices
+    //           scale = 1.5;
+    //       }
           
-          setScale(scale)          
-      }
-    }, [])
+    //       setScale(scale)          
+    //   }
+    //     window.addEventListener('resize', setViewportAndRender);
+
+    //     // Clean up the event listener when component unmounts or when PDF changes
+    //     return () => {
+    //         window.removeEventListener('resize', setViewportAndRender);
+    //     };
+    // }, [])
     
 
     const renderPage = useCallback((pageNum, pdf = pdfRef) => {
         if (loading) return;
         pdf && pdf.getPage(pageNum).then(function (page) {            
-            const viewport = page.getViewport({ scale });
-            const canvas = canvasRef.current;
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            const renderContext = {
-                canvasContext: canvas.getContext('2d'),
-                viewport: viewport
+            // const viewport = page.getViewport({ scale });
+            // const canvas = canvasRef.current;
+            // canvas.height = viewport.height;
+            // canvas.width = viewport.width;
+            // const renderContext = {
+            //     canvasContext: canvas.getContext('2d'),
+            //     viewport: viewport
+            // };
+            // page.render(renderContext);
+            
+            let scale = 0.5;
+
+            const determineScale = () => {
+                const viewportWidth = window.innerWidth;
+
+                if (viewportWidth < 768) { // Mobile devices
+                    scale = 0.5;
+                } else if (viewportWidth < 1024) { // Tablet devices
+                    scale = 1;
+                } else { // Desktop devices
+                    scale = 1.5;
+                }
             };
-            page.render(renderContext);
+
+            const setViewportAndRender = () => {
+                determineScale();
+
+                const viewport = page.getViewport({ scale });
+                const canvas = canvasRef.current;
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                const renderContext = {
+                    canvasContext: canvas.getContext('2d'),
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            };
+
+            setViewportAndRender();
+
+            // Listen for resize events
+            window.addEventListener('resize', setViewportAndRender);
+
+            // Clean up the event listener when component unmounts or when PDF changes
+            return () => {
+                window.removeEventListener('resize', setViewportAndRender);
+            };
         });
-    }, [loading, pdfRef, scale]);
+    }, [loading, pdfRef]);
 
     useEffect(() => {
         renderPage(currentPage, pdfRef);
