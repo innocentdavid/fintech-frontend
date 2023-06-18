@@ -190,10 +190,15 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setLoading(false)
                 return;
             })
+            console.log(res);
             if (res?.statusText) {
+                if(res?.data?.failed?.length>0){
+                    alert(`submission to ${res?.data?.failed.join(', ')} failed!`);
+                }
                 setShowFunders(false)
                 const list = []
-                selectedFundersArray.forEach(funder => {
+                const filteredFunders = selectedFundersArray.filter(funder => !res?.data?.failed.includes(funder.name));
+                filteredFunders.forEach(funder => {
                     list.push({ ...funder, submitted: true })
                 })
                 const concat = [...fundersArray, ...list]
@@ -797,7 +802,7 @@ const AddPdf = ({ pdfToAdd, setPdfToAdd, setShowAddPdf, reFreshPdf, setReFreshPd
 //                 });
 
 //                 if (response?.status === 200) {
-//                     const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+//                     const pdfBlob = new Blob([response?.data], { type: 'application/pdf' });
 //                     setPdfBlob(pdfBlob);
 //                     const pdfUrl = URL.createObjectURL(pdfBlob);
 //                     setFileUrl(pdfUrl);
@@ -884,7 +889,7 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     //             });
 
     //             if (response?.status === 200) {
-    //                 const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+    //                 const pdfBlob = new Blob([response?.data], { type: 'application/pdf' });
     //                 // setPdfBlob(pdfBlob);
     //                 const pdfUrl = URL.createObjectURL(pdfBlob);
     //                 // console.log(pdfUrl);

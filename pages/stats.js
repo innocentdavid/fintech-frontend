@@ -108,8 +108,8 @@ export async function getServerSideProps(context) {
     },
     withCredentials: true
   }).catch(err => {
-    if (err?.response.data?.message === "Signature has expired!") {
-      return err?.response.data?.message
+    if (err?.response?.data?.message === "Signature has expired!") {
+      return err?.response?.data?.message
     }
     console.log("err: ");
     console.log(err);

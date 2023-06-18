@@ -14,7 +14,7 @@ const Funders = ({ data }) => {
     
     const [fundersList, setFundersList] = useState(data)
     const [showAddModal, setShowAddModal] = useState(false)
-    const [loading, setLoading] = useState(false);
+    const [cloading, setCloading] = useState(false);
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [nameError, setNameError] = useState('')
@@ -70,7 +70,7 @@ const Funders = ({ data }) => {
             return
         } else { setPhoneError('') }
 
-        setLoading(true)
+        setCloading(true)
         var res;
         var newFundersList = fundersList
         // return;
@@ -106,15 +106,15 @@ const Funders = ({ data }) => {
             setShowAddModal(false)
             seteditMode(false)
         }
-        setLoading(false)
+        setCloading(false)
     }
 
     if (!user) { return (<></>) }
     
     return (<>
         <div className="container mx-auto px-2 md:px-10 lg:px-32 pb-20">
-            <LoadingModal loading={loading} />
-            {/* <FaTimes className="absolute top-10 right-10 cursor-pointer" size={20} onClick={() => { setLoading(true); router.push('/') }} /> */}
+            <LoadingModal loading={loading || cloading} />
+            {/* <FaTimes className="absolute top-10 right-10 cursor-pointer" size={20} onClick={() => { setCloading(true); router.push('/') }} /> */}
 
             <div className="text-center text-3xl font-bold mt-20">Funders</div>
             <div className="relative w-fit mt-[40px]">
@@ -207,8 +207,8 @@ export async function getServerSideProps(context) {
         },
         withCredentials: true
     }).catch(err => {
-        if (err?.response.data?.message === "Signature has expired!") {
-            return err?.response.data?.message
+        if (err?.response?.data?.message === "Signature has expired!") {
+            return err?.response?.data?.message
         }
         console.log("err: ");
         console.log(err);
