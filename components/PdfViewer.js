@@ -25,11 +25,30 @@ export default function PdfViewer({ url }) {
     const [loading, setLoading] = useState(true)
     const [pdfRef, setPdfRef] = useState();
     const [currentPage, setCurrentPage] = useState(1);
+    const [scale, setScale] = useState(0.5)
+    
+    useEffect(() => {
+      if(window){
+          let scale;
+          const viewportWidth = window.innerWidth;
+
+          if (viewportWidth < 768) { // Mobile devices
+              scale = 0.5;
+          } else if (viewportWidth < 1024) { // Tablet devices
+              scale = 1;
+          } else { // Desktop devices
+              scale = 1.5;
+          }
+          
+          setScale(scale)          
+      }
+    }, [])
+    
 
     const renderPage = useCallback((pageNum, pdf = pdfRef) => {
         if (loading) return;
-        pdf && pdf.getPage(pageNum).then(function (page) {
-            const viewport = page.getViewport({ scale: 1.5 });
+        pdf && pdf.getPage(pageNum).then(function (page) {            
+            const viewport = page.getViewport({ scale });
             const canvas = canvasRef.current;
             canvas.height = viewport.height;
             canvas.width = viewport.width;
@@ -39,7 +58,7 @@ export default function PdfViewer({ url }) {
             };
             page.render(renderContext);
         });
-    }, [loading, pdfRef]);
+    }, [loading, pdfRef, scale]);
 
     useEffect(() => {
         renderPage(currentPage, pdfRef);
@@ -68,11 +87,11 @@ export default function PdfViewer({ url }) {
         </>}
         <canvas ref={canvasRef} className='border'></canvas>
 
-        {!loading && <div className="flex items-center justify-between mt-2 mb-10">
+        {!loading && <div className="flex items-center justify-between mt-2 mb-10 text-xs md:text-base">
             <div className="">{currentPage}/{pdfRef?._pdfInfo?.numPages || ''} pages</div>
             <div className="flex gap-4 mr-4">
-                {currentPage > 1 && <button className='bg-blue-600 text-white font-bold rounded-lg w-[100px] py-3' onClick={() => { prevPage() }}>Prev</button>}
-                {currentPage < pdfRef?._pdfInfo?.numPages && <button className='bg-blue-600 text-white font-bold rounded-lg w-[100px] py-3' onClick={() => { nextPage() }}>Next</button>}
+                {currentPage > 1 && <button className='bg-black text-white font-bold rounded-lg md:w-[100px] px-2 py-1 md:py-3' onClick={() => { prevPage() }}>Prev</button>}
+                {currentPage < pdfRef?._pdfInfo?.numPages && <button className='bg-blue-600 text-white font-bold rounded-lg md:w-[100px] px-2 py-1 md:py-3' onClick={() => { nextPage() }}>Next</button>}
             </div>
         </div>}
     </>)
