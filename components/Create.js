@@ -25,7 +25,7 @@ const Create = ({ application }) => {
         status_description: 'Created',
         name_of_business: '',
         legal_business_name: '',
-        owners: '',
+        
         dba: '',
         address: '',
         suite: '',
@@ -64,16 +64,16 @@ const Create = ({ application }) => {
         length_of_ownership: '',
         years_at_location: '',
 
-        advanced_price: 0,
-        commission_price: 0,
-        percentage: 0,
-        factor: 0,
-        total_fee: 0,
-        payback: 0,
-        term: '',
-        frequency: 0,
-        payment: 0,
-        net_funding_amount: 0
+        email_id: '', //include
+        statement_missing: false,
+        opportunity_exist: true,
+        opportunity_id: "", //include
+        source_email: "", //include
+        error: false,
+        subject: "", //include
+        errors: [],
+        multiple_owners: false,
+        owners: []
     });
     const [zipError, setZipError] = useState("");
     const [ownerZipError, setOwnerZipError] = useState("");
@@ -656,110 +656,44 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Advanced Amount</span>
                                 <Inputfeild
-                                    name='advanced_price'
+                                    name='email_id'
                                     onChange={handleChange}
                                     formData={formData}
-                                    type='number'
-                                    plholder='Advanced Amount'
+                                    type='text'
+                                    plholder='Email Id'
                                 />
                             </div>
                             <div className='w-full'>
                                 <span className='mx-3'>Commission Amount</span>
                                 <Inputfeild
-                                    name='commission_price'
+                                    name='opportunity_id'
                                     onChange={handleChange}
                                     formData={formData}
-                                    type='number'
-                                    plholder='Commission Amount'
-                                />
-                            </div>
-                            <div className='w-full'>
-                                <span className='mx-3'>%</span>
-                                <Inputfeild
-                                    name='percentage'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    type='number'
-                                    plholder='percentage'
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
-                            <div className='w-full'>
-                                <span className='mx-3'>Factor</span>
-                                <Inputfeild
-                                    type='number'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='factor'
-                                    plholder='Factor'
-                                />
-                            </div>
-                            <div className='w-full'>
-                                <span className='mx-3'>Total Fee</span>
-                                <Inputfeild
-                                    type='number'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='total_fee'
-                                    plholder='Total Fee'
-                                />
-                            </div>
-                            <div className='w-full'>
-                                <span className='mx-3'>Payment</span>
-                                <Inputfeild
-                                    type='number'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='payment'
-                                    plholder='Payment'
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
-                            <div className='w-full'>
-                                <span className='mx-3'>Payback</span>
-                                <Inputfeild
-                                    type='number'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='payback'
-                                    plholder='Payback'
-                                />
-                            </div>
-                            <div className='w-full'>
-                                <span className='mx-3'>Term</span>
-                                <Inputfeild
                                     type='text'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='term'
-                                    plholder='Term'
-                                />
-                            </div>
-                            <div className='w-full'>
-                                <span className='mx-3'>Frequency</span>
-                                <Inputfeild
-                                    type='number'
-                                    onChange={handleChange}
-                                    formData={formData}
-                                    name='frequency'
-                                    plholder='Frequency'
+                                    plholder='Opportunity Id'
                                 />
                             </div>
                         </div>
 
                         <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
                             <div className='w-full'>
-                                <span className='mx-3'> Net Funding Amount</span>
+                                <span className='mx-3'>Advanced Amount</span>
                                 <Inputfeild
-                                    name='net_funding_amount'
+                                    name='source_email'
                                     onChange={handleChange}
                                     formData={formData}
-                                    type='number'
-                                    plholder='Net Funding Amount'
+                                    type='email'
+                                    plholder='Source Email'
+                                />
+                            </div>
+                            <div className='w-full'>
+                                <span className='mx-3'>Commission Amount</span>
+                                <Inputfeild
+                                    name='subject'
+                                    onChange={handleChange}
+                                    formData={formData}
+                                    type='text'
+                                    plholder='Subject'
                                 />
                             </div>
                         </div>

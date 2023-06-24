@@ -7,15 +7,11 @@ import axios from 'axios';
 import { useState } from 'react'
 import { useRouter } from 'next/router';
 import { AiFillFilePdf } from 'react-icons/ai';
-// import API from './API';
 import LoadingModal from './LoadingModal ';
 import { getCookie, getToday } from '../utils/helpers';
 import PdfViewer from './PdfViewer'
-// import pdfjs from "pdfjs-dist"; 
-// import pdfjsLib from "pdfjs-dist/build/pdf";
-// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-// import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-// import Document from "react-pdf";
+import SuccessModal from './SuccessModal';
+import AlertModal from './AlertModal';
 
 
 const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
@@ -30,16 +26,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         status: "",
         status_description: "",
         status_date: getToday(new Date()),
-        advanced_price: '',
-        commission_price: '',
-        percentage: '',
-        factor: '',
-        total_fee: '',
-        payback: '',
-        term: '',
-        frequency: '',
-        payment: '',
-        net_funding_amount: ''
     });
     const [loading, setLoading] = useState(false)
     const [isEditable, setIsEditable] = useState(false)
@@ -66,16 +52,6 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             status: application?.status || 'Created',
             status_description: application?.status_description,
             status_date: getToday(new Date()),
-            advanced_price: application?.advanced_price,
-            commission_price: application?.commission_price,
-            percentage: application?.percentage,
-            factor: application?.factor,
-            total_fee: application?.total_fee,
-            payback: application?.payback,
-            term: application?.term,
-            frequency: application?.frequency,
-            payment: application?.payment,
-            net_funding_amount: application?.net_funding_amount,
         })
 
         if (defaultPdfs) {
@@ -166,20 +142,55 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     }, [application, fundersResponse, refreshFunders, submittedApplications])
 
     const [selectedFundersArray, setSelectedFundersArray] = useState([])
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [errorMsg, setErrorMsg] = useState({ title: 'Alert', message: 'something went wrong' })
+
+    const handleOpenModal = () => {
+        setIsSuccessModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsSuccessModalOpen(false);
+    };
+    
+    const handleToggleAlertModal = () => {
+        setIsAlertModalOpen(!isAlertModalOpen);
+    };
 
     const handleSendApplication = async () => {
         if (selectedFundersArray.length > 0) {
+            console.log("application.opportunity_exist: ");
+            console.log(application.opportunity_exist);
+            if (application.opportunity_exist !== true) {
+                // show modal
+                handleToggleAlertModal()
+                setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
+            }
+            
             setLoading(true)
             const formData = {
                 ...application,
+                
+                opportunity_id: "",
+                salesforce_status: "",
+                submission_id: "",
+                error: false,
+                errors: [],
+                replied: false,
+                replied_to: "",
+                reply_text: "",
+                reply_link: "",
+                error_parsing: false,
+                errors_parsing: [],
+                
                 date_submitted: getToday(new Date()),
                 status: 'Submitted',
                 status_date: getToday(new Date()),
                 status_description: 'Submitted',
                 funder_names: selectedFundersArray
             }
-            // console.log(formData);
-            // return;
+            
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,6 +218,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setFundersArray(concat)
                 setFundersArrayO(concat)
                 setSelectedFundersArray([])
+                handleOpenModal()
             }
             setLoading(false)
         }
@@ -214,6 +226,16 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
     return (<>
         <LoadingModal loading={loading} />
+        
+        {/* success timeout modal */}
+        <SuccessModal isOpen={isSuccessModalOpen} onClose={handleCloseModal} />
+        
+        <AlertModal
+            isOpen={isAlertModalOpen}
+            onClose={handleToggleAlertModal}
+            title={errorMsg?.title}
+            message={errorMsg?.message}
+        />
 
         <div className={`${showFunders ? "opacity-100 z-10 grid" : "hidden opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
@@ -221,12 +243,24 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setFundersArray(fundersArrayO)
                 setSelectedFundersArray([])
             }}></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px]">
-                <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => {
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px] rounded-lg">
+                {/* <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => {
                     setShowFunders(false)
                     setFundersArray(fundersArrayO)
                     setSelectedFundersArray([])
-                }} />
+                }} /> */}
+                
+                <div className="flex items-center justify-between py-4">
+                    <div className="font-bold">{application?.business_name}</div>
+                    
+                    <div className="flex justify-end">
+                        <FaTimes className='cursor-pointer' onClick={() => {
+                            setShowFunders(false)
+                            setFundersArray(fundersArrayO)
+                            setSelectedFundersArray([])
+                        }} />
+                    </div>
+                </div>
 
                 <div className="w-full flex gap-2">
                     <div className="flex flex-col gap-2 border w-1/2 h-[300px] overflow-auto">
@@ -264,7 +298,15 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         })}
                     </div>
                 </div>
-                <button className={`${selectedFundersArray.length > 0 ? 'bg-black' : 'bg-black'} mt-4 py-2 px-8 text-white`} onClick={handleSendApplication}>Send</button>
+                <div className="flex items-center gap-2 justify-end">
+                    <button className={`${selectedFundersArray.length > 0 ? 'bg-black' : 'bg-gray-500'} mt-4 py-2 px-8 text-white`} onClick={handleSendApplication}>Send</button>
+                    
+                    <button className={`bg-gray-500 mt-4 py-2 px-8 text-white`} onClick={() => {
+                        setShowFunders(false)
+                        setFundersArray(fundersArrayO)
+                        setSelectedFundersArray([])
+                    }}>Cancel</button>
+                </div>
             </div>
         </div>
 
@@ -447,10 +489,9 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                     {!page && <div className="ml-2 w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
-
                 </div>
 
-                <div className='w-full lg:w-[55%]'>
+                {/* <div className='w-full lg:w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
                         <h3>Additional Information</h3>
                     </div>
@@ -606,7 +647,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                         </div>
                     </div>
-                </div>
+                </div> */}
             </form>
 
         </div>
