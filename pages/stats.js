@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../context/AuthContext';
 import { useContext, useEffect } from 'react';
 import Link from 'next/link';
+import LoadingModal from '../components/LoadingModal ';
 
 export default function Stats({ data }) {
   

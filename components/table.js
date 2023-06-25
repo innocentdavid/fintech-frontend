@@ -20,6 +20,9 @@ import { AiFillCalculator } from 'react-icons/ai';
 const Table = ({ data, page, setRefreshData }) => {
     const router = useRouter()
     const [tableData, setTableData] = useState(() => data);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(1000);
+    const [totalPages, setTotalPages] = useState(1);
     const [validationErrors, setValidationErrors] = useState({});
     const [loading, setLoading] = useState(false)
     const [showCreditScoreModal, setShowCreditScoreModal] = useState(false)
@@ -42,6 +45,7 @@ const Table = ({ data, page, setRefreshData }) => {
             setTableData(list)
 
             if (page) return;
+            if (!getCookie('jwt')) return;
             const fundersResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/funders/`, {
                 headers: {
                     'Accept': 'application/json',
@@ -305,6 +309,12 @@ const Table = ({ data, page, setRefreshData }) => {
                         {!page && <Link href="/createnew" className="rippleButton ripple cursor-pointer">Add New Application</Link>}
                     </div>
                 )}
+                // enablePagination={false}
+                muiTablePaginationProps={{
+                    rowsPerPageOptions: [5, 10],
+                    showFirstButton: false,
+                    showLastButton: false,
+                }}
             />
         </>
     );

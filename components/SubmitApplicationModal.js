@@ -28,7 +28,7 @@ export default function SubmitApplicationModal({
     useEffect(() => {
         const fetch = async () => {
             var submittedAppsArray = submittedApps
-            if (!submittedApps.length>0){
+            if (!submittedApps.length > 0) {
                 const submitedAppRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/get_submittedApplications_by_app_id/${application?.application_id}/`, {
                     headers: {
                         // 'Accept': 'application/json',
@@ -46,7 +46,7 @@ export default function SubmitApplicationModal({
                 submitedAppRes?.data && setSubmittedApps(submitedAppRes?.data)
                 submittedAppsArray = submitedAppRes?.data ? submitedAppRes?.data : []
             }
-            
+
             if (submittedAppsArray.length > 0) {
                 const filteredFunders = []
                 initialFundersArray.forEach(funder => {
@@ -63,14 +63,14 @@ export default function SubmitApplicationModal({
                     setFundersArray(filteredFunders)
                     setFundersArrayO(filteredFunders)
                 });
-                setSettingUp(false);
             } else {
-                // console.log(submittedAppsArray);
-                return;
+                setFundersArray(initialFundersArray)
+                setFundersArrayO(initialFundersArray)
             }
+            setSettingUp(false);
         }
         fetch()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showFunders, initialFundersArray])
 
 
@@ -177,11 +177,11 @@ export default function SubmitApplicationModal({
                 setSelectedFundersArray([])
                 setSubmittedApps([])
             }}></div>
-            
+
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px] rounded-lg">
 
                 <div className="flex items-center justify-between py-4">
-                    <div className="font-bold">{application?.name_of_business}</div>
+                    <div className="font-bold">{application?.name_of_business ? application?.name_of_business : application?.legal_business_name}</div>
 
                     <div className="flex justify-end">
                         <FaTimes className='cursor-pointer' onClick={() => {
@@ -199,9 +199,9 @@ export default function SubmitApplicationModal({
 
                         {fundersArray?.length > 0 && fundersArray?.map((funder, index) => {
                             const alreadySelected = selectedFundersArray.find(obj => obj?.name === funder?.name)
-                            if (alreadySelected){
-                                return(<div key={`empty_funder_${index}`} className='hidden'></div>)
-                            }else{
+                            if (alreadySelected) {
+                                return (<div key={`empty_funder_${index}`} className='hidden'></div>)
+                            } else {
                                 return (
                                     <div key={`main_${funder?.name}_${index + 1}`} className={`${funder?.submitted ? 'cursor-not-allowed' : 'cursor-pointer'} hover:bg-slate-200 p-3 flex items-center justify-between`}
                                         onClick={() => {
@@ -216,7 +216,7 @@ export default function SubmitApplicationModal({
                                             setFundersArray(newFundersArray)
                                             return;
                                         }}>{funder?.name} {funder?.submitted && <FaCheck />}</div>
-                                )                                
+                                )
                             }
                         })}
                     </div>

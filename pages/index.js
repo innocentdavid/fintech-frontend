@@ -92,7 +92,10 @@ export async function getServerSideProps(context) {
   var res;
   // const cookies = context.req.cookies;
   const cookies = parseCookies(context)
-  res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
+  var currentPage = 1,
+    pageSize = 2;
+    res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/`, {
+    // res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/?page=${currentPage}&q=${pageSize}`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${cookies['jwt']}` // get JWT token from cookie

@@ -69,6 +69,16 @@ export default ApplicationDetail
 export async function getServerSideProps(context) {
     // const cookies = context.req.cookies;
     const cookies = parseCookies(context)
+    if (!cookies['jwt']){
+        return {
+            props: {
+                application: {},
+                pdfs: {},
+                fundersResponse: {},
+                submittedApplications: {},
+            }
+        };
+    }
     const appRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/applications/${context.params.applicationId}/`, {
         headers: {
             //  'Accept': 'application/json',

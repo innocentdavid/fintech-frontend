@@ -252,7 +252,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px] rounded-lg">
 
                 <div className="flex items-center justify-between py-4">
-                    <div className="font-bold">{application?.name_of_business}</div>
+                    <div className="font-bold">{application?.name_of_business ? application?.name_of_business : application?.legal_business_name}</div>
 
                     <div className="flex justify-end">
                         <FaTimes className='cursor-pointer' onClick={() => {
