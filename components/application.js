@@ -164,10 +164,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         if (selectedFundersArray.length > 0) {
             // console.log("application.opportunity_exist: ");
             // console.log(application.opportunity_exist);
-            if (application.opportunity_exist !== true) {
+            if (application?.opportunity_exist !== true || application?.statement_missing === true) {
                 // show modal
                 handleToggleAlertModal()
                 setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
+                handleOpenModal()
                 return;
             }
 
@@ -328,7 +329,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                     </div>}
 
                     <div className="">
-                        <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
+                        <h2 className='text-[16px] mx-3'>Bussiness Information</h2>
+                        
                         <div className='w-full md:w-[75%]'>
                             <Inputfeild
                                 formData={formData}
@@ -348,7 +350,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                 type='text'
                                 application={application?.funder}
                                 // value={formData.name}
-                                onChange={()=>{}}
+                                onChange={() => { }}
                                 // disabled={!isEditable}
                                 disabled={true}
                             />}
@@ -377,7 +379,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         </div>
                     </div>
 
-                    {!page && <div className='flex flex-col md:flex-row items-center gap-2 md:gap-5 w-full md:pl-2 mt-5 md:mt-[40px]'>
+                    {!page && <div className='flex flex-col md:flex-row items-center gap-2 md:gap-5 w-full md:pl-2 mt-5 md:mt-[10px]'>
                         <div className=''>
                             <h2 className='text-[13px] text-black'>Bank Statement</h2>
                             <div className='flex items-center gap-2 mt-1'>
@@ -486,19 +488,19 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                         onChange={handleInputChange}
                                     />
                                     </div>}
+
+                                <div className="flex items-center gap-4">
+                                    {!page && <button type="button" className='w-[50px] h-[40px] grid place-items-center rounded-lg bg-blue-500 text-white hover:bg-blue-300 focus:bg-slate-300 focus:border-solid focus:border-blue-900 outline-none'
+                                        onClick={handleEditButtonClick}
+                                    >
+                                        {isEditable ? 'Done' : 'Edit'}
+                                    </button>}
+                                </div>
                             </div>
                         </div>
                     </div>}
-
-                    <div className="flex items-center gap-4 mt-7">
-                        {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 focus:bg-slate-300 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
-                            onClick={handleEditButtonClick}
-                        >
-                            {isEditable ? 'Done' : 'Edit'}
-                        </button>}
-                    </div>
-
-                    {!page && <div className="ml-2 w-[200px] bg-blue-500 text-white font-semibold mt-6 py-4 text-center cursor-pointer"
+                    
+                    {!page && <div className="ml-2 w-[200px] md:w-[420px] bg-blue-500 text-white font-semibold mt-6 py-2 text-center cursor-pointer"
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
                 </div>
 
@@ -660,7 +662,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         </div>
                     </div>
                 </div>}
-                
+
                 {/* only show on submittedApplications page */}
                 {!page && <div className='w-full lg:w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
@@ -772,7 +774,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     disabled={true}
 
                                 />
-                                
+
                             </div>
                             <div className='w-full'>
                                 <Inputfeild
@@ -793,8 +795,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
         </div>
 
-        {!page && <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
-            <Create application={application} viewOnly={true} title={application?.name_of_business} />
+        {!page && <div className=''>
+            <Create application={application} viewOnly={true} />
         </div>}
 
         {showPdfModal && <Viewer pdfObj={pdf} setPdfObj={setPdf} setShowPdfModal={setShowPdfModal} isEditable={isEditable} setLoading={setLoading} />}

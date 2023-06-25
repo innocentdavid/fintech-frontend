@@ -90,10 +90,12 @@ export default function SubmitApplicationModal({
         if (selectedFundersArray.length > 0) {
             // console.log("application.opportunity_exist: ");
             // console.log(application?.opportunity_exist);
-            if (application?.opportunity_exist !== true) {
+            if (application?.opportunity_exist !== true || application?.statement_missing === true) {
                 // show modal
                 handleToggleAlertModal()
                 setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
+                handleOpenModal()
+                return;
             }
 
             setLoading(true)
