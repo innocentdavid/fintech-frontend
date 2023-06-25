@@ -68,6 +68,8 @@ export default function PdfViewer({ url }) {
 
             const determineScale = () => {
                 const viewportWidth = window.innerWidth;
+                console.log("viewportWidth: ");
+                console.log(viewportWidth);
 
                 if (viewportWidth < 768) { // Mobile devices
                     scale = 0.5;
@@ -83,8 +85,9 @@ export default function PdfViewer({ url }) {
 
                 const viewport = page.getViewport({ scale });
                 const canvas = canvasRef.current;
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
+                if (!viewport && canvas) return;
+                canvas.height = viewport?.height;
+                canvas.width = viewport?.width;
                 const renderContext = {
                     canvasContext: canvas.getContext('2d'),
                     viewport: viewport

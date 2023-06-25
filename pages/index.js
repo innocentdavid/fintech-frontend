@@ -50,7 +50,7 @@ export default function Home({ data }) {
         withCredentials: true,
       }).catch(error => console.error(error))
       if (res && res?.status === 200) {
-        console.log('response is good');
+        // console.log('response is good');
         setApplications(res?.data)
       }
     };

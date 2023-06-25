@@ -9,12 +9,13 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
-import { BsSpeedometer2 } from 'react-icons/bs';
+import { BsSend, BsSpeedometer2 } from 'react-icons/bs';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import LoadingModal from './LoadingModal ';
 import { getCookie } from '../utils/helpers';
-// import { data, states } from './makeData';
+import SubmitApplicationModal from './SubmitApplicationModal';
+import { AiFillCalculator } from 'react-icons/ai';
 
 const Table = ({ data, page, setRefreshData }) => {
     const router = useRouter()
@@ -24,17 +25,35 @@ const Table = ({ data, page, setRefreshData }) => {
     const [showCreditScoreModal, setShowCreditScoreModal] = useState(false)
     const [appToCalcScore, setAppToCalcScore] = useState({ application_id: '', credit_score: '' })
     const [getScoreRes, setGetScoreRes] = useState({ error: '', credit_score: '' })
+    const [showSubmitAppModal, setShowSubmitAppModal] = useState(false)
+    const [submitAppModalApp, setSubmitAppModalApp] = useState(null)
+    const [fundersArray, setFundersArray] = useState([])
 
     useEffect(() => {
-        if (!data.length > 0) return;
-        const list = []
-        data.forEach(item => {
-            const funder = item.funder
-            const id = page ? item?.application?.count : item.count
-            const d = { ...item, id, funder_name: funder?.name }
-            list.push(d)
-        });
-        setTableData(list)
+        const fetch = async () => {
+            if (!data.length > 0) return;
+            const list = []
+            data.forEach(item => {
+                const funder = item.funder
+                const id = page ? item?.application?.count : item.count
+                const d = { ...item, id, funder_name: funder?.name }
+                list.push(d)
+            });
+            setTableData(list)
+
+            if (page) return;
+            const fundersResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/funders/`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getCookie('jwt')}`
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+            fundersResponse?.data && setFundersArray(fundersResponse?.data)
+        }
+        fetch()
     }, [data, page])
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
@@ -146,6 +165,13 @@ const Table = ({ data, page, setRefreshData }) => {
         <>
             <LoadingModal loading={loading} />
 
+            {!page && showSubmitAppModal && <SubmitApplicationModal
+                showFunders={showSubmitAppModal}
+                setShowFunders={setShowSubmitAppModal}
+                application={submitAppModalApp}
+                initialFundersArray={fundersArray}
+            />}
+
             <div className={`${!showCreditScoreModal ? "opacity-0 pointer-events-none" : "fixed top-0 left-0 w-full h-screen z-10 grid place-items-center"}`} style={{
                 transition: 'opacity .15s ease-in-out'
             }}>
@@ -163,7 +189,7 @@ const Table = ({ data, page, setRefreshData }) => {
                         <div className="flex items-center justify-between mt-5">
                             <div className="rippleButton ripple cursor-pointer !bg-red-600"
                                 onClick={() => {
-                                    setGetScoreRes({ credit_score: '', error: ''})
+                                    setGetScoreRes({ credit_score: '', error: '' })
                                     setShowCreditScoreModal(false)
                                 }}
                             >Close</div>
@@ -182,7 +208,7 @@ const Table = ({ data, page, setRefreshData }) => {
                                             alert(error?.response?.statusText)
                                             setGetScoreRes({ error: error?.response?.statusText })
                                             setLoading(false);
-                                            return;a
+                                            return;
                                         })
                                     if (res && res?.status === 200) {
                                         // console.log(res);
@@ -223,37 +249,54 @@ const Table = ({ data, page, setRefreshData }) => {
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
                     <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        {!page && <Tooltip arrow placement="left" title="Edit">
+                        {!page && <Tooltip arrow placement="left" title="Send">
                             <IconButton onClick={() => {
-                                router.push(`/edit/${row.original.application_id}`)
+                                setSubmitAppModalApp(row.original)
+                                setShowSubmitAppModal(true)
                             }}>
-                                <Edit />
+                                <BsSend />
                             </IconButton>
                         </Tooltip>}
+
+                        {!page && <Tooltip arrow placement="left" title="Edit">
+                            <Link href={`/edit/${row.original.application_id}`}>
+                                <IconButton onClick={() => {
+                                    // router.push(`/edit/${row.original.application_id}`)
+                                }}>
+                                    <Edit />
+                                </IconButton>
+                            </Link>
+                        </Tooltip>}
+
                         {!page && <Tooltip arrow placement="left" title="score">
                             <IconButton onClick={() => {
                                 setShowCreditScoreModal(true);
                                 setAppToCalcScore({ application_id: row.original.application_id, credit_score: row.original.credit_score });
                             }}>
-                                <BsSpeedometer2 />
+                                {/* <BsSpeedometer2 /> */}
+                                <AiFillCalculator />
                             </IconButton>
                         </Tooltip>}
+
                         <Tooltip arrow placement="left" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />
                             </IconButton>
                         </Tooltip>
+
                         <Tooltip arrow placement="right" title="View">
-                            <IconButton onClick={() => {
-                                var p = page || 'application'
-                                if (page) {
-                                    router.push(`${p}/${row?.original?.submittedApplication_id}`)
-                                } else {
-                                    router.push(`application/${row?.original?.application_id}`)
-                                }
-                            }}>
-                                <FiExternalLink />
-                            </IconButton>
+                            <Link href={page ? `${page}/${row?.original?.submittedApplication_id}` : `application/${row?.original?.application_id}`}>
+                                <IconButton onClick={() => {
+                                    // var p = page || 'application'
+                                    // if (page) {
+                                    //     router.push(`${p}/${row?.original?.submittedApplication_id}`)
+                                    // } else {
+                                    //     router.push(`application/${row?.original?.application_id}`)
+                                    // }
+                                }}>
+                                    <FiExternalLink />
+                                </IconButton>
+                            </Link>
                         </Tooltip>
                     </Box>
                 )}

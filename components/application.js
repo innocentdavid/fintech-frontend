@@ -12,6 +12,8 @@ import { getCookie, getToday } from '../utils/helpers';
 import PdfViewer from './PdfViewer'
 import SuccessModal from './SuccessModal';
 import AlertModal from './AlertModal';
+import Create from './Create';
+import Link from 'next/link';
 
 
 const Application = ({ application, defaultPdfs, fundersResponse, submittedApplications, page }) => {
@@ -153,25 +155,26 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
     const handleCloseModal = () => {
         setIsSuccessModalOpen(false);
     };
-    
+
     const handleToggleAlertModal = () => {
         setIsAlertModalOpen(!isAlertModalOpen);
     };
 
     const handleSendApplication = async () => {
         if (selectedFundersArray.length > 0) {
-            console.log("application.opportunity_exist: ");
-            console.log(application.opportunity_exist);
+            // console.log("application.opportunity_exist: ");
+            // console.log(application.opportunity_exist);
             if (application.opportunity_exist !== true) {
                 // show modal
                 handleToggleAlertModal()
                 setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
+                return;
             }
-            
+
             setLoading(true)
             const formData = {
                 ...application,
-                
+
                 opportunity_id: "",
                 salesforce_status: "",
                 submission_id: "",
@@ -183,14 +186,14 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 reply_link: "",
                 error_parsing: false,
                 errors_parsing: [],
-                
+
                 date_submitted: getToday(new Date()),
                 status: 'Submitted',
                 status_date: getToday(new Date()),
                 status_description: 'Submitted',
                 funder_names: selectedFundersArray
             }
-            
+
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/submittedApplications/`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -203,7 +206,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setLoading(false)
                 return;
             })
-            console.log(res);
+            // console.log(res);
             if (res?.statusText) {
                 if (res?.data?.failed?.length > 0) {
                     alert(`submission to ${res?.data?.failed.join(', ')} failed!`);
@@ -224,12 +227,14 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         }
     }
 
-    return (<>
+    // console.log(application);
+
+    return (<div className='relative'>
         <LoadingModal loading={loading} />
-        
+
         {/* success timeout modal */}
         <SuccessModal isOpen={isSuccessModalOpen} onClose={handleCloseModal} />
-        
+
         <AlertModal
             isOpen={isAlertModalOpen}
             onClose={handleToggleAlertModal}
@@ -237,6 +242,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             message={errorMsg?.message}
         />
 
+        {/* submit appliction modal start */}
         <div className={`${showFunders ? "opacity-100 z-10 grid" : "hidden opacity-0 pointer-events-none"} fixed top-0 left-0 w-full h-screen place-items-center`} style={{ transition: 'opacity .15s ease-in' }}>
             <div className="absolute top-0 left-0 w-full h-screen bg-black/50 cursor-pointer" onClick={() => {
                 setShowFunders(false)
@@ -244,15 +250,10 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 setSelectedFundersArray([])
             }}></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black px-5 py-10 min-w-[310px] mx-auto md:min-w-[520px] rounded-lg">
-                {/* <FaTimes className='absolute top-2 right-2 cursor-pointer' onClick={() => {
-                    setShowFunders(false)
-                    setFundersArray(fundersArrayO)
-                    setSelectedFundersArray([])
-                }} /> */}
-                
+
                 <div className="flex items-center justify-between py-4">
-                    <div className="font-bold">{application?.business_name}</div>
-                    
+                    <div className="font-bold">{application?.name_of_business}</div>
+
                     <div className="flex justify-end">
                         <FaTimes className='cursor-pointer' onClick={() => {
                             setShowFunders(false)
@@ -299,8 +300,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                     </div>
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <button className={`${selectedFundersArray.length > 0 ? 'bg-black' : 'bg-gray-500'} mt-4 py-2 px-8 text-white`} onClick={handleSendApplication}>Send</button>
-                    
+                    <button className={`${selectedFundersArray.length > 0 ? 'bg-blue-600' : 'bg-blue-400'} mt-4 py-2 px-8 text-white`} onClick={handleSendApplication}>Send</button>
+
                     <button className={`bg-gray-500 mt-4 py-2 px-8 text-white`} onClick={() => {
                         setShowFunders(false)
                         setFundersArray(fundersArrayO)
@@ -309,65 +310,74 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                 </div>
             </div>
         </div>
+        {/* submit appliction modal start */}
 
         <div className='md:first-letter:w-[85%] mx-auto items-center  py-3 rounded-lg mt-[60px] relative'>
             <FaTimes size={20} className="cursor-pointer absolute z-[2] top-0 right-2 text-[15px] h-[20px] w-[20px] flex justify-center my-2" onClick={() => {
-                // setLoading(true)
                 router.back()
             }} />
 
-            <form action="" method="post" className='flex flex-col-reverse lg:flex-row' onSubmit={handleSubmit} >
-                <div className='w-full lg:w-[45%] mb-[160px] '>
+            <form action="" method="post" className='flex flex-col-reverse lg:flex-row pb-[20px]' onSubmit={handleSubmit} >
+                <div className={`w-full lg:w-[45%]`}>
                     <div className='hidden lg:flex justify-between max-w-[300px] items-center mx-4 mb-3 border-b border-slate-200'>
                         <h3>APPLICATION DATA</h3>
                     </div>
-                    <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
 
-                    <div className='w-full md:w-[75%]'>
-                        <Inputfeild
-                            formData={formData}
-                            label='Business Name'
-                            name='name_of_business'
-                            type='text'
-                            application={application}
-                            // value={formData.name}
-                            onChange={handleInputChange}
-                            // disabled={!isEditable}
-                            disabled={true}
-                        />
+                    {page && <div className="py-4 px-3">
+                        <Link href={`/application/${application?.application?.application_id}`} className="rippleButton ripple cursor-pointer">View Application</Link>
+                    </div>}
 
-                        {/* <SelectMenuNew
-                            onChange={handleInputChange}
-                            formData={formData}
-                            name='status'
-                            // disabled={!isEditable}
-                            disabled={true}
-                        /> */}
-                        <Inputfeild
-                            formData={formData}
-                            label='Status'
-                            name='status'
-                            type='text'
-                            application={application}
-                            // value={formData.name}
-                            onChange={handleInputChange}
-                            // disabled={!isEditable}
-                            disabled={true}
-                        />
-                        <Inputfeild
-                            formData={formData}
-                            label='Status Description'
-                            name='status_description'
-                            type='text'
-                            application={application}
-                            // value={formData.name}
-                            onChange={handleInputChange}
-                            // disabled={!isEditable}
-                            disabled={true}
-                        />
+                    <div className="">
+                        <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2>
+                        <div className='w-full md:w-[75%]'>
+                            <Inputfeild
+                                formData={formData}
+                                label='Business Name'
+                                name='name_of_business'
+                                type='text'
+                                application={application}
+                                // value={formData.name}
+                                onChange={handleInputChange}
+                                // disabled={!isEditable}
+                                disabled={true}
+                            />
+                            {page && <Inputfeild
+                                formData={formData}
+                                label='Funder Name'
+                                name='name'
+                                type='text'
+                                application={application?.funder}
+                                // value={formData.name}
+                                onChange={()=>{}}
+                                // disabled={!isEditable}
+                                disabled={true}
+                            />}
+                            <Inputfeild
+                                formData={formData}
+                                label='Status'
+                                name='status'
+                                type='text'
+                                application={application}
+                                // value={formData.name}
+                                onChange={handleInputChange}
+                                // disabled={!isEditable}
+                                disabled={true}
+                            />
+                            <Inputfeild
+                                formData={formData}
+                                label='Status Description'
+                                name='status_description'
+                                type='text'
+                                application={application}
+                                // value={formData.name}
+                                onChange={handleInputChange}
+                                // disabled={!isEditable}
+                                disabled={true}
+                            />
+                        </div>
                     </div>
 
-                    <div className='flex flex-col md:flex-row items-center gap-2 md:gap-5 w-full md:pl-2 mt-5 md:mt-[40px]'>
+                    {!page && <div className='flex flex-col md:flex-row items-center gap-2 md:gap-5 w-full md:pl-2 mt-5 md:mt-[40px]'>
                         <div className=''>
                             <h2 className='text-[13px] text-black'>Bank Statement</h2>
                             <div className='flex items-center gap-2 mt-1'>
@@ -478,7 +488,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     </div>}
                             </div>
                         </div>
-                    </div>
+                    </div>}
+
                     <div className="flex items-center gap-4 mt-7">
                         {!page && <button type="button" className='px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 focus:bg-slate-300 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
                             onClick={handleEditButtonClick}
@@ -491,7 +502,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
                 </div>
 
-                {/* <div className='w-full lg:w-[55%]'>
+                {/* only show on submittedApplications page */}
+                {page && <div className='w-full lg:w-[55%]'>
                     <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
                         <h3>Additional Information</h3>
                     </div>
@@ -647,14 +659,147 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                         </div>
                     </div>
-                </div> */}
+                </div>}
+                
+                {/* only show on submittedApplications page */}
+                {!page && <div className='w-full lg:w-[55%]'>
+                    <div className='flex justify-between max-w-[450px] items-center mx-4 mb-3 p-2 border-b border-slate-200'>
+                        <h3>Additional Information</h3>
+                    </div>
+                    {/* <h2 className='text-[16px] mx-3 mb-3'>Bussiness Information</h2> */}
+
+                    <div className=' gap-1 w-full flex-1 '>
+                        <div className='flex flex-col md:flex-row'>
+                            <div className='w-full'>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Legal Business Name'
+                                    name='legal_business_name'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className='flex flex-col md:flex-row gap-3 w-full md:w-[60%] '>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='DBA'
+                                    name='dba'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+                                />
+                                <Inputfeild
+                                    formData={formData}
+                                    label='State Inc'
+                                    name='state_inc'
+                                    type='number'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
+                            <div className='w-full'>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Federal Tax Id'
+                                    name='federal_tax_id'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+                            <div className='w-full'>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Date Business Started'
+                                    name='date_business_started'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className='flex flex-col md:flex-row gap-1 w-full flex-1 '>
+                            <div className='w-full'>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Years At Location'
+                                    name='years_at_location'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+                            <div className='flex flex-col md:flex-row gap-3 w-full md:w-[60%] '>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='phone'
+                                    name='Phone'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col md:flex-row items-center justify-between'>
+                            <div className='w-full'>
+
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Number Of Locations'
+                                    name='number_of_locations'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                                
+                            </div>
+                            <div className='w-full'>
+                                <Inputfeild
+                                    formData={formData}
+                                    label='Length Of Ownership'
+                                    name='length_of_ownership'
+                                    type='text'
+                                    application={application}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>}
             </form>
 
         </div>
 
+        {!page && <div className='w-[90%] mx-auto rounded-lg mt-[60px]'>
+            <Create application={application} viewOnly={true} title={application?.name_of_business} />
+        </div>}
+
         {showPdfModal && <Viewer pdfObj={pdf} setPdfObj={setPdf} setShowPdfModal={setShowPdfModal} isEditable={isEditable} setLoading={setLoading} />}
         {showAddPdf && <AddPdf pdfToAdd={pdfToAdd} setPdfToAdd={setPdfToAdd} setShowAddPdf={setShowAddPdf} reFreshPdf={reFreshPdf} setReFreshPdf={setReFreshPdf} />}
-    </>)
+    </div>)
 }
 
 
@@ -1031,94 +1176,96 @@ const Viewer = ({ pdfObj, setPdfObj, setShowPdfModal, isEditable, setLoading }) 
     return (<>
         <div className="pt-16 fixed top-0 left-0 w-full h-screen overflow-auto z-10 bg-white text-black flex items-center justify-center">
             <FaTimesCircle className='absolute right-5 top-5 cursor-pointer' onClick={() => setShowPdfModal(false)} />
-            <div className='w-[90%] m-auto flex flex-col-reverse lg:flex-row justify-between'>
-                <form className="flex-1 lg:flex-[2]" onSubmit={handleUpdateButton}>
+            <div className={`w-[90%] m-auto flex ${(pdfObj.pdf_type).startsWith('Statement') ? 'flex-col-reverse lg:flex-row justify-between' : 'flex-col items-center'}`}>
+                <form className={`flex-1 ${(pdfObj.pdf_type).startsWith('Statement') && 'lg:flex-[2]'}`} onSubmit={handleUpdateButton}>
                     <div className="mt-1 mb-3 text-center font-bold text-lg">
-                        {pdfObj.pdf_type}
+                        {(pdfObj.pdf_type).startsWith('Statement') ? `Bank ${pdfObj.pdf_type}` : pdfObj.pdf_type}
                     </div>
-                    <div className="">
-                        <div className="flex flex-col lg:flex-row items-center">
-                            <Inputfeild2
-                                type='text'
-                                label='Business Name'
-                                name="business_name"
-                                plholder="Business Name"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                            <Inputfeild2
-                                type='text'
-                                label='Bank Name'
-                                name="bank_name"
-                                plholder="Bank Name"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
+                    {(pdfObj.pdf_type).startsWith('Statement') && <>
+                        <div className="">
+                            <div className="flex flex-col lg:flex-row items-center">
+                                <Inputfeild2
+                                    type='text'
+                                    label='Business Name'
+                                    name="business_name"
+                                    plholder="Business Name"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                                <Inputfeild2
+                                    type='text'
+                                    label='Bank Name'
+                                    name="bank_name"
+                                    plholder="Bank Name"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                            </div>
+                            <div className="flex flex-col lg:flex-row items-center">
+                                <Inputfeild2
+                                    type='number'
+                                    label='Begin Balance Amount'
+                                    name="begin_bal_amount"
+                                    plholder="Begin Balance Amount"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                                <Inputfeild2
+                                    type='date'
+                                    label='Begin Balance Date'
+                                    name="begin_bal_date"
+                                    plholder="Begin Balance Date"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                            </div>
+                            <div className="flex flex-col lg:flex-row items-center">
+                                <Inputfeild2
+                                    type='number'
+                                    label='Ending Balance Amount'
+                                    name="ending_bal_amount"
+                                    plholder="Ending Balance Amount"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                                <Inputfeild2
+                                    type='date'
+                                    label='Ending Balance Date'
+                                    name="ending_bal_date"
+                                    plholder="Ending Balance Date"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                            </div>
+                            <div className="flex flex-col lg:flex-row items-center">
+                                <Inputfeild2
+                                    type='number'
+                                    label='Total Deposit'
+                                    name="total_deposit"
+                                    plholder="Total Deposit"
+                                    disabled={!isEditable}
+                                    onChange={handleInputChange}
+                                    formData={pdfObj}
+                                />
+                            </div>
                         </div>
-                        <div className="flex flex-col lg:flex-row items-center">
-                            <Inputfeild2
-                                type='number'
-                                label='Begin Balance Amount'
-                                name="begin_bal_amount"
-                                plholder="Begin Balance Amount"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                            <Inputfeild2
-                                type='date'
-                                label='Begin Balance Date'
-                                name="begin_bal_date"
-                                plholder="Begin Balance Date"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                        </div>
-                        <div className="flex flex-col lg:flex-row items-center">
-                            <Inputfeild2
-                                type='number'
-                                label='Ending Balance Amount'
-                                name="ending_bal_amount"
-                                plholder="Ending Balance Amount"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                            <Inputfeild2
-                                type='date'
-                                label='Ending Balance Date'
-                                name="ending_bal_date"
-                                plholder="Ending Balance Date"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                        </div>
-                        <div className="flex flex-col lg:flex-row items-center">
-                            <Inputfeild2
-                                type='number'
-                                label='Total Deposit'
-                                name="total_deposit"
-                                plholder="Total Deposit"
-                                disabled={!isEditable}
-                                onChange={handleInputChange}
-                                formData={pdfObj}
-                            />
-                        </div>
-                    </div>
 
-                    <div className="flex items-center justify-center gap-4 mb-7">
-                        {isEditable && <button type="submit" className='px-4 py-2 w-full rounded-lg bg-blue-600 text-white hover:bg-blue-400 focus:bg-blue-400 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
-                        >
-                            Update
-                        </button>}
-                    </div>
+                        <div className="flex items-center justify-center gap-4 mb-7">
+                            {isEditable && <button type="submit" className='px-4 py-2 w-full rounded-lg bg-blue-600 text-white hover:bg-blue-400 focus:bg-blue-400 focus:border-solid focus:border-blue-900 outline-none  mb-4 '
+                            >
+                                Update
+                            </button>}
+                        </div>
+                    </>}
                 </form>
 
-                <div className="flex-1 lg:flex-[3] mb-14 lg:mb-0 z-50">
+                <div className={`flex-1 ${(pdfObj.pdf_type).startsWith('Statement') && 'lg:flex-[3]'} overflow-auto mb-14 lg:mb-0 z-50`}>
                     {pdfBlob ? <PdfViewer url={pdfBlob} /> :
                         <>
                             Loading...

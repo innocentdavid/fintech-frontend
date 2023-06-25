@@ -62,7 +62,7 @@ const SelectMenuNew = (props)=>{
         <div className='flex gap-1 flex-col mx-3 my-2'>
 
             <select className='text-[15px] w-full h-[40px] border border-gray-500 rounded-lg' 
-            name={props.name} onChange={props.onChange}>
+            name={props.name} onChange={props.onChange} disabled={props.disabled}>
                 <option value="">SELECT</option>
                 {stateOptions.map(state => {
                     return (<option key={state.id} value={state.id} selected={selectedState === state.id ? true : false}>{state.name}</option>)

@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../../context/AuthContext';
 import { getCookie } from '../../utils/helpers';
 import Link from 'next/link';
+import LoadingModal from '../../components/LoadingModal ';
 
 
 const ApplicationDetail = ({ application }) => {

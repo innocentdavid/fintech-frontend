@@ -13,7 +13,7 @@ import LoadingModal from '../components/LoadingModal ';
 import { getCookie, getToday, minMaxValidator, scrollToInput } from '../utils/helpers';
 
 
-const Create = ({ application }) => {
+const Create = ({ application, viewOnly, title }) => {
     const router = useRouter()
     const [step, setStep] = useState(0)
     const [application_id, setApplication_id] = useState('')
@@ -25,7 +25,7 @@ const Create = ({ application }) => {
         status_description: 'Created',
         name_of_business: '',
         legal_business_name: '',
-        
+
         dba: '',
         address: '',
         suite: '',
@@ -200,16 +200,17 @@ const Create = ({ application }) => {
         }}>
             {/* <Creates/> */}
             <div className='md:w-[80%] w-full mx-auto p-2 border flex flex-col justify-center'>
-                <FaTimes size={20} className='absolute -top-1 right-0 cursor-pointer' onClick={() => {
+                {!viewOnly && <FaTimes size={20} className='absolute -top-1 right-0 cursor-pointer' onClick={() => {
                     setLoading(true)
                     router.back()
-                }} />
-                <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >{application ? "Update Application" : 'Create New Application'}</h1>
+                }} />}
+                {!title ? <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >{application ? "Update Application" : 'Create New Application'}</h1> :
+                    <h1 className='md:text-[25px] text-[20px] text-center md:my-5 my-2' >{title}</h1>}
 
                 <form method='POST' action='' onSubmit={handleSubmit} >
                     <div className='md:max-w-[700px] w-full mx-auto flex flex-col gap-5'>
 
-                        {application && <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
+                        {!viewOnly && application && <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
                             <div className='w-full mt-2 mb-5'>
                                 <span className='mx-3'>Status</span>
                                 <div className='flex gap-1 flex-col mx-3 my-2'>
@@ -225,6 +226,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Status Description</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='status_description'
                                     onChange={handleChange}
                                     formData={formData}
@@ -240,6 +242,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Legal Business Name</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='legal_business_name'
                                     onChange={handleChange}
                                     formData={formData}
@@ -250,6 +253,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>DBA</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='dba'
                                     onChange={handleChange}
                                     formData={formData}
@@ -263,6 +267,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Address</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='text'
                                     onChange={handleChange}
                                     formData={formData}
@@ -273,6 +278,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Suite</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='suite'
                                     onChange={handleChange}
                                     formData={formData}
@@ -286,6 +292,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>City</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='city'
                                     onChange={handleChange}
                                     formData={formData}
@@ -296,6 +303,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mt-1 mx-3'>State</span>
                                 <SelectMenuNew
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     name='state'
@@ -307,6 +315,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>ZIP</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='number'
@@ -320,6 +329,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Phone</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -336,6 +346,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Mobile</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='number'
@@ -349,6 +360,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>E-mail</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='email'
@@ -362,6 +374,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Federal Tax ID</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='text'
@@ -372,6 +385,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>State of Inc</span>
                                 <SelectMenuNew
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     name='state_inc'
@@ -383,6 +397,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Legal Entry</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='text'
@@ -393,6 +408,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Date Business Started</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     type='date'
@@ -406,6 +422,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Length of Owernship</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -416,6 +433,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Years at Location</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -426,6 +444,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Number Of Locations</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -445,6 +464,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>First Name</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='owner_first_name'
                                     onChange={handleChange}
                                     formData={formData}
@@ -455,6 +475,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Last Name</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='owner_last_name'
                                     onChange={handleChange}
                                     formData={formData}
@@ -468,6 +489,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Home Address</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='text'
                                     onChange={handleChange}
                                     formData={formData}
@@ -478,6 +500,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>City</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='owner_city'
                                     type='text'
                                     onChange={handleChange}
@@ -491,6 +514,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mt-1 mx-3'>State</span>
                                 <SelectMenuNew
+                                    disabled={viewOnly}
                                     onChange={handleChange}
                                     formData={formData}
                                     name="owner_state"
@@ -499,6 +523,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>ZIP</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -515,6 +540,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>SSN (999-99-9999)</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='text'
                                     onChange={handleChange}
                                     formData={formData}
@@ -526,6 +552,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Percentage of Ownership</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -539,6 +566,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>DOB</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='date'
                                     onChange={handleChange}
                                     formData={formData}
@@ -549,6 +577,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Phone</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     type='number'
                                     onChange={handleChange}
                                     formData={formData}
@@ -571,6 +600,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Name Of Business</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='name_of_business'
                                     onChange={handleChange}
                                     formData={formData}
@@ -581,6 +611,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Gross Monthly Sale</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='gross_monthly_sales'
                                     onChange={handleChange}
                                     formData={formData}
@@ -591,6 +622,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Type of Product Sold</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='type_of_product_sold'
                                     onChange={handleChange}
                                     formData={formData}
@@ -604,6 +636,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Do you have any open Cash Advances [Y/N]</span>
                                 <RadioFeild
+                                    disabled={viewOnly}
                                     type='radio'
                                     onChange={handleChange}
                                     formData={formData}
@@ -614,6 +647,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'> Have you used a Cash Advance plan before [Y/N]</span>
                                 <RadioFeild
+                                    disabled={viewOnly}
                                     type='radio'
                                     onChange={handleChange}
                                     formData={formData}
@@ -627,6 +661,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'> Using the Money For</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='using_money_for'
                                     onChange={handleChange}
                                     formData={formData}
@@ -637,6 +672,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'> Description of Business: Retail</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='description_of_business'
                                     onChange={handleChange}
                                     formData={formData}
@@ -656,6 +692,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Advanced Amount</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='email_id'
                                     onChange={handleChange}
                                     formData={formData}
@@ -666,6 +703,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Commission Amount</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='opportunity_id'
                                     onChange={handleChange}
                                     formData={formData}
@@ -679,6 +717,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Advanced Amount</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='source_email'
                                     onChange={handleChange}
                                     formData={formData}
@@ -689,6 +728,7 @@ const Create = ({ application }) => {
                             <div className='w-full'>
                                 <span className='mx-3'>Commission Amount</span>
                                 <Inputfeild
+                                    disabled={viewOnly}
                                     name='subject'
                                     onChange={handleChange}
                                     formData={formData}
@@ -699,14 +739,14 @@ const Create = ({ application }) => {
                         </div>
                     </div>
 
-                    <div className='mt-[40px] flex justify-center gap-4 items-center w-full mx-auto'>
+                    {!viewOnly && <div className='mt-[40px] flex justify-center gap-4 items-center w-full mx-auto'>
                         <button type='submit' className='px-4 py-2 rounded-lg bg-slate-100 focus:border-solid focus:border-blue-900 outline-none  mb-4 ' >{application ? 'Update' : 'Save and Continue'}</button>
-                    </div>
+                    </div>}
                 </form>
             </div>
         </div>
 
-        <div id="step2" className={`${step === 1 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto mt-[60px]`} style={{
+        {!viewOnly && <div id="step2" className={`${step === 1 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none absolute top-[-1000%]"} w-[80%] mx-auto mt-[60px]`} style={{
             transition: 'all .15s ease-in'
         }}>
             <div className="mb-10 flex gap-4 items-center justify-center">
@@ -739,13 +779,14 @@ const Create = ({ application }) => {
                         }}>Complete</button>
                 </div>
             </div>
-        </div>
+        </div>}
     </>)
 }
 
 export default Create
 
-const UploadFiles = ({ title, application_id, formData }) => {
+const UploadFiles = ({ title, application_id }) => {
+    const viewOnly = false;
     const [formData2, setFormData2] = useState({
         business_name: '',
         bank_name: '',
@@ -837,6 +878,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Business Name</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             name='business_name'
                             onChange={handleChange}
                             formData={formData2}
@@ -847,6 +889,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Bank Name</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             name='bank_name'
                             onChange={handleChange}
                             formData={formData2}
@@ -857,6 +900,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Beginning Balance Date</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             onChange={handleChange}
                             formData={formData2}
                             type='date'
@@ -870,6 +914,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Total Deposit</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             name='total_deposit'
                             onChange={handleChange}
                             formData={formData2}
@@ -880,6 +925,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Ending Balance Date</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             name='ending_bal_date'
                             onChange={handleChange}
                             formData={formData2}
@@ -890,6 +936,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                     <div className=' w-[33%] mx-2 my-5'>
                         <span className='mx-3'>Ending Balance Amount</span>
                         <Inputfeild
+                            disabled={viewOnly}
                             name='ending_bal_amount'
                             onChange={handleChange}
                             formData={formData2}
@@ -902,6 +949,7 @@ const UploadFiles = ({ title, application_id, formData }) => {
                 <div className='w-full'>
                     <span className='mx-3'> Beginning Balance Amount</span>
                     <Inputfeild
+                        disabled={viewOnly}
                         name='begin_bal_amount'
                         onChange={handleChange}
                         formData={formData2}
