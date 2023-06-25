@@ -690,7 +690,7 @@ const Create = ({ application, viewOnly, title }) => {
 
                         <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
                             <div className='w-full'>
-                                <span className='mx-3'>Advanced Amount</span>
+                                <span className='mx-3'>Email Id</span>
                                 <Inputfeild
                                     disabled={viewOnly}
                                     name='email_id'
@@ -701,7 +701,7 @@ const Create = ({ application, viewOnly, title }) => {
                                 />
                             </div>
                             <div className='w-full'>
-                                <span className='mx-3'>Commission Amount</span>
+                                <span className='mx-3'>Opportunity Id</span>
                                 <Inputfeild
                                     disabled={viewOnly}
                                     name='opportunity_id'
@@ -715,7 +715,7 @@ const Create = ({ application, viewOnly, title }) => {
 
                         <div className="flex flex-col lg:flex-row gap-5 justify-between items-center">
                             <div className='w-full'>
-                                <span className='mx-3'>Advanced Amount</span>
+                                <span className='mx-3'>Source Email</span>
                                 <Inputfeild
                                     disabled={viewOnly}
                                     name='source_email'
@@ -726,7 +726,7 @@ const Create = ({ application, viewOnly, title }) => {
                                 />
                             </div>
                             <div className='w-full'>
-                                <span className='mx-3'>Commission Amount</span>
+                                <span className='mx-3'>Subject</span>
                                 <Inputfeild
                                     disabled={viewOnly}
                                     name='subject'
