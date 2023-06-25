@@ -165,10 +165,8 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             // console.log("application.opportunity_exist: ");
             // console.log(application.opportunity_exist);
             if (application?.opportunity_exist !== true || application?.statement_missing === true) {
-                // show modal
-                handleToggleAlertModal()
+                setIsAlertModalOpen(true)
                 setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
-                handleOpenModal()
                 return;
             }
 
@@ -238,7 +236,12 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
         <AlertModal
             isOpen={isAlertModalOpen}
-            onClose={handleToggleAlertModal}
+            onClose={() => {
+                setShowFunders(false);
+                setFundersArray(fundersArrayO)
+                setSelectedFundersArray([])
+                setIsAlertModalOpen(false);
+            }}
             title={errorMsg?.title}
             message={errorMsg?.message}
         />
@@ -330,7 +333,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
 
                     <div className="">
                         <h2 className='text-[16px] mx-3'>Bussiness Information</h2>
-                        
+
                         <div className='w-full md:w-[75%]'>
                             <Inputfeild
                                 formData={formData}
@@ -499,7 +502,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                             </div>
                         </div>
                     </div>}
-                    
+
                     {!page && <div className="ml-2 w-[200px] md:w-[420px] bg-blue-500 text-white font-semibold mt-6 py-2 text-center cursor-pointer"
                         onClick={() => setShowFunders(true)}>Submit Application</div>}
                 </div>

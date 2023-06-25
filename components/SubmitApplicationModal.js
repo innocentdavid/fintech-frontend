@@ -82,19 +82,13 @@ export default function SubmitApplicationModal({
         setIsSuccessModalOpen(false);
     };
 
-    const handleToggleAlertModal = () => {
-        setIsAlertModalOpen(!isAlertModalOpen);
-    };
-
     const handleSendApplication = async () => {
         if (selectedFundersArray.length > 0) {
             // console.log("application.opportunity_exist: ");
             // console.log(application?.opportunity_exist);
             if (application?.opportunity_exist !== true || application?.statement_missing === true) {
-                // show modal
-                handleToggleAlertModal()
+                setIsAlertModalOpen(true);
                 setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
-                handleOpenModal()
                 return;
             }
 
@@ -138,7 +132,6 @@ export default function SubmitApplicationModal({
                 if (res?.data?.failed?.length > 0) {
                     alert(`submission to ${res?.data?.failed.join(', ')} failed!`);
                 }
-                setShowFunders(false)
                 const list = []
                 const filteredFunders = selectedFundersArray.filter(funder => !res?.data?.failed.includes(funder.name));
                 filteredFunders.forEach(funder => {
@@ -150,6 +143,7 @@ export default function SubmitApplicationModal({
                 setSelectedFundersArray([])
                 setSubmittedApps([])
                 handleOpenModal()
+                setShowFunders(false)
             }
             setLoading(false)
         }
@@ -167,7 +161,10 @@ export default function SubmitApplicationModal({
 
         <AlertModal
             isOpen={isAlertModalOpen}
-            onClose={handleToggleAlertModal}
+            onClose={() => {
+                setShowFunders(false)
+                setIsAlertModalOpen(false);
+            }}
             title={errorMsg?.title}
             message={errorMsg?.message}
         />
