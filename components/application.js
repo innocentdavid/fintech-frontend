@@ -156,9 +156,9 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         setIsSuccessModalOpen(false);
     };
 
-    const handleToggleAlertModal = () => {
-        setIsAlertModalOpen(!isAlertModalOpen);
-    };
+    // const handleToggleAlertModal = () => {
+    //     setIsAlertModalOpen(!isAlertModalOpen);
+    // };
 
     const handleSendApplication = async () => {
         if (selectedFundersArray.length > 0) {
@@ -226,7 +226,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
         }
     }
 
-    // console.log(application);
+    // console.log(application); //
 
     return (<div className='relative'>
         <LoadingModal loading={loading} />
