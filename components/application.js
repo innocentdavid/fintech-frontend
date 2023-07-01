@@ -166,7 +166,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             // console.log(application.opportunity_exist);
             if (application?.opportunity_exist !== true || application?.statement_missing === true) {
                 setIsAlertModalOpen(true)
-                setErrorMsg({ title: 'Alert', message: 'No opportunity with the name {business name} exists in Salesforce' })
+                setErrorMsg({ title: 'Alert', message: `No opportunity with the name ${application?.name_of_business} exists in Salesforce` })
                 return;
             }
 
