@@ -72,6 +72,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
             });
             setApplicaitonPdfs(applicaitonPdfs)
             setStatementPdfs(statementPdfs)
+            console.log(statementPdfs);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -386,11 +387,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         <div className=''>
                             <h2 className='text-[13px] text-black'>Bank Statement</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                {statementPdfs[0] ? <>
+                                {statementPdfs.find(pdf => pdf.pdf_type==="Statement 1") ? <>
                                     <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
                                         <AiFillFilePdf size={20}
                                             onClick={() => {
-                                                setPdf(statementPdfs[0])
+                                                setPdf(statementPdfs.find(pdf => pdf.pdf_type === "Statement 1"))
                                                 setShowPdfModal(true)
                                             }}
                                         />
@@ -407,11 +408,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                         />
                                     </div>}
 
-                                {statementPdfs[1] ? <>
+                                {statementPdfs.find(pdf => pdf.pdf_type==="Statement 2") ? <>
                                     <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
                                         <AiFillFilePdf size={20}
                                             onClick={() => {
-                                                setPdf(statementPdfs[1])
+                                                setPdf(statementPdfs.find(pdf => pdf.pdf_type==="Statement 2"))
                                                 setShowPdfModal(true)
                                             }}
                                         />
@@ -427,11 +428,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     />
                                     </div>}
 
-                                {statementPdfs[2] ? <>
+                                {statementPdfs.find(pdf => pdf.pdf_type==="Statement 3") ? <>
                                     <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
                                         <AiFillFilePdf size={20}
                                             onClick={() => {
-                                                setPdf(statementPdfs[2])
+                                                setPdf(statementPdfs.find(pdf => pdf.pdf_type==="Statement 3"))
                                                 setShowPdfModal(true)
                                             }}
                                         />
@@ -440,7 +441,7 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     <div className={!isEditable && "cursor-not-allowed"}><FileUpload
                                         pdfToAdd={pdfToAdd}
                                         setPdfToAdd={setPdfToAdd}
-                                        type={'Statement 3'}
+                                        type='Statement 3'
                                         setShowAddPdf={setShowAddPdf}
                                         disabled={!isEditable}
                                         onChange={handleInputChange}
@@ -452,11 +453,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                         <div className=''>
                             <h2 className='text-[13px] text-black'>Application</h2>
                             <div className='flex items-center gap-2 mt-1'>
-                                {applicaitonPdfs[0] ? <>
+                                    {applicaitonPdfs.find(pdf => pdf.pdf_type==="Application file 1") ? <>
                                     <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
                                         <AiFillFilePdf size={20}
                                             onClick={() => {
-                                                setPdf(applicaitonPdfs[0])
+                                                setPdf(applicaitonPdfs.find(pdf => pdf.pdf_type==="Application file 1"))
                                                 setShowPdfModal(true)
                                             }}
                                         />
@@ -472,11 +473,11 @@ const Application = ({ application, defaultPdfs, fundersResponse, submittedAppli
                                     />
                                     </div>}
 
-                                {applicaitonPdfs[1] ? <>
+                                {applicaitonPdfs.find(pdf => pdf.pdf_type==="Application file 2") ? <>
                                     <div className='bg-gray-300 cursor-pointer rounded-[10px] text-black grid place-items-center w-[50px] h-[40px]'>
                                         <AiFillFilePdf size={20}
                                             onClick={() => {
-                                                setPdf(applicaitonPdfs[1])
+                                                setPdf(applicaitonPdfs.find(pdf => pdf.pdf_type==="Application file 2"))
                                                 setShowPdfModal(true)
                                             }}
                                         />
